@@ -29332,7 +29332,7 @@
 		AF1ADA0F18500FA200932759 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.updater";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -29349,7 +29349,7 @@
 		AF1ADA1018500FA200932759 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.updater";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -31668,7 +31668,7 @@
 		AF9771DB0989DC4B001F8B92 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
@@ -31679,7 +31679,7 @@
 		AF9771DC0989DC4B001F8B92 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
@@ -34428,7 +34428,7 @@
 		AFBFE75C178642DC00432B21 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -34441,7 +34441,7 @@
 		AFBFE75D178642DC00432B21 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -34454,7 +34454,7 @@
 		AFBFE77C178647FE00432B21 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
@@ -34467,7 +34467,7 @@
 		AFBFE77D178647FE00432B21 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
