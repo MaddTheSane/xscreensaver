@@ -93,7 +93,7 @@ FuzzyFlakesColorResource(Flake *flake, char *Color)
 	fprintf(stderr, "%s: can't allocate color %s", progname, Color);
 	return 0;
      }
-   return color.pixel;
+   return (unsigned int)color.pixel;
 }
 
 /*

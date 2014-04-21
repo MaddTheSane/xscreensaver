@@ -430,7 +430,7 @@ ENTRYPOINT void
 init_demon (ModeInfo * mi)
 {
 	Display    *display = MI_DISPLAY(mi);
-	int         size = MI_SIZE(mi), nk;
+	int         size = (int)(MI_SIZE(mi)), nk;
 	demonstruct *dp;
 
 	if (demons == NULL) {
@@ -518,8 +518,8 @@ init_demon (ModeInfo * mi)
 			else
 				dp->ys = MINSIZE;
 		} else
-			dp->ys = MIN(size, MAX(MINSIZE, MIN(dp->width, dp->height) /
-					       MINGRIDSIZE));
+			dp->ys = (int)(MIN(size, MAX(MINSIZE, MIN(dp->width, dp->height) /
+					       MINGRIDSIZE)));
 		dp->xs = dp->ys;
 		nccols = MAX(dp->width / dp->xs - 2, 2);
 		ncrows = MAX(dp->height / dp->ys - 1, 4);
@@ -541,8 +541,8 @@ init_demon (ModeInfo * mi)
 			else
 				dp->ys = MINSIZE;
 		} else
-			dp->ys = MIN(size, MAX(MINSIZE, MIN(dp->width, dp->height) /
-					       MINGRIDSIZE));
+			dp->ys = (int)(MIN(size, MAX(MINSIZE, MIN(dp->width, dp->height) /
+					       MINGRIDSIZE)));
 		dp->xs = dp->ys;
 		dp->ncols = MAX(dp->width / dp->xs, 2);
 		dp->nrows = MAX(dp->height / dp->ys, 2);
@@ -564,8 +564,8 @@ init_demon (ModeInfo * mi)
 			else
 				dp->ys = MINSIZE;
 		} else
-			dp->ys = MIN(size, MAX(MINSIZE, MIN(dp->width, dp->height) /
-					       MINGRIDSIZE));
+			dp->ys = (int)(MIN(size, MAX(MINSIZE, MIN(dp->width, dp->height) /
+					       MINGRIDSIZE)));
 		dp->xs = (int) (1.52 * dp->ys);
 		dp->ncols = (MAX(dp->width / dp->xs - 1, 2) / 2) * 2;
 		dp->nrows = (MAX(dp->height / dp->ys - 1, 2) / 2) * 2;

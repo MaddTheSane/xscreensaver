@@ -453,7 +453,7 @@ init_atlantis(ModeInfo * mi)
 			return;
 	}
 	ap = &atlantis[screen];
-	ap->num_sharks = MI_COUNT(mi);
+	ap->num_sharks = (int)MI_COUNT(mi);
 	if (ap->sharks == NULL) {
 		if ((ap->sharks = (fishRec *) calloc(ap->num_sharks,
 						sizeof (fishRec))) == NULL) {
@@ -465,7 +465,7 @@ init_atlantis(ModeInfo * mi)
 	}
 	ap->sharkspeed = MI_CYCLES(mi);		/* has influence on the "width"
 						   of the movement */
-	ap->sharksize = MI_SIZE(mi);	/* has influence on the "distance"
+	ap->sharksize = (int)MI_SIZE(mi);	/* has influence on the "distance"
 					   of the sharks */
 	ap->whalespeed = whalespeed;
 	ap->wire = MI_IS_WIREFRAME(mi);

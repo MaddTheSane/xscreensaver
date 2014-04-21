@@ -99,7 +99,7 @@ draw_fps_string (b_state *state)
   XDrawImageString (state->dpy, state->b, state->font_gc,
 		    10, state->xgwa.height - state->font_height*2 -
                     state->font_baseline - 10,
-		    state->fps_str, strlen(state->fps_str));
+		    state->fps_str, (int)strlen(state->fps_str));
 }
 
 /* Finds the origin of the window relative to the root window, by

@@ -7566,7 +7566,7 @@
 		AFD572B50996F99600BA26F7 /* Bouboule.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Bouboule.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFD572B90996FB3D00BA26F7 /* bouboule.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = bouboule.c; path = hacks/bouboule.c; sourceTree = "<group>"; };
 		AFD572D20996FC0F00BA26F7 /* Crystal.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Crystal.saver; sourceTree = BUILT_PRODUCTS_DIR; };
-		AFD572ED0997006E00BA26F7 /* crystal.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = crystal.c; path = hacks/crystal.c; sourceTree = "<group>"; };
+		AFD572ED0997006E00BA26F7 /* crystal.c */ = {isa = PBXFileReference; fileEncoding = 5; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = crystal.c; path = hacks/crystal.c; sourceTree = "<group>"; usesTabs = 1; };
 		AFD57309099701C000BA26F7 /* Julia.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Julia.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFD5730C099702C800BA26F7 /* julia.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = julia.c; path = hacks/julia.c; sourceTree = "<group>"; };
 		AFD5736D0997411200BA26F7 /* Strange.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Strange.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -35346,7 +35346,8 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
 					"CLASS=XScreenSaver${EXECUTABLE_NAME}View",
-					"$(GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS)",
+					SABER,
+					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -35423,7 +35424,8 @@
 				);
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
 					"CLASS=XScreenSaver${EXECUTABLE_NAME}View",
-					"$(GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS)",
+					SABER,
+					"$(inherited)",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;

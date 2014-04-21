@@ -428,7 +428,7 @@ get_word_text (state *s)
    */
   if (end > s->buf)
     {
-      int n = end - s->buf;
+      long n = end - s->buf;
       memmove (s->buf, end, sizeof(s->buf) - n);
       s->buf_tail -= n;
     }
@@ -452,7 +452,7 @@ new_word (state *s, sentence *se, char *txt, Bool alloc_p)
     return 0;
 
   w = (word *) calloc (1, sizeof(*w));
-  XTextExtents (se->font, txt, strlen(txt), &dir, &ascent, &descent, &overall);
+  XTextExtents (se->font, txt, (int)strlen(txt), &dir, &ascent, &descent, &overall);
 
   /* Leave a little more slack. Not entirely clear on what's going on here,
      but maybe it's fonts with goofy metrics. */
@@ -559,7 +559,7 @@ new_word (state *s, sentence *se, char *txt, Bool alloc_p)
 
       /* Draw foreground text */
       XDrawString (s->dpy, w->pixmap, gc1, -w->lbearing, w->ascent,
-                   txt, strlen(txt));
+                   txt, (int)strlen(txt));
 
       /* Cheesy hack to draw a border */
       /* (I should be able to do this in i*2 time instead of i*i time,
@@ -683,7 +683,7 @@ split_words (state *s, sentence *se)
   for (i = 0, j = 0; i < se->nwords; i++)
     {
       word *ow = se->words[i];
-      int L = strlen (ow->text);
+      size_t L = strlen (ow->text);
       int k;
 
       int x  = ow->x;
@@ -1364,7 +1364,7 @@ fontglide_draw_metrics (state *s)
   jwxyz_XSetAntiAliasing (s->dpy, gc, False);
 #endif
 
-  XTextExtents (font, txt, strlen(txt), 
+  XTextExtents (font, txt, (int)strlen(txt),
                 &dir, &ascent, &descent, &overall);
   c = font->per_char[((unsigned char *) txt)[0] - font->min_char_or_byte2];
 
@@ -1409,7 +1409,7 @@ fontglide_draw_metrics (state *s)
                  x + cc.rbearing, y + descent);
 
       XSetForeground (s->dpy, gc, WhitePixelOfScreen (s->xgwa.screen));
-      XDrawString (s->dpy, s->window, gc, x, y, txt, strlen(txt));
+      XDrawString (s->dpy, s->window, gc, x, y, txt, (int)strlen(txt));
 
       y += (ascent + descent) * 2;
     }

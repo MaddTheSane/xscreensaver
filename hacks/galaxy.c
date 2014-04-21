@@ -193,7 +193,7 @@ startover(ModeInfo * mi)
 
  if (MI_BATCHCOUNT(mi) < -MINGALAXIES)
   free_galaxies(gp);
- gp->ngalaxies = MI_BATCHCOUNT(mi);
+ gp->ngalaxies = (int)MI_BATCHCOUNT(mi);
  if (gp->ngalaxies < -MINGALAXIES)
   gp->ngalaxies = NRAND(-gp->ngalaxies - MINGALAXIES + 1) + MINGALAXIES;
 
@@ -318,7 +318,7 @@ init_galaxy(ModeInfo * mi)
   dbufp = False;
 # endif
 
- gp->f_hititerations = MI_CYCLES(mi);
+ gp->f_hititerations = (int)MI_CYCLES(mi);
 
  gp->scale = (double) (MI_WIN_WIDTH(mi) + MI_WIN_HEIGHT(mi)) / 8.0;
  gp->midx =  MI_WIN_WIDTH(mi)  / 2;

@@ -20,7 +20,7 @@
 #define ABS(x) ((x)<0?-(x):(x))
 #define MAX(x,y) ((x)<(y)?(y):(x))
 #define MIN(x,y) ((x)>(y)?(y):(x))
-#define RAND(n) ((long) ((random() & 0x7fffffff) % ((long) (n))))
+#define RAND(n) ((int) ((random() & 0x7fffffff) % ((int) (n))))
 #define RANDSIGN() ((random() & 1) ? 1 : -1)
 
 struct state {

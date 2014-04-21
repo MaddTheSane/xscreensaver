@@ -636,7 +636,7 @@ init_flow (ModeInfo * mi)
 
 	sp->count2 = 0;
 
-	sp->taillen = MI_SIZE(mi);
+	sp->taillen = (int)MI_SIZE(mi);
 	if (sp->taillen < -MINTRAIL) {
 		/* Change by sqrt so it seems more variable */
 		sp->taillen = NRAND((int)sqrt((double) (-sp->taillen - MINTRAIL + 1)));
@@ -774,7 +774,7 @@ init_flow (ModeInfo * mi)
 	sp->count2 = 0; /* Reset search */
 
 	free_flow(sp);
-	sp->beecount = MI_COUNT(mi);
+	sp->beecount = (int)MI_COUNT(mi);
 	if (sp->beecount < 0) {	/* random variations */
 		sp->beecount = NRAND(-sp->beecount) + 1; /* Minimum 1 */
 	}

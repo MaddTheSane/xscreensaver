@@ -93,9 +93,9 @@ ERROR!  Sorry, xlockmore.h requires ANSI C (gcc, for example.)
 
 /* Some other utility macros.
  */
-#define SINF(n)			((float)sin((double)(n)))
-#define COSF(n)			((float)cos((double)(n)))
-#define FABSF(n)		((float)fabs((double)(n)))
+#define SINF(n)			((float)sin(n))
+#define COSF(n)			((float)cos(n))
+#define FABSF(n)		((float)fabs(n))
 
 #undef MAX
 #undef MIN

@@ -240,7 +240,7 @@ initmode(ModeInfo * mi, int mode)
 		dp->rainbow = dp->color;
 		dp->fractal_len = 2000000;
 	}
-	dp->fractal_len = (dp->fractal_len * MI_COUNT(mi)) / 20;
+	dp->fractal_len = (int)((dp->fractal_len * MI_COUNT(mi)) / 20);
 
 #ifndef STANDALONE
 	MI_CLEARWINDOW(mi);

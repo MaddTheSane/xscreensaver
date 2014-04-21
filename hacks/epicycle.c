@@ -101,7 +101,7 @@ struct tagCircle
   double w;			/* position (radians ccw from x-axis) */
   double initial_w;		/* starting position */
   double wdot;			/* rotation rate (change in w per iteration) */
-  int    divisor;
+  long   divisor;
 
   struct tagCircle *pchild;
 };
@@ -170,8 +170,8 @@ struct state {
  *
  * See Knuth, section 4.5.2.
  */
-static int
-gcd(int u, int v)		/* Euclid's Method */
+static long
+gcd(long u, long v)		/* Euclid's Method */
 {
   /* If either operand of % is negative, the sign of the result is
    * implementation-defined.  See section 6.3.5 "Multiplicative
@@ -183,7 +183,7 @@ gcd(int u, int v)		/* Euclid's Method */
   
   while (0 != v)
     {
-      int r;
+      long r;
       r = u % v;
       u = v;
       v = r;
@@ -195,8 +195,8 @@ gcd(int u, int v)		/* Euclid's Method */
  * Euclid's Proposition 34, as explained in Knuth's The Art of
  * Computer Programming, Vol 2, section 4.5.2.
  */
-static int
-lcm(int u, int v)
+static long
+lcm(long u, long v)
 {
   return u / gcd(u,v) * v;
 }

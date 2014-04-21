@@ -311,7 +311,7 @@ init_bouboule(ModeInfo * mi)
  */
 {
 	StarField  *sp;
-	int         size = MI_SIZE(mi);
+	int         size = (int)(MI_SIZE(mi));
 	int         i;
 	double      theta, omega;
 
@@ -340,7 +340,7 @@ init_bouboule(ModeInfo * mi)
 	else
 		sp->max_star_size = size;
 
-	sp->NbStars = MI_BATCHCOUNT(mi);
+	sp->NbStars = (int)(MI_BATCHCOUNT(mi));
 	if (sp->NbStars < -MINSTARS) {
 		if (sp->star) {
 			(void) free((void *) sp->star);

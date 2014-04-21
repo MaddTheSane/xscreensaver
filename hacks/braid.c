@@ -258,7 +258,7 @@ init_braid(ModeInfo * mi)
 		}
 	} while (count > 0);
 
-	braid->linewidth = MI_SIZE(mi);
+	braid->linewidth = (int)(MI_SIZE(mi));
 
 	if (braid->linewidth < 0)
 		braid->linewidth = NRAND(-braid->linewidth) + 1;
@@ -295,7 +295,7 @@ draw_braid(ModeInfo * mi)
 #endif
 
 	MI_IS_DRAWN(mi) = True;
-	XSetLineAttributes(display, MI_GC(mi), braid->linewidth,
+	XSetLineAttributes(display, MI_GC(mi), (unsigned int)braid->linewidth,
 			   LineSolid,
 			   (braid->linewidth <= 3 ? CapButt : CapRound),
 			   JoinMiter);

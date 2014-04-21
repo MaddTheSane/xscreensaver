@@ -268,8 +268,8 @@ draw_discrete_1 (ModeInfo * mi)
 	Display    *dsp = MI_DISPLAY(mi);
 	Window      win = MI_WINDOW(mi);
 	double      oldj, oldi;
-	int         count = MI_COUNT(mi);
-	int         cycles = MI_CYCLES(mi);
+	int         count = (int)(MI_COUNT(mi));
+	int         cycles = (int)(MI_CYCLES(mi));
 	int         k;
 	XPoint     *xp;
 	GC          gc = MI_GC(mi);
@@ -403,7 +403,7 @@ ENTRYPOINT void
 draw_discrete (ModeInfo * mi)
 {
   discretestruct *hp = &discretes[MI_SCREEN(mi)];
-  int cycles = MI_CYCLES(mi);
+  int cycles = (int)(MI_CYCLES(mi));
   int i;
 
   if (hp->eraser) {

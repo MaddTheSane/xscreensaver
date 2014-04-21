@@ -193,7 +193,7 @@ init_fiberlamp(ModeInfo * mi)
 	return;
 
   fl->init = True;
-  fl->nfibers = MI_COUNT(mi);
+  fl->nfibers = (int)MI_COUNT(mi);
   /* Allocate fibers */
   if((fl->fiber =
 	  (fiberstruct*) calloc(fl->nfibers, sizeof (fiberstruct))) == NULL) {
@@ -413,17 +413,17 @@ draw_fiberlamp (ModeInfo * mi)
 	  int tiplen;
 
       if (tipcolor < 0) tipcolor += MI_NPIXELS(mi);
-      tipcolor = MI_PIXEL(mi, tipcolor);
+      tipcolor = (int)(MI_PIXEL(mi, tipcolor));
 
 	  if(fs->node[1].z < 0.0) { /* Back */
 		tiplen = 2;
-		fibercolor = fl->dim;
+		fibercolor = (int)fl->dim;
 	  }else	if(fs->node[NODES-1].z < 0.7) { /* Middle */
 		tiplen = 3;
-		fibercolor = fl->medium;
+		fibercolor = (int)fl->medium;
 	  } else {                 /* Front */
 		tiplen = 3;
-		fibercolor = fl->bright;
+		fibercolor = (int)fl->bright;
 	  }
 
 	  XSetForeground(MI_DISPLAY(mi), MI_GC(mi), fibercolor);

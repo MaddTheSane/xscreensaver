@@ -540,14 +540,14 @@ init_euler2d (ModeInfo * mi)
 	sp->width = MI_WIDTH(mi);
 	sp->height = MI_HEIGHT(mi);
 
-	sp->N = MI_COUNT(mi)+number_of_vortex_points;
+	sp->N = (int)(MI_COUNT(mi)+number_of_vortex_points);
 	sp->Nvortex = number_of_vortex_points;
 
 	if (tail_len < 1) { /* minimum tail */
 	  tail_len = 1;
 	}
 	if (tail_len > MI_CYCLES(mi)) { /* maximum tail */
-	  tail_len = MI_CYCLES(mi);
+	  tail_len = (int)(MI_CYCLES(mi));
 	}
 
 	/* Clear the background. */

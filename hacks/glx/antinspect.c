@@ -619,7 +619,7 @@ ENTRYPOINT Bool antinspect_handle_event (ModeInfo *mi, XEvent *event)
             event->xbutton.button == Button6 ||
             event->xbutton.button == Button7))
     {
-      gltrackball_mousewheel (mp->trackball, event->xbutton.button, 5,
+      gltrackball_mousewheel (mp->trackball, (int)event->xbutton.button, 5,
                               !event->xbutton.state);
       return True;
     }

@@ -950,8 +950,8 @@ init_crystal(ModeInfo * mi)
 		cryst->ny = DEF_NY1;
 	neqv = neqv * cryst->nx * cryst->ny;
 
-	cryst->num_atom = MI_COUNT(mi);
-	max_atoms = MI_COUNT(mi);
+	cryst->num_atom = (int)(MI_COUNT(mi));
+	max_atoms = (int)(MI_COUNT(mi));
 	if (cryst->num_atom == 0) {
 		cryst->num_atom = DEF_NUM_ATOM;
 		max_atoms = DEF_NUM_ATOM;
@@ -1031,7 +1031,7 @@ init_crystal(ModeInfo * mi)
 		if (MI_SIZE(mi) < -size_atom)
 			size_atom = -size_atom;
 		else
-			size_atom = MI_SIZE(mi);
+			size_atom = (int)(MI_SIZE(mi));
 	}
 	cryst->a = cryst->a / cryst->nx;
 	cryst->b = cryst->b / cryst->ny;

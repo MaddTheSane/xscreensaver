@@ -325,7 +325,7 @@ gcd(int a, int b)
 	return a;
 }
 
-static int
+static inline int
 isqrt(int n)
 {
 	int y;
@@ -552,7 +552,7 @@ p(ModeInfo *mi, circle c)
 			((int) (cp->size * c.x / (2.0 * c.e) + cp->offset.x)),
 			((int) (cp->size * c.y / (2.0 * c.e) + MI_HEIGHT(mi) -
 			FONT_HEIGHT / 2)), (char *) space_string[cp->geometry],
-			strlen(space_string[cp->geometry]));
+			(int)strlen(space_string[cp->geometry]));
 		}
 		return;
 	}
@@ -700,7 +700,7 @@ init_apollonian (ModeInfo * mi)
 	cp->altgeom = cp->label && altgeom;
 
 	if (cp->quad == NULL) {
-		cp->count = ABS(MI_COUNT(mi));
+		cp->count = (int)(ABS(MI_COUNT(mi)));
 		if ((cp->quad = (apollonian_quadruple *) malloc(cp->count *
 			sizeof (apollonian_quadruple))) == NULL) {
 			return;

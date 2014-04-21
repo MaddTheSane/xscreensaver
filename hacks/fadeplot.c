@@ -130,13 +130,13 @@ init_fadeplot (ModeInfo * mi)
 	fp->factor.x = MAX(fp->width / (2 * fp->min), 1);
 	fp->factor.y = MAX(fp->height / (2 * fp->min), 1);
 
-	fp->nbstep = MI_COUNT(mi);
+	fp->nbstep = (int)(MI_COUNT(mi));
 	if (fp->nbstep < -MINSTEPS) {
 		fp->nbstep = NRAND(-fp->nbstep - MINSTEPS + 1) + MINSTEPS;
 	} else if (fp->nbstep < MINSTEPS)
 		fp->nbstep = MINSTEPS;
 
-	fp->maxpts = MI_CYCLES(mi);
+	fp->maxpts = (int)(MI_CYCLES(mi));
 	if (fp->maxpts < 1)
 		fp->maxpts = 1;
 
