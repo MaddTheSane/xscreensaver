@@ -88,8 +88,8 @@
 
   CGRect win = [self view].frame;
   if (win.size.width > 320) {					// iPad
-    [label1 setTextAlignment: UITextAlignmentLeft];
-    [label2 setTextAlignment: UITextAlignmentRight];
+    [label1 setTextAlignment: NSTextAlignmentLeft];
+    [label2 setTextAlignment: NSTextAlignmentRight];
     label2.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     r3.size.width = win.size.width;
     r1 = r3;
@@ -99,8 +99,8 @@
 
   } else {							// iPhone
     r3.size.width = 320; // force it to be flush-left
-    [label1 setTextAlignment: UITextAlignmentLeft];
-    [label2 setTextAlignment: UITextAlignmentLeft];
+    [label1 setTextAlignment: NSTextAlignmentLeft];
+    [label2 setTextAlignment: NSTextAlignmentLeft];
     r1.origin.y = -1;    // make it fit in landscape
     r2.origin.y = r1.origin.y + r1.size.height - 2;
     r3.size.height = r1.size.height + r2.size.height;

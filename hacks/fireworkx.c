@@ -376,7 +376,7 @@ static void glow_blur(struct state *st)
 static void chromo_2x2_light(struct state *st)
 {
 	__m128 xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6;
-	__m128i xmi4, xmi5, xmi6, xmi7;
+	__m128i xmi4, xmi5 = {0}, xmi6, xmi7;
 
 	unsigned int x, y, v = 0;
 	unsigned int nl = st->width * 4;

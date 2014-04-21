@@ -7042,7 +7042,7 @@
 		AF975A96099C6BC300B05160 /* Barcode.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Barcode.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF975A99099C6C3500B05160 /* barcode.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = barcode.c; path = hacks/barcode.c; sourceTree = "<group>"; };
 		AF975AE7099C6EB100B05160 /* Fireworkx.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Fireworkx.saver; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF975AEE099C6F1700B05160 /* fireworkx.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = fireworkx.c; path = hacks/fireworkx.c; sourceTree = "<group>"; };
+		AF975AEE099C6F1700B05160 /* fireworkx.c */ = {isa = PBXFileReference; fileEncoding = 5; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = fireworkx.c; path = hacks/fireworkx.c; sourceTree = "<group>"; usesTabs = 1; };
 		AF975B0C099C6FE400B05160 /* MemScroller.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemScroller.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF975B14099C709E00B05160 /* memscroller.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = memscroller.c; path = hacks/memscroller.c; sourceTree = "<group>"; };
 		AF975C22099C8C1500B05160 /* Halo.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Halo.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -29105,6 +29105,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -29124,6 +29125,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -29351,6 +29353,7 @@
 		AF2D4D8D13E902F5002AA818 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"PHOSPHOR_ONLY=1",
@@ -29368,6 +29371,7 @@
 		AF2D4D8E13E902F5002AA818 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"PHOSPHOR_ONLY=1",
@@ -29385,6 +29389,7 @@
 		AF2D4F7C13E91093002AA818 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"APPLE2_ONLY=1",
@@ -29402,6 +29407,7 @@
 		AF2D4F7D13E91093002AA818 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"APPLE2_ONLY=1",
@@ -30226,6 +30232,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CLANG_ENABLE_MODULES = YES;
 				INSTALL_PATH = /usr/local/lib;
 				LD_RUNPATH_SEARCH_PATHS = "";
 				SDKROOT = iphoneos;
@@ -30237,6 +30244,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CLANG_ENABLE_MODULES = YES;
 				INSTALL_PATH = /usr/local/lib;
 				LD_RUNPATH_SEARCH_PATHS = "";
 				SDKROOT = iphoneos;
@@ -31397,7 +31405,7 @@
 		AF91898D158FC00A002B5D1E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
@@ -31415,7 +31423,7 @@
 		AF91898E158FC00A002B5D1E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = iSaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
@@ -35277,7 +35285,7 @@
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -35353,7 +35361,7 @@
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_MODULES = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;

@@ -696,7 +696,7 @@ static void layout_group (NSView *group, BOOL horiz_p);
     withKeyPath:[@"values." stringByAppendingString: pref_key]
         options:nil];
 # else  // USE_IPHONE
-  SEL sel;
+  SEL sel = NULL;
   NSObject *val = [prefs objectForKey:pref_key];
   NSString *sval = 0;
   double dval = 0;

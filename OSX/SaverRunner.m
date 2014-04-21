@@ -540,7 +540,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
 
   frame = CGRectMake (0, 0, tsize.width, tsize.height);
 
-  UIInterfaceOrientation orient =
+  UIDeviceOrientation orient =
     // Why are both of these wrong when starting up rotated??
     [[UIDevice currentDevice] orientation];
     // [rootViewController interfaceOrientation];
@@ -603,7 +603,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
       textview = [[UITextView alloc] initWithFrame:frame];
       textview.font = (j == 0 ? font1 : font2);
       textview.text = (j == 0 ? name  : year);
-      textview.textAlignment = UITextAlignmentCenter;
+      textview.textAlignment = NSTextAlignmentCenter;
       textview.showsHorizontalScrollIndicator = NO;
       textview.showsVerticalScrollIndicator   = NO;
       textview.scrollEnabled = NO;

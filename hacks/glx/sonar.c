@@ -183,7 +183,7 @@ draw_screen (ModeInfo *mi, Bool mesh_p, Bool sweep_p)
   int i;
   int th_steps, r_steps, r_skip, th_skip, th_skip2, outer_r;
   GLfloat curvature = M_PI * 0.4;
-  GLfloat r0, r1, z0, z1, zoff;
+  GLfloat r0 = 1, r1, z0 = 1, z1, zoff;
   XYZ *ring;
 
   static const GLfloat glass[4]  = {0.0, 0.4, 0.0, 0.5};

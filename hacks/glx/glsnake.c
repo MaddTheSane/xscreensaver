@@ -1821,7 +1821,7 @@ static int cross_product(int src_dir, int dst_dir)
  */
 static void calc_snake_metrics(struct glsnake_cfg *bp) 
 {
-    int srcDir, dstDir;
+    int srcDir = X_MASK, dstDir = X_MASK;
     int i, x, y, z;
     int prevSrcDir = -Y_MASK;
     int prevDstDir = Z_MASK;
