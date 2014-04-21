@@ -303,6 +303,12 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		558A98BB19057D2D00AFA53C /* InvertedSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD410981E32E00F7970E /* InvertedSlider.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		558A98BC19057D2D00AFA53C /* jwxyz.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD430981E32E00F7970E /* jwxyz.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		558A98BD19057D2D00AFA53C /* PrefsReader.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD470981E32E00F7970E /* PrefsReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		558A98BE19057D2D00AFA53C /* XScreenSaverGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = AF4812F70990D9AE00FB32B8 /* XScreenSaverGLView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		558A98BF19057D2D00AFA53C /* XScreenSaverView.h in Headers */ = {isa = PBXBuildFile; fileRef = AFC254C409882C97000655EE /* XScreenSaverView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		558A98C019057D4F00AFA53C /* XScreenSaverConfigSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = AFC2577F09888F5A000655EE /* XScreenSaverConfigSheet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		55EFF6B81904D5BD00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
 		55EFF6BF1904D67800BB1BA5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		55EFF6C91904D67800BB1BA5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6C71904D67800BB1BA5 /* InfoPlist.strings */; };
@@ -11727,6 +11733,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				558A98BB19057D2D00AFA53C /* InvertedSlider.h in Headers */,
+				558A98C019057D4F00AFA53C /* XScreenSaverConfigSheet.h in Headers */,
+				558A98BE19057D2D00AFA53C /* XScreenSaverGLView.h in Headers */,
+				558A98BC19057D2D00AFA53C /* jwxyz.h in Headers */,
+				558A98BD19057D2D00AFA53C /* PrefsReader.h in Headers */,
+				558A98BF19057D2D00AFA53C /* XScreenSaverView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -29108,7 +29120,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_COMPATIBILITY_VERSION = 5.26;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
@@ -29128,8 +29140,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_COMPATIBILITY_VERSION = 5.26;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
@@ -29293,6 +29304,7 @@
 		AF137D420F075C9C004DE3B2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = Obsolete;
 			};
 			name = Debug;
@@ -29300,6 +29312,7 @@
 		AF137D430F075C9C004DE3B2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = Obsolete;
 			};
 			name = Release;
@@ -30255,6 +30268,7 @@
 		AF480ABB098C66E300FB32B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = "All Savers (XScreenSaver)";
 			};
 			name = Debug;
@@ -30262,6 +30276,7 @@
 		AF480ABC098C66E300FB32B8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = "All Savers (XScreenSaver)";
 			};
 			name = Release;
@@ -30281,6 +30296,7 @@
 		AF480D65098EED6E00FB32B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = "All Savers (XLockmore)";
 			};
 			name = Debug;
@@ -30288,6 +30304,7 @@
 		AF480D66098EED6E00FB32B8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = "All Savers (XLockmore)";
 			};
 			name = Release;
@@ -30295,6 +30312,7 @@
 		AF480D68098EED6E00FB32B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = "All Savers (OpenGL)";
 			};
 			name = Debug;
@@ -30302,6 +30320,7 @@
 		AF480D69098EED6E00FB32B8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = "All Savers (OpenGL)";
 			};
 			name = Release;
@@ -30309,6 +30328,7 @@
 		AF480D6B098EED6E00FB32B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = "All Savers";
 			};
 			name = Debug;
@@ -30316,6 +30336,7 @@
 		AF480D6C098EED6E00FB32B8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = "All Savers";
 			};
 			name = Release;
@@ -30611,6 +30632,7 @@
 		AF4FF4950D52CA0800666F98 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = m6502.h;
 			};
 			name = Debug;
@@ -30618,6 +30640,7 @@
 		AF4FF4960D52CA0800666F98 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = m6502.h;
 			};
 			name = Release;
@@ -31921,6 +31944,7 @@
 		AFA33C080B058E67002B0E7D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = webcollage;
 			};
 			name = Debug;
@@ -31928,6 +31952,7 @@
 		AFA33C090B058E67002B0E7D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = webcollage;
 			};
 			name = Release;
@@ -33775,6 +33800,7 @@
 		AFA5611B099378EA00F3E977 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = molecules.h;
 			};
 			name = Debug;
@@ -33782,6 +33808,7 @@
 		AFA5611C099378EA00F3E977 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				PRODUCT_NAME = molecules.h;
 			};
 			name = Release;
@@ -34402,10 +34429,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				"OTHER_CFLAGS[sdk=macosx*]" = "";
 				PRODUCT_NAME = Apple2;
 				WRAPPER_EXTENSION = app;
 			};
@@ -34415,10 +34442,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				"OTHER_CFLAGS[sdk=macosx*]" = "";
 				PRODUCT_NAME = Apple2;
 				WRAPPER_EXTENSION = app;
 			};
@@ -35281,7 +35308,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = XScreenSaver;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -35332,7 +35359,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(HEADER_SEARCH_PATHS)",
+					"$(inherited)",
 					"$(SRCROOT)",
 					"$(SRCROOT)/utils",
 					"$(SRCROOT)/hacks",
@@ -35357,7 +35384,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
+				ASSETCATALOG_COMPILER_APPICON_NAME = XScreenSaver;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -35408,7 +35435,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(HEADER_SEARCH_PATHS)",
+					"$(inherited)",
 					"$(SRCROOT)",
 					"$(SRCROOT)/utils",
 					"$(SRCROOT)/hacks",
