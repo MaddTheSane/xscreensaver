@@ -113,9 +113,9 @@ scale_image (Display *dpy, Window window, XImage *in,
     }
   else
     {
-      rmsk = xgwa.visual->red_mask;
-      gmsk = xgwa.visual->green_mask;
-      bmsk = xgwa.visual->blue_mask;
+      rmsk = (unsigned int)xgwa.visual->red_mask;
+      gmsk = (unsigned int)xgwa.visual->green_mask;
+      bmsk = (unsigned int)xgwa.visual->blue_mask;
       decode_mask (rmsk, &rpos, &rsiz);
       decode_mask (gmsk, &gpos, &gsiz);
       decode_mask (bmsk, &bpos, &bsiz);
@@ -1483,7 +1483,7 @@ static int make_typo(char *out_buf, const char *orig, char *err_buf)
       }
 
     if (random()%10==0 && strlen(p)>=4 && (errc=typo_map[(int)(unsigned char)p[0]])) {
-      int remain=strlen(p);
+      size_t remain=strlen(p);
       int past=random()%(remain-2)+1;
       memmove(p+past+past, p, remain+1);
       p[0]=errc;

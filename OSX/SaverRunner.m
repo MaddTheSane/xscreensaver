@@ -50,6 +50,16 @@
 #endif // USE_IPHONE
 
 
+#ifndef USE_IPHONE
+
+@interface NSObject (PrivateAnimationTimer)
+
+- (BOOL)needsAnimationTimer;
+
+@end
+
+#endif
+
 @implementation SaverRunner
 
 
@@ -144,8 +154,8 @@ static ScreenSaverView *
 find_saverView_child (NSView *v)
 {
   NSArray *kids = [v subviews];
-  int nkids = [kids count];
-  int i;
+  NSUInteger nkids = [kids count];
+  NSUInteger i;
   for (i = 0; i < nkids; i++) {
     NSObject *kid = [kids objectAtIndex:i];
     if ([kid isKindOfClass:[ScreenSaverView class]]) {
@@ -182,8 +192,8 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     [m setTitle: [[m title] stringByReplacingOccurrencesOfString:old_str
                             withString:new_str]];
     NSArray *kids = [m itemArray];
-    int nkids = [kids count];
-    int i;
+    NSUInteger nkids = [kids count];
+    NSUInteger i;
     for (i = 0; i < nkids; i++) {
       relabel_menus ([kids objectAtIndex:i], old_str, new_str);
     }
@@ -203,7 +213,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
   if ([sender isKindOfClass:[NSView class]]) {	// Sent from button
     sv = find_saverView ((NSView *) sender);
   } else {
-    int i;
+    NSInteger i;
     NSWindow *w = 0;
     for (i = [windows count]-1; i >= 0; i--) {	// Sent from menubar
       w = [windows objectAtIndex:i];
@@ -221,7 +231,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
       modalDelegate:self
      didEndSelector:@selector(preferencesClosed:returnCode:contextInfo:)
         contextInfo:nil];
-  int code = [NSApp runModalForWindow:prefs];
+  NSInteger code = [NSApp runModalForWindow:prefs];
   
   /* Restart the animation if the "OK" button was hit, but not if "Cancel".
      We have to restart *both* animations, because the xlockmore-style

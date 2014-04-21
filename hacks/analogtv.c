@@ -432,9 +432,9 @@ analogtv_allocate(Display *dpy, Window window)
     it->use_color=0;
   }
 
-  it->red_mask=it->xgwa.visual->red_mask;
-  it->green_mask=it->xgwa.visual->green_mask;
-  it->blue_mask=it->xgwa.visual->blue_mask;
+  it->red_mask=(unsigned int)it->xgwa.visual->red_mask;
+  it->green_mask=(unsigned int)it->xgwa.visual->green_mask;
+  it->blue_mask=(unsigned int)it->xgwa.visual->blue_mask;
   it->red_shift=it->red_invprec=-1;
   it->green_shift=it->green_invprec=-1;
   it->blue_shift=it->blue_invprec=-1;
@@ -2090,7 +2090,7 @@ void
 analogtv_draw_string_centered(analogtv_input *input, analogtv_font *f,
                               char *s, int x, int y, int ntsc[4])
 {
-  int width=strlen(s) * f->char_w * 4;
+  size_t width=strlen(s) * f->char_w * 4;
   x -= width/2;
 
   analogtv_draw_string(input, f, s, x, y, ntsc);

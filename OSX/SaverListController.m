@@ -322,7 +322,7 @@
   for (NSArray *sec in letter_sections)
     for (NSString *s in sec)
       [a addObject: s];
-  int n = [a count];
+  NSUInteger n = [a count];
   if (! n) return;
   NSString *which = [a objectAtIndex: (random() % n)];
 

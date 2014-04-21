@@ -114,8 +114,8 @@ static void *ecalloc(uint32_t nelm, size_t nsize){
 
 /* estrdup() - Allocates memory for a new string a returns a copy of the source sting in it. */
 static char *estrdup(const char *source){
-  int ln = strlen(source) + 1;
-  char *s = ecalloc(ln, sizeof(char));
+  size_t ln = strlen(source) + 1;
+  char *s = ecalloc((uint32_t)ln, sizeof(char));
   strncpy(s,source,ln);
   return s;
 }
@@ -1353,7 +1353,7 @@ static BOOL parseHex(char **s, Bit32 *value){
     for(; ishexdigit(**s) && i < MAX_HEX_LEN; (*s)++)
       hex[i++] = **s;
     
-    *value = strtol(hex,NULL,16);
+    *value = (Bit32)strtol(hex,NULL,16);
     free(hex);  
     return TRUE;
   }
@@ -1406,7 +1406,7 @@ static BOOL immediate(char **s, Param *param){
     param->type = (**s == '<') ? IMMEDIATE_LESS : IMMEDIATE_GREAT;
     (*s)++; /* move past < or > */
     if (paramLabel(s, &label)){
-      int ln = strlen(label) + 1;
+      size_t ln = strlen(label) + 1;
       strncpy(param->label, label, ln);
       free(label);
       return TRUE;

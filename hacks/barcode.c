@@ -875,7 +875,7 @@ static void drawUpcEanSupplementalBars (struct state *st,
                                         Bitmap *upcBitmap, char *digits, 
                                         int x, int y, int y2, int textAbove)
 {
-    int len = strlen (digits);
+    size_t len = strlen (digits);
     int i;
     int parity;
     int textY;
@@ -916,7 +916,7 @@ static void drawUpcEanSupplementalBars (struct state *st,
 	}
 	default:
 	{
-	    fprintf (stderr, "%s: bad supplement (%d digits)\n",
+	    fprintf (stderr, "%s: bad supplement (%zu digits)\n",
                      progname, len);
 	    exit(1);
 	    break;
@@ -1823,7 +1823,7 @@ static void updateClock (struct state *st)
       {
         char s[20];
         sprintf (s, "%03d", tm->tm_yday);
-        bitmapDrawString5x8 (st->theBitmap, (BW - strlen (s)*5) / 2, 0, s);
+        bitmapDrawString5x8 (st->theBitmap, (int)((BW - strlen (s)*5) / 2), 0, s);
       }
   }
 

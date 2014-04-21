@@ -313,7 +313,7 @@ position_for_text (struct bsod_state *bst, const char *line)
         while (*end && *end != '\r' && *end != '\n')
           end++;
 
-        XTextExtents (bst->font, start, end-start,
+        XTextExtents (bst->font, start, (int)(end-start),
                       &dir, &ascent, &descent, &ov);
         if (ov.width > max_width)
           max_width = ov.width;
@@ -498,18 +498,18 @@ bsod_pop (struct bsod_state *bst)
     }
   case MOVETO:
     {
-      bst->x = (long) bst->queue[bst->pos].arg1;
-      bst->y = (long) bst->queue[bst->pos].arg2;
+      bst->x = (int)(long) bst->queue[bst->pos].arg1;
+      bst->y = (int)(long) bst->queue[bst->pos].arg2;
       bst->pos++;
       return 0;
     }
   case RECT:
     {
-      int f = (long) bst->queue[bst->pos].arg1;
-      int x = (long) bst->queue[bst->pos].arg2;
-      int y = (long) bst->queue[bst->pos].arg3;
-      int w = (long) bst->queue[bst->pos].arg4;
-      int h = (long) bst->queue[bst->pos].arg5;
+      int f = (int)(long) bst->queue[bst->pos].arg1;
+      int x = (int)(long) bst->queue[bst->pos].arg2;
+      int y = (int)(long) bst->queue[bst->pos].arg3;
+      int w = (int)(long) bst->queue[bst->pos].arg4;
+      int h = (int)(long) bst->queue[bst->pos].arg5;
       if (f)
         XFillRectangle (bst->dpy, bst->window, bst->gc, x, y, w, h);
       else
@@ -520,12 +520,12 @@ bsod_pop (struct bsod_state *bst)
   case COPY:
   case PIXMAP:
     {
-      int srcx = (long) bst->queue[bst->pos].arg1;
-      int srcy = (long) bst->queue[bst->pos].arg2;
-      int w    = (long) bst->queue[bst->pos].arg3;
-      int h    = (long) bst->queue[bst->pos].arg4;
-      int tox  = (long) bst->queue[bst->pos].arg5;
-      int toy  = (long) bst->queue[bst->pos].arg6;
+      int srcx = (int)(long) bst->queue[bst->pos].arg1;
+      int srcy = (int)(long) bst->queue[bst->pos].arg2;
+      int w    = (int)(long) bst->queue[bst->pos].arg3;
+      int h    = (int)(long) bst->queue[bst->pos].arg4;
+      int tox  = (int)(long) bst->queue[bst->pos].arg5;
+      int toy  = (int)(long) bst->queue[bst->pos].arg6;
       XCopyArea (bst->dpy, 
                  (type == PIXMAP ? bst->pixmap : bst->window), 
                  bst->window, bst->gc,
@@ -562,8 +562,8 @@ bsod_pop (struct bsod_state *bst)
     }
   case MARGINS:
     {
-      bst->left_margin  = (long) bst->queue[bst->pos].arg1;
-      bst->right_margin = (long) bst->queue[bst->pos].arg2;
+      bst->left_margin  = (int)(long) bst->queue[bst->pos].arg1;
+      bst->right_margin = (int)(long) bst->queue[bst->pos].arg2;
       bst->pos++;
       return 0;
     }
@@ -1303,7 +1303,7 @@ atari (Display *dpy, Window window)
 
   pixmap = XCreatePixmapFromBitmapData (dpy, window, (char *) atari_bits,
                                         pix_w, pix_h,
-                                        bst->fg, bst->bg, bst->xgwa.depth);
+                                        bst->fg, (unsigned int)bst->bg, bst->xgwa.depth);
   pixmap = double_pixmap (dpy, bst->gc, bst->xgwa.visual, bst->xgwa.depth,
                           pixmap, pix_w, pix_h);
   pix_w *= 2;
@@ -1347,7 +1347,7 @@ mac (Display *dpy, Window window)
 
   pixmap = XCreatePixmapFromBitmapData(dpy, window, (char *) mac_bits,
 				       mac_width, mac_height,
-				       bst->fg, bst->bg, bst->xgwa.depth);
+				       bst->fg, (unsigned int)bst->bg, bst->xgwa.depth);
 
   for (i = 0; i < 2; i++)
     {
@@ -1565,7 +1565,7 @@ mac1 (Display *dpy, Window window)
 
   pixmap = XCreatePixmapFromBitmapData (dpy, window, (char *) macbomb_bits,
                                         macbomb_width, macbomb_height,
-                                        bst->fg, bst->bg, bst->xgwa.depth);
+                                        bst->fg, (unsigned int)bst->bg, bst->xgwa.depth);
 
   x = (bst->xgwa.width - pix_w) / 2;
   y = (bst->xgwa.height - pix_h) / 2;
@@ -2752,7 +2752,7 @@ vms (Display *dpy, Window window)
   int dot_delay = 40000;
   int chunk_delay = 500000;
   char *s, *s1;
-  int i;
+  size_t i;
   int arg_count;
 
   __extension__
@@ -3803,7 +3803,7 @@ atm (Display *dpy, Window window)
 
   pixmap = XCreatePixmapFromBitmapData (dpy, window, (char *) atm_bits,
                                         atm_width, atm_height,
-                                        bst->fg, bst->bg, bst->xgwa.depth);
+                                        bst->fg, (unsigned int)bst->bg, bst->xgwa.depth);
 
   while (pix_w <= bst->xgwa.width  * scale && 
          pix_h <= bst->xgwa.height * scale)
@@ -4173,7 +4173,7 @@ bsod_draw (Display *dpy, Window window, void *closure)
 {
   struct driver_state *dst = (struct driver_state *) closure;
   time_t now;
-  int time_left;
+  time_t time_left;
 
  AGAIN:
   now = time ((time_t *) 0);
@@ -4189,13 +4189,13 @@ bsod_draw (Display *dpy, Window window, void *closure)
   if (! dst->bst && time_left > 0)	/* run completed; wait out the delay */
     {
       if (dst->debug_p)
-        fprintf (stderr, "%s: %s: %d left\n", progname, dst->name, time_left);
+        fprintf (stderr, "%s: %s: %ld left\n", progname, dst->name, time_left);
       return 500000;
     }
 
   else if (dst->bst)			/* sub-mode currently running */
     {
-      int this_delay = -1;
+      time_t this_delay = -1;
 
       if (time_left > 0)
         this_delay = bsod_pop (dst->bst);

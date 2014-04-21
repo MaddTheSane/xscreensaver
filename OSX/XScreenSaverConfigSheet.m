@@ -159,12 +159,7 @@ typedef enum { SimpleXMLCommentKind,
 #if defined(USE_IPHONE) && !defined(USE_PICKER_VIEW)
 
 @interface RadioButton : UILabel
-{
-  int index;
-  NSArray *items;
-}
-
-@property(nonatomic) int index;
+@property(nonatomic) NSInteger index;
 @property(nonatomic, retain) NSArray *items;
 
 @end
@@ -174,11 +169,11 @@ typedef enum { SimpleXMLCommentKind,
 @synthesize index;
 @synthesize items;
 
-- (id) initWithIndex:(int)_index items:_items
+- (id) initWithIndex:(NSInteger)_index items:(NSArray*)_items
 {
   self = [super initWithFrame:CGRectZero];
   index = _index;
-  items = [_items retain];
+  self.items = _items;
 
   [self setText: [[items objectAtIndex:index] objectAtIndex:0]];
   [self setBackgroundColor:[UIColor clearColor]];
@@ -3218,9 +3213,9 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 {
   UITableView *tv = (UITableView *) [self view];
   NSMutableArray *a = [NSMutableArray arrayWithCapacity:20];
-  int rows = [self numberOfSectionsInTableView:tv];
+  NSInteger rows = [self numberOfSectionsInTableView:tv];
   for (int i = 0; i < rows; i++) {
-    int cols = [self tableView:tv numberOfRowsInSection:i];
+    NSInteger cols = [self tableView:tv numberOfRowsInSection:i];
     for (int j = 0; j < cols; j++) {
       NSUInteger ip[2];
       ip[0] = i;

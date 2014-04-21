@@ -576,7 +576,7 @@ static void Execute( SBumps *pBumps )
 			else if( iScreenY == 0 || iScreenY >= pBumps->iWinHeight-2 ||
 					 iScreenX == 0 || iScreenX >= pBumps->iWinWidth-2 )
 			{
-				MyPutPixel( pDOffset, pBumps->aColors[ 0 ] );
+				MyPutPixel( pDOffset, (uint32_t)pBumps->aColors[ 0 ] );
 				continue;
 			}
 
@@ -587,12 +587,12 @@ static void Execute( SBumps *pBumps )
 			if( nX<0 || nX>=pBumps->SpotLight.nLightDiameter
 			 || nY<0 || nY>=pBumps->SpotLight.nLightDiameter )
 			{
-				MyPutPixel( pDOffset, pBumps->aColors[ 0 ] );
+				MyPutPixel( pDOffset, (uint32_t)pBumps->aColors[ 0 ] );
 				continue;
 			}
 				
 			nColor = pBumps->SpotLight.aLightMap[ ( nY * pBumps->SpotLight.nLightDiameter ) + nX ];
-			MyPutPixel( pDOffset, pBumps->aColors[ nColor ] );
+			MyPutPixel( pDOffset, (uint32_t)pBumps->aColors[ nColor ] );
 		}
 	}	
 

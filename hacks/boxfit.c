@@ -426,7 +426,7 @@ draw_boxes (state *st)
 
       if (st->border_size > 0)
         {
-          unsigned int bd = (st->image
+          unsigned int bd = (unsigned int)(st->image
                              ? st->fg_color
                              : st->colors [(b->fill_color + st->ncolors/2)
                                            % st->ncolors].pixel);
