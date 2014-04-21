@@ -303,6 +303,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		55EFF6B81904D5BD00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6BF1904D67800BB1BA5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		55EFF6C91904D67800BB1BA5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6C71904D67800BB1BA5 /* InfoPlist.strings */; };
+		55EFF6CD1904D67800BB1BA5 /* jwxyz_FW.m in Sources */ = {isa = PBXBuildFile; fileRef = 55EFF6CC1904D67800BB1BA5 /* jwxyz_FW.m */; };
 		AF012918157C1E4C00C396E1 /* chessmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55E2309935F2B00F3E977 /* chessmodels.c */; };
 		AF0839A609930BAC00277BE9 /* atlantis.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258700988A468000655EE /* atlantis.xml */; };
 		AF0839B009930C4900277BE9 /* atlantis.c in Sources */ = {isa = PBXBuildFile; fileRef = AF0839A909930C4900277BE9 /* atlantis.c */; };
@@ -1704,16 +1708,6 @@
 		AF51FD3615845F9900E5741F /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */; };
 		AF51FD3715845F9F00E5741F /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */; };
 		AF51FD3915845FCB00E5741F /* SaverRunner.icns in Resources */ = {isa = PBXBuildFile; fileRef = AF2D522513E954A0002AA818 /* SaverRunner.icns */; };
-		AF51FD3A15845FD300E5741F /* iSaverRunner29.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295A157D5C2C00C396E1 /* iSaverRunner29.png */; };
-		AF51FD3B15845FD800E5741F /* iSaverRunner29.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295A157D5C2C00C396E1 /* iSaverRunner29.png */; };
-		AF51FD3C15845FDB00E5741F /* iSaverRunner50.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295B157D5C2C00C396E1 /* iSaverRunner50.png */; };
-		AF51FD3D15845FDE00E5741F /* iSaverRunner50.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295B157D5C2C00C396E1 /* iSaverRunner50.png */; };
-		AF51FD3E15845FE200E5741F /* iSaverRunner57.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295C157D5C2C00C396E1 /* iSaverRunner57.png */; };
-		AF51FD3F15845FF700E5741F /* iSaverRunner57.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295C157D5C2C00C396E1 /* iSaverRunner57.png */; };
-		AF51FD4015845FF900E5741F /* iSaverRunner72.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295D157D5C2C00C396E1 /* iSaverRunner72.png */; };
-		AF51FD4115845FFC00E5741F /* iSaverRunner72.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295D157D5C2C00C396E1 /* iSaverRunner72.png */; };
-		AF51FD4215845FFF00E5741F /* iSaverRunner114.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295E157D5C2C00C396E1 /* iSaverRunner114.png */; };
-		AF51FD431584600300E5741F /* iSaverRunner114.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295E157D5C2C00C396E1 /* iSaverRunner114.png */; };
 		AF561DF615969BC3007CA5ED /* iosgrabimage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF561DF515969BC3007CA5ED /* iosgrabimage.m */; };
 		AF561DF815969C5B007CA5ED /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF561DF715969C5B007CA5ED /* AssetsLibrary.framework */; };
 		AF6048FB157C07C600CA21E4 /* jwzgles.c in Sources */ = {isa = PBXBuildFile; fileRef = AF6048F8157C07C600CA21E4 /* jwzgles.c */; };
@@ -2065,11 +2059,6 @@
 		AF84AF1F15829AF000607E4C /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
 		AF84AF2015829AF000607E4C /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
 		AF84FD4209B1209E00F3AB06 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF84FD4109B1209E00F3AB06 /* GLUT.framework */; };
-		AF91897E158FC00A002B5D1E /* iSaverRunner29.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295A157D5C2C00C396E1 /* iSaverRunner29.png */; };
-		AF91897F158FC00A002B5D1E /* iSaverRunner50.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295B157D5C2C00C396E1 /* iSaverRunner50.png */; };
-		AF918980158FC00A002B5D1E /* iSaverRunner57.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295C157D5C2C00C396E1 /* iSaverRunner57.png */; };
-		AF918981158FC00A002B5D1E /* iSaverRunner72.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295D157D5C2C00C396E1 /* iSaverRunner72.png */; };
-		AF918982158FC00A002B5D1E /* iSaverRunner114.png in Resources */ = {isa = PBXBuildFile; fileRef = AF01295E157D5C2C00C396E1 /* iSaverRunner114.png */; };
 		AF918983158FC00A002B5D1E /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */; };
 		AF918986158FC00A002B5D1E /* SaverRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD400981E32E00F7970E /* SaverRunner.m */; };
 		AF918987158FC00A002B5D1E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -2844,7 +2833,6 @@
 		AFA563B8099398F700F3E977 /* juggler3d.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258D10988A468000655EE /* juggler3d.xml */; };
 		AFA563BA0993991300F3E977 /* juggler3d.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA563B90993991300F3E977 /* juggler3d.c */; };
 		AFAA6B2B1773863000DE720C /* iSaverRunner29t.png in Resources */ = {isa = PBXBuildFile; fileRef = AF7E080315932A1600D81407 /* iSaverRunner29t.png */; };
-		AFAA6B2C1773866200DE720C /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AFC6BBC1161CE07E0084EDB1 /* Default-568h@2x.png */; };
 		AFAA6B2D1773870700DE720C /* apple2-main.c in Sources */ = {isa = PBXBuildFile; fileRef = AF9D4E0509B5BC9D006E59CF /* apple2-main.c */; };
 		AFAA6B2E1773870700DE720C /* apple2.c in Sources */ = {isa = PBXBuildFile; fileRef = AF9D4DD309B5B990006E59CF /* apple2.c */; };
 		AFAA6B2F1773871900DE720C /* analogtv.c in Sources */ = {isa = PBXBuildFile; fileRef = AF9D4CFA09B5AC94006E59CF /* analogtv.c */; };
@@ -2856,7 +2844,6 @@
 		AFAA6B351773878000DE720C /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF0FAF3B159BAC7B00BCE2F7 /* CoreText.framework */; };
 		AFAA6B361773878400DE720C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFEB9C3F1590056A003974F3 /* QuartzCore.framework */; };
 		AFAA6B391773923900DE720C /* iSaverRunner29t.png in Resources */ = {isa = PBXBuildFile; fileRef = AF7E080315932A1600D81407 /* iSaverRunner29t.png */; };
-		AFAA6B3A1773923D00DE720C /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AFC6BBC1161CE07E0084EDB1 /* Default-568h@2x.png */; };
 		AFAA6B3B1773926C00DE720C /* phosphor.c in Sources */ = {isa = PBXBuildFile; fileRef = AF77770309B63B5F00EA3033 /* phosphor.c */; };
 		AFAA6B3D177392DD00DE720C /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFEB9C3A1590054B003974F3 /* OpenGLES.framework */; };
 		AFAA6B3E177392E000DE720C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFEB9C3815900514003974F3 /* UIKit.framework */; };
@@ -2908,7 +2895,6 @@
 		AFBFE7831786483B00432B21 /* Phosphor.saver in Resources */ = {isa = PBXBuildFile; fileRef = AF7776F609B63ABF00EA3033 /* Phosphor.saver */; };
 		AFBFE78B17895CD000432B21 /* apple2.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC2586F0988A468000655EE /* apple2.xml */; };
 		AFC211950E4E30C800D87B6E /* teapot.c in Sources */ = {isa = PBXBuildFile; fileRef = AFC211930E4E30C800D87B6E /* teapot.c */; };
-		AFC6BBC2161CE07E0084EDB1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AFC6BBC1161CE07E0084EDB1 /* Default-568h@2x.png */; };
 		AFC7592D158D8E8B00C5458E /* textclient.c in Sources */ = {isa = PBXBuildFile; fileRef = AFC7592B158D8E8B00C5458E /* textclient.c */; };
 		AFC7592E158D8E8B00C5458E /* textclient.h in Headers */ = {isa = PBXBuildFile; fileRef = AFC7592C158D8E8B00C5458E /* textclient.h */; };
 		AFC75930158D9A7A00C5458E /* iostextclient.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC7592F158D9A7A00C5458E /* iostextclient.m */; };
@@ -6411,17 +6397,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		089C165DFE840E0CC02AAC07 /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = OSX/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		089C165DFE840E0CC02AAC07 /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = OSX/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = OSX/main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* xscreensaver_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xscreensaver_Prefix.pch; path = OSX/xscreensaver_Prefix.pch; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = XScreenSaver.plist; path = OSX/XScreenSaver.plist; sourceTree = "<group>"; };
-		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = iSaverRunner.plist; path = OSX/iSaverRunner.plist; sourceTree = SOURCE_ROOT; };
-		AF01295A157D5C2C00C396E1 /* iSaverRunner29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iSaverRunner29.png; path = OSX/iSaverRunner29.png; sourceTree = "<group>"; };
-		AF01295B157D5C2C00C396E1 /* iSaverRunner50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iSaverRunner50.png; path = OSX/iSaverRunner50.png; sourceTree = "<group>"; };
-		AF01295C157D5C2C00C396E1 /* iSaverRunner57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iSaverRunner57.png; path = OSX/iSaverRunner57.png; sourceTree = "<group>"; };
-		AF01295D157D5C2C00C396E1 /* iSaverRunner72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iSaverRunner72.png; path = OSX/iSaverRunner72.png; sourceTree = "<group>"; };
-		AF01295E157D5C2C00C396E1 /* iSaverRunner114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iSaverRunner114.png; path = OSX/iSaverRunner114.png; sourceTree = "<group>"; };
+		55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = jwxyz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		55EFF6C11904D67800BB1BA5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		55EFF6C21904D67800BB1BA5 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		55EFF6C31904D67800BB1BA5 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		55EFF6C61904D67800BB1BA5 /* jwxyz-FW-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "jwxyz-FW-Info.plist"; sourceTree = "<group>"; };
+		55EFF6C81904D67800BB1BA5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		55EFF6CA1904D67800BB1BA5 /* jwxyz-FW-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "jwxyz-FW-Prefix.pch"; sourceTree = "<group>"; };
+		55EFF6CB1904D67800BB1BA5 /* jwxyz_FW.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = jwxyz_FW.h; sourceTree = "<group>"; };
+		55EFF6CC1904D67800BB1BA5 /* jwxyz_FW.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = jwxyz_FW.m; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = XScreenSaver.plist; sourceTree = "<group>"; };
+		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iSaverRunner.plist; sourceTree = "<group>"; };
 		AF0839A209930B6B00277BE9 /* Atlantis.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Atlantis.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF0839A909930C4900277BE9 /* atlantis.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = atlantis.c; path = hacks/glx/atlantis.c; sourceTree = "<group>"; };
 		AF0839AA09930C4900277BE9 /* dolphin.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = dolphin.c; path = hacks/glx/dolphin.c; sourceTree = "<group>"; };
@@ -6443,10 +6434,10 @@
 		AF0DCA5F0C4CBB7300D76972 /* voronoi.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = voronoi.c; path = hacks/glx/voronoi.c; sourceTree = "<group>"; };
 		AF0DCA610C4CBB8E00D76972 /* voronoi.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = voronoi.xml; sourceTree = "<group>"; };
 		AF0F46DC104E1809000A929C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		AF0FAF0B09CA6FF900EE1051 /* xscreensaver-text */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-text"; path = "driver/xscreensaver-text"; sourceTree = "<group>"; };
-		AF0FAF1209CA712600EE1051 /* xscreensaver-getimage-file */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-getimage-file"; path = "driver/xscreensaver-getimage-file"; sourceTree = "<group>"; };
+		AF0FAF0B09CA6FF900EE1051 /* xscreensaver-text */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-text"; path = "../driver/xscreensaver-text"; sourceTree = "<group>"; };
+		AF0FAF1209CA712600EE1051 /* xscreensaver-getimage-file */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-getimage-file"; path = "../driver/xscreensaver-getimage-file"; sourceTree = "<group>"; };
 		AF0FAF3B159BAC7B00BCE2F7 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
-		AF14EE300E3CEF1A004CBBD2 /* XScreenSaver.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = XScreenSaver.icns; path = OSX/XScreenSaver.icns; sourceTree = "<group>"; };
+		AF14EE300E3CEF1A004CBBD2 /* XScreenSaver.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = XScreenSaver.icns; sourceTree = "<group>"; };
 		AF1A17730D6D6EE3008AF328 /* LCDscrub.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LCDscrub.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF1A177E0D6D6F3E008AF328 /* lcdscrub.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = lcdscrub.c; path = hacks/lcdscrub.c; sourceTree = "<group>"; };
 		AF1A17800D6D6F62008AF328 /* lcdscrub.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = lcdscrub.xml; sourceTree = "<group>"; };
@@ -6462,7 +6453,7 @@
 		AF2C31E515C0F7FE007A6896 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		AF2D4D8F13E902F5002AA818 /* Phosphor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Phosphor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF2D4F7E13E91093002AA818 /* Apple2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Apple2.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF2D522513E954A0002AA818 /* SaverRunner.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = SaverRunner.icns; path = OSX/SaverRunner.icns; sourceTree = "<group>"; };
+		AF2D522513E954A0002AA818 /* SaverRunner.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SaverRunner.icns; sourceTree = "<group>"; };
 		AF32D9F40F3AD0B40080F535 /* RubikBlocks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RubikBlocks.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF32D9FA0F3AD1200080F535 /* rubikblocks.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = rubikblocks.c; path = hacks/glx/rubikblocks.c; sourceTree = "<group>"; };
 		AF32D9FC0F3AD1330080F535 /* rubikblocks.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = rubikblocks.xml; sourceTree = "<group>"; };
@@ -6642,7 +6633,7 @@
 		AF4FF4CE0D52CBDE00666F98 /* CubicGrid.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CubicGrid.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF4FF4D00D52CC8400666F98 /* cubicgrid.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = cubicgrid.c; path = hacks/glx/cubicgrid.c; sourceTree = "<group>"; };
 		AF4FF4D30D52CCAA00666F98 /* cubicgrid.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = cubicgrid.xml; sourceTree = "<group>"; };
-		AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = iSaverRunner.xib; path = OSX/iSaverRunner.xib; sourceTree = "<group>"; };
+		AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = iSaverRunner.xib; sourceTree = "<group>"; };
 		AF561DF3159651A7007CA5ED /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		AF561DF515969BC3007CA5ED /* iosgrabimage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iosgrabimage.m; path = OSX/iosgrabimage.m; sourceTree = "<group>"; };
 		AF561DF715969C5B007CA5ED /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/AssetsLibrary.framework; sourceTree = DEVELOPER_DIR; };
@@ -6735,7 +6726,7 @@
 		AF795014099751940059A8B0 /* pacman_level.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = pacman_level.h; path = hacks/pacman_level.h; sourceTree = "<group>"; };
 		AF795015099751940059A8B0 /* pacman.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = pacman.c; path = hacks/pacman.c; sourceTree = "<group>"; };
 		AF795016099751940059A8B0 /* pacman.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = pacman.h; path = hacks/pacman.h; sourceTree = "<group>"; };
-		AF7E080315932A1600D81407 /* iSaverRunner29t.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iSaverRunner29t.png; path = OSX/iSaverRunner29t.png; sourceTree = "<group>"; };
+		AF7E080315932A1600D81407 /* iSaverRunner29t.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iSaverRunner29t.png; sourceTree = "<group>"; };
 		AF84AF1E15829AF000607E4C /* SaverListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SaverListController.m; path = OSX/SaverListController.m; sourceTree = "<group>"; };
 		AF84FD4109B1209E00F3AB06 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 		AF91898F158FC00A002B5D1E /* XScreenSaver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XScreenSaver.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6773,7 +6764,7 @@
 		AF9770400989D1E6001F8B92 /* Rorschach.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Rorschach.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF97707D0989D2F6001F8B92 /* Attraction.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Attraction.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9771D70989DC4A001F8B92 /* SaverTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaverTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF9771D90989DC4A001F8B92 /* SaverRunner.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = SaverRunner.plist; path = OSX/SaverRunner.plist; sourceTree = "<group>"; };
+		AF9771D90989DC4A001F8B92 /* SaverRunner.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = SaverRunner.plist; sourceTree = "<group>"; };
 		AF9772E20989DFC6001F8B92 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = OSX/English.lproj/SaverRunner.nib; sourceTree = "<group>"; };
 		AF998EEE0A083DB30051049D /* TopBlock.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TopBlock.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF998EF80A083E750051049D /* topblock.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = topblock.c; path = hacks/glx/topblock.c; sourceTree = "<group>"; };
@@ -7203,7 +7194,6 @@
 		AFC25B5E0988BA63000655EE /* deco.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = deco.c; path = hacks/deco.c; sourceTree = "<group>"; };
 		AFC25B990988BC08000655EE /* colors.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = colors.c; path = utils/colors.c; sourceTree = "<group>"; };
 		AFC25B9A0988BC08000655EE /* colors.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = colors.h; path = utils/colors.h; sourceTree = "<group>"; };
-		AFC6BBC1161CE07E0084EDB1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../xdaliclock/OSX/Default-568h@2x.png"; sourceTree = "<group>"; };
 		AFC7592B158D8E8B00C5458E /* textclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = textclient.c; path = utils/textclient.c; sourceTree = "<group>"; };
 		AFC7592C158D8E8B00C5458E /* textclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = textclient.h; path = utils/textclient.h; sourceTree = "<group>"; };
 		AFC7592F158D9A7A00C5458E /* iostextclient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iostextclient.m; path = OSX/iostextclient.m; sourceTree = "<group>"; };
@@ -7338,6 +7328,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		55EFF6BA1904D67700BB1BA5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55EFF6BF1904D67800BB1BA5 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AF08399709930B6B00277BE9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -10632,6 +10630,7 @@
 				AFB591BA178B812C00EA4005 /* Hexadrop.saver */,
 				AFF3C9FB17CCAC440028F240 /* Geodesic.saver */,
 				AF1AD9E218500F9F00932759 /* XScreenSaverUpdater.app */,
+				55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -10646,6 +10645,7 @@
 				AFE1FD610981E3E700F7970E /* Hacks */,
 				AFC258670988A468000655EE /* config */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
+				55EFF6C41904D67800BB1BA5 /* jwxyz-FW */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
@@ -10655,18 +10655,13 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				AF14EE300E3CEF1A004CBBD2 /* XScreenSaver.icns */,
 				AF9772E10989DFC6001F8B92 /* SaverRunner.nib */,
 				AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */,
 				AF2D522513E954A0002AA818 /* SaverRunner.icns */,
-				AF01295A157D5C2C00C396E1 /* iSaverRunner29.png */,
 				AF7E080315932A1600D81407 /* iSaverRunner29t.png */,
-				AF01295B157D5C2C00C396E1 /* iSaverRunner50.png */,
-				AF01295C157D5C2C00C396E1 /* iSaverRunner57.png */,
-				AF01295D157D5C2C00C396E1 /* iSaverRunner72.png */,
-				AF01295E157D5C2C00C396E1 /* iSaverRunner114.png */,
-				AFC6BBC1161CE07E0084EDB1 /* Default-568h@2x.png */,
 				AF9771D90989DC4A001F8B92 /* SaverRunner.plist */,
 				AF01294C157D31DD00C396E1 /* iSaverRunner.plist */,
 				8D1107310486CEB800E47090 /* XScreenSaver.plist */,
@@ -10674,6 +10669,7 @@
 				AF0FAF0B09CA6FF900EE1051 /* xscreensaver-text */,
 			);
 			name = Resources;
+			path = OSX;
 			sourceTree = "<group>";
 		};
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
@@ -10702,8 +10698,39 @@
 				AF84FD4109B1209E00F3AB06 /* GLUT.framework */,
 				AF48112B0990A2C700FB32B8 /* Carbon.framework */,
 				AF1ADA0118500FA100932759 /* XCTest.framework */,
+				55EFF6C01904D67800BB1BA5 /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		55EFF6C01904D67800BB1BA5 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				55EFF6C11904D67800BB1BA5 /* Foundation.framework */,
+				55EFF6C21904D67800BB1BA5 /* CoreData.framework */,
+				55EFF6C31904D67800BB1BA5 /* AppKit.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		55EFF6C41904D67800BB1BA5 /* jwxyz-FW */ = {
+			isa = PBXGroup;
+			children = (
+				55EFF6CB1904D67800BB1BA5 /* jwxyz_FW.h */,
+				55EFF6CC1904D67800BB1BA5 /* jwxyz_FW.m */,
+				55EFF6C51904D67800BB1BA5 /* Supporting Files */,
+			);
+			path = "jwxyz-FW";
+			sourceTree = "<group>";
+		};
+		55EFF6C51904D67800BB1BA5 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				55EFF6C61904D67800BB1BA5 /* jwxyz-FW-Info.plist */,
+				55EFF6C71904D67800BB1BA5 /* InfoPlist.strings */,
+				55EFF6CA1904D67800BB1BA5 /* jwxyz-FW-Prefix.pch */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		AF1AD9E818500FA000932759 /* Updater */ = {
@@ -11399,6 +11426,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		55EFF6BB1904D67700BB1BA5 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AF4808BD098C3B6C00FB32B8 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -11452,6 +11486,24 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
+		55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 55EFF6E01904D67A00BB1BA5 /* Build configuration list for PBXNativeTarget "jwxyz-FW" */;
+			buildPhases = (
+				55EFF6B91904D67700BB1BA5 /* Sources */,
+				55EFF6BA1904D67700BB1BA5 /* Frameworks */,
+				55EFF6BB1904D67700BB1BA5 /* Headers */,
+				55EFF6BC1904D67700BB1BA5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "jwxyz-FW";
+			productName = "jwxyz-FW";
+			productReference = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		AF08398F09930B6B00277BE9 /* Atlantis */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AF08399F09930B6B00277BE9 /* Build configuration list for PBXNativeTarget "Atlantis" */;
@@ -16118,7 +16170,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "xscreensaver" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -16138,6 +16190,7 @@
 			targets = (
 				AF480D5A098EED5E00FB32B8 /* All Savers */,
 				AF4808C0098C3B6C00FB32B8 /* jwxyz */,
+				55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */,
 				AF480AAF098C669800FB32B8 /* All Savers (XScreenSaver) */,
 				AFE6A41B0CDD7FAA002805BF /* Abstractile */,
 				AF47721E099D4F67001F091E /* Anemone */,
@@ -16382,6 +16435,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		55EFF6BC1904D67700BB1BA5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55EFF6C91904D67800BB1BA5 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AF08399209930B6B00277BE9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -16438,13 +16499,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF51FD3715845F9F00E5741F /* iSaverRunner.xib in Resources */,
-				AFAA6B3A1773923D00DE720C /* Default-568h@2x.png in Resources */,
-				AF51FD3B15845FD800E5741F /* iSaverRunner29.png in Resources */,
 				AFAA6B391773923900DE720C /* iSaverRunner29t.png in Resources */,
-				AF51FD3C15845FDB00E5741F /* iSaverRunner50.png in Resources */,
-				AF51FD3F15845FF700E5741F /* iSaverRunner57.png in Resources */,
-				AF51FD4015845FF900E5741F /* iSaverRunner72.png in Resources */,
-				AF51FD431584600300E5741F /* iSaverRunner114.png in Resources */,
 				AF51FD3415845CD500E5741F /* phosphor.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -16454,13 +16509,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF51FD3615845F9900E5741F /* iSaverRunner.xib in Resources */,
-				AFAA6B2C1773866200DE720C /* Default-568h@2x.png in Resources */,
-				AF51FD3A15845FD300E5741F /* iSaverRunner29.png in Resources */,
 				AFAA6B2B1773863000DE720C /* iSaverRunner29t.png in Resources */,
-				AF51FD3D15845FDE00E5741F /* iSaverRunner50.png in Resources */,
-				AF51FD3E15845FE200E5741F /* iSaverRunner57.png in Resources */,
-				AF51FD4115845FFC00E5741F /* iSaverRunner72.png in Resources */,
-				AF51FD4215845FFF00E5741F /* iSaverRunner114.png in Resources */,
 				AFBFE78B17895CD000432B21 /* apple2.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -17199,13 +17248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF918983158FC00A002B5D1E /* iSaverRunner.xib in Resources */,
-				AFC6BBC2161CE07E0084EDB1 /* Default-568h@2x.png in Resources */,
-				AF91897E158FC00A002B5D1E /* iSaverRunner29.png in Resources */,
 				AF7E080415932A1600D81407 /* iSaverRunner29t.png in Resources */,
-				AF91897F158FC00A002B5D1E /* iSaverRunner50.png in Resources */,
-				AF918980158FC00A002B5D1E /* iSaverRunner57.png in Resources */,
-				AF918981158FC00A002B5D1E /* iSaverRunner72.png in Resources */,
-				AF918982158FC00A002B5D1E /* iSaverRunner114.png in Resources */,
 				AF918AB4158FC53D002B5D1E /* abstractile.xml in Resources */,
 				AF918AB5158FC53D002B5D1E /* anemone.xml in Resources */,
 				AF918AB6158FC53D002B5D1E /* anemotaxis.xml in Resources */,
@@ -17279,6 +17322,7 @@
 				AFF3C9FF17CCAD9A0028F240 /* geodesic.xml in Resources */,
 				AF918B01158FC53D002B5D1E /* gflux.xml in Resources */,
 				AF918B02158FC53D002B5D1E /* glblur.xml in Resources */,
+				55EFF6B81904D5BD00BB1BA5 /* Images.xcassets in Resources */,
 				AF918B03158FC53D002B5D1E /* glcells.xml in Resources */,
 				AF918B04158FC53D002B5D1E /* gleidescope.xml in Resources */,
 				AF918B06158FC53D002B5D1E /* glhanoi.xml in Resources */,
@@ -23596,6 +23640,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		55EFF6B91904D67700BB1BA5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55EFF6CD1904D67800BB1BA5 /* jwxyz_FW.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AF08399409930B6B00277BE9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -28474,6 +28526,15 @@
 				089C165DFE840E0CC02AAC07 /* InfoPlist.strings */,
 			);
 			name = InfoPlist.strings;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		55EFF6C71904D67800BB1BA5 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				55EFF6C81904D67800BB1BA5 /* en */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		AF9772E10989DFC6001F8B92 /* SaverRunner.nib */ = {
@@ -28482,11 +28543,90 @@
 				AF9772E20989DFC6001F8B92 /* English */,
 			);
 			name = SaverRunner.nib;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		55EFF6E11904D67A00BB1BA5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_VERSION = A;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "jwxyz-FW/jwxyz-FW-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = jwxyz;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		55EFF6E21904D67A00BB1BA5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_VERSION = A;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "jwxyz-FW/jwxyz-FW-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
+				PRODUCT_NAME = jwxyz;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
 		AF0839A009930B6B00277BE9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -29569,7 +29709,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
-				VALID_ARCHS = "i386 x86_64 armv6 armv7 armv7s";
+				VALID_ARCHS = "i386 x86_64 armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -29579,7 +29719,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
-				VALID_ARCHS = "i386 x86_64 armv6 armv7 armv7s";
+				VALID_ARCHS = "i386 x86_64 armv7 armv7s arm64";
 			};
 			name = Release;
 		};
@@ -30736,6 +30876,7 @@
 		AF91898D158FC00A002B5D1E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
@@ -30752,6 +30893,7 @@
 		AF91898E158FC00A002B5D1E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
@@ -34594,11 +34736,11 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OSX/xscreensaver_Prefix.pch;
@@ -34642,10 +34784,10 @@
 				);
 				INFOPLIST_FILE = OSX/XScreenSaver.plist;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				"OTHER_CFLAGS[sdk=macosx*]" = "-fobjc-gc";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				"SDKROOT[arch=arm*]" = iphoneos;
@@ -34660,11 +34802,11 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Jamie Zawinski";
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "iPhone Distribution: Jamie Zawinski";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OSX/xscreensaver_Prefix.pch;
@@ -34707,12 +34849,11 @@
 				);
 				INFOPLIST_FILE = OSX/XScreenSaver.plist;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				LLVM_LTO = NO;
 				"LLVM_LTO[sdk=macosx*]" = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				"OTHER_CFLAGS[sdk=macosx*]" = "-fobjc-gc";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				"SDKROOT[arch=arm*]" = iphoneos;
@@ -34728,6 +34869,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		55EFF6E01904D67A00BB1BA5 /* Build configuration list for PBXNativeTarget "jwxyz-FW" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				55EFF6E11904D67A00BB1BA5 /* Debug */,
+				55EFF6E21904D67A00BB1BA5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AF08399F09930B6B00277BE9 /* Build configuration list for PBXNativeTarget "Atlantis" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
