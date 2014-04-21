@@ -223,7 +223,7 @@
     while (*val == ' ' || *val == '\t')
       val++;
 
-    int L = strlen(val);
+    size_t L = strlen(val);
     while (L > 0 && (val[L-1] == ' ' || val[L-1] == '\t'))
       val[--L] = 0;
 

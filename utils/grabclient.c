@@ -571,7 +571,7 @@ pipe_cb (XtPointer closure, int *source, XtInputId *id)
   clo2->id = 0;
 
   /* strip trailing newline */
-  int L = strlen(buf);
+  size_t L = strlen(buf);
   while (L > 0 && (buf[L-1] == '\r' || buf[L-1] == '\n'))
     buf[--L] = 0;
 
@@ -861,7 +861,7 @@ print_loading_msg (Screen *screen, Window window)
   fn = 0;
 
   XGetWindowAttributes (dpy, window, &xgwa);
-  w = XTextWidth (f, text, strlen(text));
+  w = XTextWidth (f, text, (int)strlen(text));
 
   gcv.foreground = get_pixel_resource (dpy, xgwa.colormap,
                                        "foreground", "Foreground");
@@ -872,7 +872,7 @@ print_loading_msg (Screen *screen, Window window)
   XDrawImageString (dpy, window, gc,
                     (xgwa.width - w) / 2,
                     (xgwa.height - (f->ascent + f->descent)) / 2 + f->ascent,
-                    text, strlen(text));
+                    text, (int)strlen(text));
   XFreeFont (dpy, f);
   XFreeGC (dpy, gc);
   XSync (dpy, False);

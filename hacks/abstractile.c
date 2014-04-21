@@ -1516,7 +1516,7 @@ static unsigned long
 abstractile_draw (Display *dpy, Window window, void *closure)
 {
   struct state *st = (struct state *) closure;
-  int mse, usleep;
+  long mse, usleep;
 
   gettimeofday(&st->time, NULL);
 

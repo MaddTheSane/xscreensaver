@@ -244,7 +244,7 @@ extern void check_gl_error (const char *type);
     int h = 8;
     backbuffer = CGBitmapContextCreate (NULL, w, h,
                                         8, w*4, cs,
-                                        kCGImageAlphaPremultipliedLast);
+                                        (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
     CGColorSpaceRelease (cs);
   }
 }

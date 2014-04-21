@@ -345,7 +345,7 @@ textclient_getc (text_data *d)
   else if (d->input_available_p && d->pipe)
     {
       unsigned char s[2];
-      int n = read (fileno (d->pipe), (void *) s, 1);
+      ssize_t n = read (fileno (d->pipe), (void *) s, 1);
       if (n > 0)
         ret = s[0];
       else		/* EOF */

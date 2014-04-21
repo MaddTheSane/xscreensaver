@@ -180,9 +180,9 @@ convert_ximage_to_rgba32 (Screen *screen, XImage *image)
 
   if (colors == 0)  /* truecolor */
     {
-      srmsk = to->red_mask;
-      sgmsk = to->green_mask;
-      sbmsk = to->blue_mask;
+      srmsk = (unsigned int)to->red_mask;
+      sgmsk = (unsigned int)to->green_mask;
+      sbmsk = (unsigned int)to->blue_mask;
 
       decode_mask (srmsk, &srpos, &srsiz);
       decode_mask (sgmsk, &sgpos, &sgsiz);

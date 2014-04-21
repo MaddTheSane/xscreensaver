@@ -395,9 +395,9 @@ xpm_to_ximage_1 (Display *dpy, Visual *visual, Colormap cmap,
    */
   w8 = (ximage->width + 7) / 8;
 
-  rmsk = ximage->red_mask;
-  gmsk = ximage->green_mask;
-  bmsk = ximage->blue_mask;
+  rmsk = (unsigned int)ximage->red_mask;
+  gmsk = (unsigned int)ximage->green_mask;
+  bmsk = (unsigned int)ximage->blue_mask;
   amsk = ~(rmsk|gmsk|bmsk);
 
   decode_mask (rmsk, &rpos, &rsiz);
@@ -414,7 +414,7 @@ xpm_to_ximage_1 (Display *dpy, Visual *visual, Colormap cmap,
     
       for (x = 0; x < ximage->width; x++)
         {
-          unsigned long pixel = iline[x];
+          unsigned int pixel = iline[x];
           unsigned char r = (pixel & rmsk) >> rpos;
           unsigned char g = (pixel & gmsk) >> gpos;
           unsigned char b = (pixel & bmsk) >> bpos;

@@ -796,9 +796,9 @@ unwrap (NSString *text)
   // Unwrap lines: delete \n but do not delete \n\n.
   //
   NSArray *lines = [text componentsSeparatedByString:@"\n"];
-  int nlines = [lines count];
+  NSInteger nlines = [lines count];
   BOOL eolp = YES;
-  int i;
+  NSInteger i;
 
   text = @"\n";      // start with one blank line
 
@@ -945,7 +945,7 @@ hreffify (NSText *nstext)
   NSString *text = [nstext text];
 # endif
 
-  int L = [text length];
+  NSInteger L = [text length];
   NSRange start;		// range is start-of-search to end-of-string
   start.location = 0;
   start.length = L;
@@ -1006,7 +1006,7 @@ hreffify (NSText *nstext)
 
     free (anchor);
 
-    int L2 = [text length];  // might have changed
+    NSInteger L2 = [text length];  // might have changed
     start.location -= (L - L2);
     L = L2;
   }
@@ -1034,8 +1034,8 @@ hreffify (NSText *nstext)
 - (void) parseAttrs:(NSMutableDictionary *)dict node:(NSXMLNode *)node
 {
   NSArray *attrs = [(NSXMLElement *) node attributes];
-  int n = [attrs count];
-  int i;
+  NSInteger n = [attrs count];
+  NSInteger i;
   
   // For each key in the dictionary, fill in the dict with the corresponding
   // value.  The value @"" is assumed to mean "un-set".  Issue a warning if
@@ -1304,7 +1304,7 @@ hreffify (NSText *nstext)
     //      to be an integer, even though it should be...
     //      Maybe we need to use a value converter or something?
 
-    LABEL *lab;
+    LABEL *lab = nil;
     if (label) {
       lab = [self makeLabel:label];
       [self placeChild:lab on:parent];
@@ -1495,7 +1495,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 - (void) makeOptionMenu:(NSXMLNode *)node on:(NSView *)parent
 {
   NSArray *children = [node children];
-  int i, count = [children count];
+  NSInteger i, count = [children count];
 
   if (count <= 0) {
     NSAssert1 (0, @"no menu items in \"%@\"", [node name]);
@@ -1715,7 +1715,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 {
   NSString *text = nil;
   NSArray *children = [node children];
-  int i, count = [children count];
+  NSInteger i, count = [children count];
 
   for (i = 0; i < count; i++) {
     NSXMLNode *child = [children objectAtIndex:i];
@@ -1957,12 +1957,12 @@ do_file_selector (NSTextField *txt, BOOL dirs_p)
 
 //  NSString *dir = [file stringByDeletingLastPathComponent];
 
-  int result = [panel runModalForDirectory:file //dir
+  NSInteger result = [panel runModalForDirectory:file //dir
                                       file:nil //[file lastPathComponent]
                                      types:nil];
   if (result == NSOKButton) {
-    NSArray *files = [panel filenames];
-    file = ([files count] > 0 ? [files objectAtIndex:0] : @"");
+    NSArray *files = [panel URLs];
+    file = ([files count] > 0 ? [[files objectAtIndex:0] path] : @"");
     file = [file stringByAbbreviatingWithTildeInPath];
     [txt setStringValue:file];
 
@@ -2002,7 +2002,7 @@ find_text_field_of_button (NSButton *button)
 {
   NSView *parent = [button superview];
   NSArray *kids = [parent subviews];
-  int nkids = [kids count];
+  NSInteger nkids = [kids count];
   int i;
   NSTextField *f = 0;
   for (i = 0; i < nkids; i++) {
@@ -2444,7 +2444,7 @@ static NSView *
 last_child (NSView *parent)
 {
   NSArray *kids = [parent subviews];
-  int nkids = [kids count];
+  NSInteger nkids = [kids count];
   if (nkids == 0)
     return 0;
   else
@@ -2574,7 +2574,7 @@ static void
 layout_group (NSView *group, BOOL horiz_p)
 {
   NSArray *kids = [group subviews];
-  int nkids = [kids count];
+  NSInteger nkids = [kids count];
   int i;
   double maxx = 0, miny = 0;
   for (i = 0; i < nkids; i++) {
@@ -2686,7 +2686,7 @@ layout_group (NSView *group, BOOL horiz_p)
 - (void)traverseChildren:(NSXMLNode *)node on:(NSView *)parent
 {
   NSArray *children = [node children];
-  int i, count = [children count];
+  NSInteger i, count = [children count];
   for (i = 0; i < count; i++) {
     NSXMLNode *child = [children objectAtIndex:i];
     [self makeControl:child on:parent];
@@ -2703,7 +2703,7 @@ fix_contentview_size (NSView *parent)
 {
   NSRect f;
   NSArray *kids = [parent subviews];
-  int nkids = [kids count];
+  NSInteger nkids = [kids count];
   NSView *text = 0;  // the NSText at the bottom of the window
   double maxx = 0, miny = 0;
   int i;

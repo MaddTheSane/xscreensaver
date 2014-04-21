@@ -523,7 +523,7 @@ XDrawPoints (Display *dpy, Drawable d, GC gc,
 
     Assert (data, "no bitmap data in Drawable");
 
-    unsigned int argb = gc->gcv.foreground;
+    unsigned int argb = (unsigned int)gc->gcv.foreground;
     validate_pixel (argb, gc->depth, gc->gcv.alpha_allowed_p);
     if (gc->depth == 1)
       argb = (gc->gcv.foreground ? WhitePixel(0,0) : BlackPixel(0,0));
@@ -792,7 +792,7 @@ XCopyArea (Display *dpy, Drawable src, Drawable dst, GC gc,
   }
   
   NSObject *releaseme = 0;
-  CGImageRef cgi;
+  CGImageRef cgi = NULL;
   BOOL mask_p = NO;
   BOOL free_cgi_p = NO;
 
@@ -876,7 +876,7 @@ XCopyArea (Display *dpy, Drawable src, Drawable dst, GC gc,
         if (orig_dst_y < dst_y0) {
           fill_rect_memset (seek_xy (dst_data, dst_pitch,
                                      orig_dst_x, orig_dst_y), dst_pitch,
-                            gc->gcv.background, orig_width,
+                            (uint32_t)gc->gcv.background, orig_width,
                             dst_y0 - orig_dst_y);
         }
 
@@ -884,20 +884,20 @@ XCopyArea (Display *dpy, Drawable src, Drawable dst, GC gc,
           fill_rect_memset (seek_xy (dst_data, dst_pitch, orig_dst_x,
                                      dst_y0 + height0),
                             dst_pitch,
-                            gc->gcv.background, orig_width,
+                            (uint32_t)gc->gcv.background, orig_width,
                             orig_dst_y + orig_height - dst_y0 - height0);
         }
 
         if (orig_dst_x < dst_x0) {
           fill_rect_memset (seek_xy (dst_data, dst_pitch, orig_dst_x, dst_y0),
-                            dst_pitch, gc->gcv.background,
+                            dst_pitch, (uint32_t)gc->gcv.background,
                             dst_x0 - orig_dst_x, height0);
         }
 
         if (dst_x0 + width0 < orig_dst_x + orig_width) {
           fill_rect_memset (seek_xy (dst_data, dst_pitch, dst_x0 + width0,
                                      dst_y0),
-                            dst_pitch, gc->gcv.background,
+                            dst_pitch, (uint32_t)gc->gcv.background,
                             orig_dst_x + orig_width - dst_x0 - width0,
                             height0);
         }
@@ -2001,7 +2001,8 @@ XGetImage (Display *dpy, Drawable d, int x, int y,
            unsigned long plane_mask, int format)
 {
   const unsigned char *data = 0;
-  int depth, ibpp, ibpl;
+  int depth;
+  size_t ibpp, ibpl;
   enum { RGBA, ARGB, BGRA } src_format; // As bytes.
 # ifndef USE_BACKBUFFER
   NSBitmapImageRep *bm = 0;
@@ -2214,7 +2215,7 @@ jwxyz_draw_NSImage_or_CGImage (Display *dpy, Drawable d,
 {
   CGImageRef cgi;
 # ifndef USE_IPHONE
-  CGImageSourceRef cgsrc;
+  CGImageSourceRef cgsrc = NULL;
 # endif // USE_IPHONE
   NSSize imgr;
 
@@ -2762,7 +2763,7 @@ random_font (BOOL bold, BOOL ital, float size, char **name_ret)
                      availableFontNamesWithTraits:mask];
   if (!fonts) return 0;
 
-  int n = [fonts count];
+  NSUInteger n = [fonts count];
   if (n <= 0) return 0;
 
   int j;
@@ -2876,7 +2877,7 @@ try_xlfd_font (const char *name, float scale,
     while (*s2 && (*s2 != '*' && *s2 != '-'))
       s2++;
     
-    int L = s2-s;
+    size_t L = s2-s;
     if (s == s2)
       ;
 # define CMP(STR) (L == strlen(STR) && !strncasecmp (s, (STR), L))

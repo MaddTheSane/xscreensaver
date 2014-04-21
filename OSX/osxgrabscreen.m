@@ -321,7 +321,7 @@ osx_grab_desktop_image (Screen *screen, Window xwindow, Drawable drawable,
    */
 
   // save our current level so we can restore it later
-  int oldLevel = [[nsview window] level]; 
+  NSInteger oldLevel = [[nsview window] level];
 
   [[nsview window] setLevel:CGWindowLevelForKey(kCGPopUpMenuWindowLevelKey)];
 
@@ -331,7 +331,7 @@ osx_grab_desktop_image (Screen *screen, Window xwindow, Drawable drawable,
   CGImageRef img = 
     CGWindowListCreateImage (cgrect,
                              kCGWindowListOptionOnScreenBelowWindow,
-                             [[nsview window] windowNumber],
+                             (CGWindowID)[[nsview window] windowNumber],
                              kCGWindowImageDefault);
 
   // put us back above the login windows so the screensaver is visible.

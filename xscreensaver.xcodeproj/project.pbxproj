@@ -543,6 +543,38 @@
 		55EFF7D01904E04D00BB1BA5 /* jwxyz.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD440981E32E00F7970E /* jwxyz.m */; };
 		55EFF7D11904E05200BB1BA5 /* jwxyz-timers.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9D4E2109B63413006E59CF /* jwxyz-timers.m */; };
 		55EFF7D21904E05800BB1BA5 /* InvertedSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD420981E32E00F7970E /* InvertedSlider.m */; };
+		55EFF7D31904E1FF00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
+		55EFF7D61904E22E00BB1BA5 /* fps-gl.c in Sources */ = {isa = PBXBuildFile; fileRef = AFBF89AE0E423FC3006A2D66 /* fps-gl.c */; };
+		55EFF7D71904E23E00BB1BA5 /* fps.c in Sources */ = {isa = PBXBuildFile; fileRef = AFBF893C0E41D930006A2D66 /* fps.c */; };
+		55EFF7D81904E25400BB1BA5 /* xpm-ximage.c in Sources */ = {isa = PBXBuildFile; fileRef = AF0839AE09930C4900277BE9 /* xpm-ximage.c */; };
+		55EFF7D91904E26D00BB1BA5 /* grab-ximage.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA5607909936FDD00F3E977 /* grab-ximage.c */; };
+		55EFF7DA1904E2ED00BB1BA5 /* colorbars.c in Sources */ = {isa = PBXBuildFile; fileRef = AF9D473609B52EE0006E59CF /* colorbars.c */; };
+		55EFF7DB1904E2ED00BB1BA5 /* colors.c in Sources */ = {isa = PBXBuildFile; fileRef = AFC25B990988BC08000655EE /* colors.c */; };
+		55EFF7DC1904E2ED00BB1BA5 /* erase.c in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD530981E3CB00F7970E /* erase.c */; };
+		55EFF7DD1904E2ED00BB1BA5 /* gllist.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55A3E0993351F00F3E977 /* gllist.c */; };
+		55EFF7DE1904E2ED00BB1BA5 /* gltrackball.c in Sources */ = {isa = PBXBuildFile; fileRef = AF480EB0098F63D600FB32B8 /* gltrackball.c */; };
+		55EFF7DF1904E2ED00BB1BA5 /* glut_stroke.c in Sources */ = {isa = PBXBuildFile; fileRef = AFD56E0B0996A0ED00BA26F7 /* glut_stroke.c */; };
+		55EFF7E01904E2ED00BB1BA5 /* glut_swidth.c in Sources */ = {isa = PBXBuildFile; fileRef = AFD56E0C0996A0ED00BA26F7 /* glut_swidth.c */; };
+		55EFF7E11904E2ED00BB1BA5 /* glxfonts.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55C560993482800F3E977 /* glxfonts.c */; };
+		55EFF7E21904E2ED00BB1BA5 /* grabclient.c in Sources */ = {isa = PBXBuildFile; fileRef = AFAD462209D5F4DA00AB5F95 /* grabclient.c */; };
+		55EFF7E31904E2ED00BB1BA5 /* hsv.c in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD550981E3CB00F7970E /* hsv.c */; };
+		55EFF7E41904E2ED00BB1BA5 /* logo.c in Sources */ = {isa = PBXBuildFile; fileRef = AF4774E7099D8D8C001F091E /* logo.c */; };
+		55EFF7E51904E2ED00BB1BA5 /* minixpm.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55864099324D800F3E977 /* minixpm.c */; };
+		55EFF7E61904E2ED00BB1BA5 /* normals.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55A93099336D800F3E977 /* normals.c */; };
+		55EFF7E71904E2ED00BB1BA5 /* resources.c in Sources */ = {isa = PBXBuildFile; fileRef = AF4775BE099D9E79001F091E /* resources.c */; };
+		55EFF7E81904E2ED00BB1BA5 /* rotator.c in Sources */ = {isa = PBXBuildFile; fileRef = AF480EB7098F646400FB32B8 /* rotator.c */; };
+		55EFF7E91904E2ED00BB1BA5 /* sphere.c in Sources */ = {isa = PBXBuildFile; fileRef = AF480EBB098F649600FB32B8 /* sphere.c */; };
+		55EFF7EA1904E2ED00BB1BA5 /* spline.c in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD570981E3CB00F7970E /* spline.c */; };
+		55EFF7EB1904E2ED00BB1BA5 /* texfont.c in Sources */ = {isa = PBXBuildFile; fileRef = AF77780809B64F4900EA3033 /* texfont.c */; };
+		55EFF7EC1904E2ED00BB1BA5 /* textclient.c in Sources */ = {isa = PBXBuildFile; fileRef = AFC7592B158D8E8B00C5458E /* textclient.c */; };
+		55EFF7ED1904E2ED00BB1BA5 /* trackball.c in Sources */ = {isa = PBXBuildFile; fileRef = AF480EAD098F63BE00FB32B8 /* trackball.c */; };
+		55EFF7EE1904E2ED00BB1BA5 /* tube.c in Sources */ = {isa = PBXBuildFile; fileRef = AF480ED2098F652A00FB32B8 /* tube.c */; };
+		55EFF7EF1904E2ED00BB1BA5 /* usleep.c in Sources */ = {isa = PBXBuildFile; fileRef = AFB5A0ED0981FF8B00871B16 /* usleep.c */; };
+		55EFF7F01904E2ED00BB1BA5 /* xlockmore.c in Sources */ = {isa = PBXBuildFile; fileRef = AF480CBB098E37D600FB32B8 /* xlockmore.c */; };
+		55EFF7F11904E2ED00BB1BA5 /* xpm-pixmap.c in Sources */ = {isa = PBXBuildFile; fileRef = AF975C91099C929800B05160 /* xpm-pixmap.c */; };
+		55EFF7F21904E2ED00BB1BA5 /* yarandom.c in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD5B0981E3CB00F7970E /* yarandom.c */; };
+		55EFF7F31904E30D00BB1BA5 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AF78369617DB9F25003B9FC0 /* libz.dylib */; };
+		55EFF7F61904E46F00BB1BA5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF2C31E515C0F7FE007A6896 /* QuartzCore.framework */; };
 		AF012918157C1E4C00C396E1 /* chessmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55E2309935F2B00F3E977 /* chessmodels.c */; };
 		AF0839A609930BAC00277BE9 /* atlantis.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258700988A468000655EE /* atlantis.xml */; };
 		AF0839B009930C4900277BE9 /* atlantis.c in Sources */ = {isa = PBXBuildFile; fileRef = AF0839A909930C4900277BE9 /* atlantis.c */; };
@@ -604,7 +636,6 @@
 		AF1ADA1A1850186B00932759 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AF1ADA171850180E00932759 /* Sparkle.framework */; };
 		AF1ADA1B18501B3D00932759 /* SaverRunner.icns in Resources */ = {isa = PBXBuildFile; fileRef = AF2D522513E954A0002AA818 /* SaverRunner.icns */; };
 		AF1ADA1F18504A4F00932759 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
-		AF1FD713158FF96500C40F17 /* libjwxyz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* libjwxyz.a */; };
 		AF1FD714158FF96500C40F17 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
 		AF1FD715158FF96500C40F17 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AF1FD716158FF96500C40F17 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF48112B0990A2C700FB32B8 /* Carbon.framework */; };
@@ -3305,6 +3336,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		55EFF7D41904E20700BB1BA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 55EFF6BD1904D67700BB1BA5;
+			remoteInfo = "jwxyz-FW";
+		};
 		AF08399109930B6B00277BE9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -6553,13 +6591,6 @@
 			remoteGlobalIDString = AFE6A1820CDD7B2E002805BF;
 			remoteInfo = MoebiusGears;
 		};
-		AFE6A41D0CDD7FAA002805BF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AF4808C0098C3B6C00FB32B8;
-			remoteInfo = jwxyz;
-		};
 		AFE6A42F0CDD7FEE002805BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -6633,7 +6664,7 @@
 
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = OSX/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = OSX/main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* xscreensaver_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xscreensaver_Prefix.pch; path = OSX/xscreensaver_Prefix.pch; sourceTree = "<group>"; };
 		55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -6652,8 +6683,8 @@
 		AF0839AB09930C4900277BE9 /* shark.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = shark.c; path = hacks/glx/shark.c; sourceTree = "<group>"; };
 		AF0839AC09930C4900277BE9 /* swim.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = swim.c; path = hacks/glx/swim.c; sourceTree = "<group>"; };
 		AF0839AD09930C4900277BE9 /* whale.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = whale.c; path = hacks/glx/whale.c; sourceTree = "<group>"; };
-		AF0839AE09930C4900277BE9 /* xpm-ximage.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = "xpm-ximage.c"; path = "hacks/glx/xpm-ximage.c"; sourceTree = "<group>"; };
-		AF0839AF09930C4900277BE9 /* xpm-ximage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "xpm-ximage.h"; path = "hacks/glx/xpm-ximage.h"; sourceTree = "<group>"; };
+		AF0839AE09930C4900277BE9 /* xpm-ximage.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = "xpm-ximage.c"; path = "../hacks/glx/xpm-ximage.c"; sourceTree = "<group>"; };
+		AF0839AF09930C4900277BE9 /* xpm-ximage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = "xpm-ximage.h"; path = "../hacks/glx/xpm-ximage.h"; sourceTree = "<group>"; };
 		AF083A31099311CE00277BE9 /* atunnel.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = atunnel.c; path = hacks/glx/atunnel.c; sourceTree = "<group>"; };
 		AF083A48099311D700277BE9 /* Atunnel.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Atunnel.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF083A58099312B000277BE9 /* tunnel_draw.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = tunnel_draw.c; path = hacks/glx/tunnel_draw.c; sourceTree = "<group>"; };
@@ -6666,7 +6697,6 @@
 		AF0DCA560C4CBB0D00D76972 /* Voronoi.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Voronoi.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF0DCA5F0C4CBB7300D76972 /* voronoi.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = voronoi.c; path = hacks/glx/voronoi.c; sourceTree = "<group>"; };
 		AF0DCA610C4CBB8E00D76972 /* voronoi.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = voronoi.xml; sourceTree = "<group>"; };
-		AF0F46DC104E1809000A929C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		AF0FAF0B09CA6FF900EE1051 /* xscreensaver-text */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-text"; path = "../driver/xscreensaver-text"; sourceTree = "<group>"; };
 		AF0FAF1209CA712600EE1051 /* xscreensaver-getimage-file */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-getimage-file"; path = "../driver/xscreensaver-getimage-file"; sourceTree = "<group>"; };
 		AF0FAF3B159BAC7B00BCE2F7 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
@@ -6675,10 +6705,6 @@
 		AF1A177E0D6D6F3E008AF328 /* lcdscrub.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = lcdscrub.c; path = hacks/lcdscrub.c; sourceTree = "<group>"; };
 		AF1A17800D6D6F62008AF328 /* lcdscrub.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = lcdscrub.xml; sourceTree = "<group>"; };
 		AF1AD9E218500F9F00932759 /* XScreenSaverUpdater.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XScreenSaverUpdater.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF1AD9E518500F9F00932759 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		AF1AD9E618500FA000932759 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		AF1AD9E718500FA000932759 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		AF1ADA0118500FA100932759 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		AF1ADA151850157400932759 /* Updater.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Updater.xib; path = OSX/Updater.xib; sourceTree = SOURCE_ROOT; };
 		AF1ADA171850180E00932759 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = OSX/Sparkle.framework; sourceTree = "<group>"; };
 		AF241F81107C38DF00046A84 /* dropshadow.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = dropshadow.c; path = hacks/glx/dropshadow.c; sourceTree = "<group>"; };
@@ -6762,15 +6788,15 @@
 		AF4774CB099D8BC2001F091E /* lmorph.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = lmorph.c; path = hacks/lmorph.c; sourceTree = "<group>"; };
 		AF4774DE099D8BFF001F091E /* Maze.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Maze.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF4774E1099D8C8B001F091E /* maze.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = maze.c; path = hacks/maze.c; sourceTree = "<group>"; };
-		AF4774E7099D8D8C001F091E /* logo.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = logo.c; path = utils/logo.c; sourceTree = "<group>"; };
+		AF4774E7099D8D8C001F091E /* logo.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; path = logo.c; sourceTree = "<group>"; };
 		AF47756D099D9A1A001F091E /* Pedal.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Pedal.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF477570099D9A8A001F091E /* pedal.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = pedal.c; path = hacks/pedal.c; sourceTree = "<group>"; };
 		AF477593099D9C28001F091E /* Pyro.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Pyro.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF47759C099D9CA3001F091E /* pyro.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = pyro.c; path = hacks/pyro.c; sourceTree = "<group>"; };
 		AF4775AF099D9CF7001F091E /* Starfish.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Starfish.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF4775B3099D9D67001F091E /* starfish.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = starfish.c; path = hacks/starfish.c; sourceTree = "<group>"; };
-		AF4775BE099D9E79001F091E /* resources.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = resources.c; path = utils/resources.c; sourceTree = "<group>"; };
-		AF4775BF099D9E79001F091E /* resources.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = resources.h; path = utils/resources.h; sourceTree = "<group>"; };
+		AF4775BE099D9E79001F091E /* resources.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; path = resources.c; sourceTree = "<group>"; };
+		AF4775BF099D9E79001F091E /* resources.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; path = resources.h; sourceTree = "<group>"; };
 		AF4775E8099D9F69001F091E /* Coral.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Coral.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF4775EF099D9FFF001F091E /* coral.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = coral.c; path = hacks/coral.c; sourceTree = "<group>"; };
 		AF477602099DA030001F091E /* Epicycle.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Epicycle.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6821,25 +6847,25 @@
 		AF480C2F098E2A6700FB32B8 /* helix.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = helix.c; path = hacks/helix.c; sourceTree = "<group>"; };
 		AF480C58098E301400FB32B8 /* Helix.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Helix.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF480C82098E336D00FB32B8 /* drift.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = drift.c; path = hacks/drift.c; sourceTree = "<group>"; };
-		AF480C89098E346700FB32B8 /* xlockmore.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = xlockmore.h; path = hacks/xlockmore.h; sourceTree = "<group>"; };
-		AF480C8A098E34AB00FB32B8 /* xlockmoreI.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = xlockmoreI.h; path = hacks/xlockmoreI.h; sourceTree = "<group>"; };
-		AF480CBB098E37D600FB32B8 /* xlockmore.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = xlockmore.c; path = hacks/xlockmore.c; sourceTree = "<group>"; };
+		AF480C89098E346700FB32B8 /* xlockmore.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = xlockmore.h; path = ../hacks/xlockmore.h; sourceTree = "<group>"; };
+		AF480C8A098E34AB00FB32B8 /* xlockmoreI.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = xlockmoreI.h; path = ../hacks/xlockmoreI.h; sourceTree = "<group>"; };
+		AF480CBB098E37D600FB32B8 /* xlockmore.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = xlockmore.c; path = ../hacks/xlockmore.c; sourceTree = "<group>"; };
 		AF480D81098EEDDE00FB32B8 /* Drift.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Drift.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF480DD1098F4F6200FB32B8 /* dangerball.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = dangerball.c; path = hacks/glx/dangerball.c; sourceTree = "<group>"; };
-		AF480DF1098F528500FB32B8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		AF480EAC098F63B000FB32B8 /* rotator.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = rotator.h; path = hacks/glx/rotator.h; sourceTree = "<group>"; };
-		AF480EAD098F63BE00FB32B8 /* trackball.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = trackball.c; path = hacks/glx/trackball.c; sourceTree = "<group>"; };
-		AF480EAF098F63CD00FB32B8 /* trackball.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = trackball.h; path = hacks/glx/trackball.h; sourceTree = "<group>"; };
-		AF480EB0098F63D600FB32B8 /* gltrackball.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = gltrackball.c; path = hacks/glx/gltrackball.c; sourceTree = "<group>"; };
-		AF480EB2098F63DF00FB32B8 /* gltrackball.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = gltrackball.h; path = hacks/glx/gltrackball.h; sourceTree = "<group>"; };
-		AF480EB7098F646400FB32B8 /* rotator.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = rotator.c; path = hacks/glx/rotator.c; sourceTree = "<group>"; };
-		AF480EBA098F648700FB32B8 /* sphere.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = sphere.h; path = hacks/glx/sphere.h; sourceTree = "<group>"; };
-		AF480EBB098F649600FB32B8 /* sphere.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = sphere.c; path = hacks/glx/sphere.c; sourceTree = "<group>"; };
-		AF480ED1098F651C00FB32B8 /* tube.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = tube.h; path = hacks/glx/tube.h; sourceTree = "<group>"; };
-		AF480ED2098F652A00FB32B8 /* tube.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = tube.c; path = hacks/glx/tube.c; sourceTree = "<group>"; };
-		AF480FE70990375900FB32B8 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
+		AF480DF1098F528500FB32B8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		AF480EAC098F63B000FB32B8 /* rotator.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = rotator.h; path = ../hacks/glx/rotator.h; sourceTree = "<group>"; };
+		AF480EAD098F63BE00FB32B8 /* trackball.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = trackball.c; path = ../hacks/glx/trackball.c; sourceTree = "<group>"; };
+		AF480EAF098F63CD00FB32B8 /* trackball.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = trackball.h; path = ../hacks/glx/trackball.h; sourceTree = "<group>"; };
+		AF480EB0098F63D600FB32B8 /* gltrackball.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = gltrackball.c; path = ../hacks/glx/gltrackball.c; sourceTree = "<group>"; };
+		AF480EB2098F63DF00FB32B8 /* gltrackball.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = gltrackball.h; path = ../hacks/glx/gltrackball.h; sourceTree = "<group>"; };
+		AF480EB7098F646400FB32B8 /* rotator.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = rotator.c; path = ../hacks/glx/rotator.c; sourceTree = "<group>"; };
+		AF480EBA098F648700FB32B8 /* sphere.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = sphere.h; path = ../hacks/glx/sphere.h; sourceTree = "<group>"; };
+		AF480EBB098F649600FB32B8 /* sphere.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = sphere.c; path = ../hacks/glx/sphere.c; sourceTree = "<group>"; };
+		AF480ED1098F651C00FB32B8 /* tube.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = tube.h; path = ../hacks/glx/tube.h; sourceTree = "<group>"; };
+		AF480ED2098F652A00FB32B8 /* tube.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = tube.c; path = ../hacks/glx/tube.c; sourceTree = "<group>"; };
+		AF480FE70990375900FB32B8 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = System/Library/Frameworks/AGL.framework; sourceTree = SDKROOT; };
 		AF4810FB09909FBA00FB32B8 /* DangerBall.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DangerBall.saver; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF48112B0990A2C700FB32B8 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		AF48112B0990A2C700FB32B8 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		AF4812250990CB8C00FB32B8 /* gears.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = gears.c; path = hacks/glx/gears.c; sourceTree = "<group>"; };
 		AF4812640990CE2700FB32B8 /* Gears.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Gears.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF4812760990CF5D00FB32B8 /* buildlwo.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = buildlwo.c; path = hacks/glx/buildlwo.c; sourceTree = "<group>"; };
@@ -6923,8 +6949,8 @@
 		AF7777E709B64CF700EA3033 /* glslideshow.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = glslideshow.c; path = hacks/glx/glslideshow.c; sourceTree = "<group>"; };
 		AF7777FE09B64E3100EA3033 /* FlipText.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlipText.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF77780109B64EC000EA3033 /* fliptext.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = fliptext.c; path = hacks/glx/fliptext.c; sourceTree = "<group>"; };
-		AF77780809B64F4900EA3033 /* texfont.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = texfont.c; path = hacks/glx/texfont.c; sourceTree = "<group>"; };
-		AF77780909B64F4900EA3033 /* texfont.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = texfont.h; path = hacks/glx/texfont.h; sourceTree = "<group>"; };
+		AF77780809B64F4900EA3033 /* texfont.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = texfont.c; path = ../hacks/glx/texfont.c; sourceTree = "<group>"; };
+		AF77780909B64F4900EA3033 /* texfont.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = texfont.h; path = ../hacks/glx/texfont.h; sourceTree = "<group>"; };
 		AF77782809B650FF00EA3033 /* starwars.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = starwars.c; path = hacks/glx/starwars.c; sourceTree = "<group>"; };
 		AF77782909B650FF00EA3033 /* starwars.txt */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text; name = starwars.txt; path = hacks/glx/starwars.txt; sourceTree = "<group>"; };
 		AF77785809B6528100EA3033 /* Carousel.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Carousel.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6961,7 +6987,7 @@
 		AF795016099751940059A8B0 /* pacman.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = pacman.h; path = hacks/pacman.h; sourceTree = "<group>"; };
 		AF7E080315932A1600D81407 /* iSaverRunner29t.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iSaverRunner29t.png; sourceTree = "<group>"; };
 		AF84AF1E15829AF000607E4C /* SaverListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SaverListController.m; path = OSX/SaverListController.m; sourceTree = "<group>"; };
-		AF84FD4109B1209E00F3AB06 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
+		AF84FD4109B1209E00F3AB06 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		AF91898F158FC00A002B5D1E /* XScreenSaver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XScreenSaver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF97573D099C317000B05160 /* IMSMap.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IMSMap.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF975740099C31DD00B05160 /* imsmap.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = imsmap.c; path = hacks/imsmap.c; sourceTree = "<group>"; };
@@ -6987,12 +7013,12 @@
 		AF975C4E099C8DCF00B05160 /* Greynetic.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Greynetic.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF975C6E099C8F3F00B05160 /* NoseGuy.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NoseGuy.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF975C76099C8FC700B05160 /* noseguy.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = noseguy.c; path = hacks/noseguy.c; sourceTree = "<group>"; };
-		AF975C91099C929800B05160 /* xpm-pixmap.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = "xpm-pixmap.c"; path = "hacks/xpm-pixmap.c"; sourceTree = "<group>"; };
-		AF975C92099C929800B05160 /* xpm-pixmap.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = "xpm-pixmap.h"; path = "hacks/xpm-pixmap.h"; sourceTree = "<group>"; };
+		AF975C91099C929800B05160 /* xpm-pixmap.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = "xpm-pixmap.c"; path = "../hacks/xpm-pixmap.c"; sourceTree = "<group>"; };
+		AF975C92099C929800B05160 /* xpm-pixmap.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = "xpm-pixmap.h"; path = "../hacks/xpm-pixmap.h"; sourceTree = "<group>"; };
 		AF975D63099CA0F000B05160 /* Rocks.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Rocks.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF975D66099CA16A00B05160 /* rocks.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = rocks.c; path = hacks/rocks.c; sourceTree = "<group>"; };
 		AF976DFA09896BEB001F8B92 /* attraction.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = attraction.c; path = hacks/attraction.c; sourceTree = "<group>"; };
-		AF976ED30989BF59001F8B92 /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = /System/Library/Frameworks/ScreenSaver.framework; sourceTree = "<absolute>"; };
+		AF976ED30989BF59001F8B92 /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = System/Library/Frameworks/ScreenSaver.framework; sourceTree = SDKROOT; };
 		AF976FBC0989CAA2001F8B92 /* Deco.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Deco.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9770400989D1E6001F8B92 /* Rorschach.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Rorschach.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF97707D0989D2F6001F8B92 /* Attraction.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Attraction.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7006,8 +7032,8 @@
 		AF9D467609B5109C006E59CF /* DecayScreen.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DecayScreen.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9D467809B5110B006E59CF /* decayscreen.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = decayscreen.c; path = hacks/decayscreen.c; sourceTree = "<group>"; };
 		AF9D468E09B51567006E59CF /* osxgrabscreen.m */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.objc; name = osxgrabscreen.m; path = OSX/osxgrabscreen.m; sourceTree = "<group>"; };
-		AF9D473609B52EE0006E59CF /* colorbars.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = colorbars.c; path = utils/colorbars.c; sourceTree = "<group>"; };
-		AF9D473709B52EE0006E59CF /* colorbars.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = colorbars.h; path = utils/colorbars.h; sourceTree = "<group>"; };
+		AF9D473609B52EE0006E59CF /* colorbars.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; path = colorbars.c; sourceTree = "<group>"; };
+		AF9D473709B52EE0006E59CF /* colorbars.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; path = colorbars.h; sourceTree = "<group>"; };
 		AF9D475409B5300A006E59CF /* SlideScreen.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SlideScreen.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9D475809B53091006E59CF /* slidescreen.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = slidescreen.c; path = hacks/slidescreen.c; sourceTree = "<group>"; };
 		AF9D476F09B53166006E59CF /* Zoom.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Zoom.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7041,10 +7067,10 @@
 		AFA339400B058505002B0E7D /* WebCollage.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WebCollage.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA33BAE0B0585F7002B0E7D /* webcollage-cocoa.m */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.objc; name = "webcollage-cocoa.m"; path = "hacks/webcollage-cocoa.m"; sourceTree = "<group>"; };
 		AFA33BC70B058740002B0E7D /* webcollage-helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "webcollage-helper"; sourceTree = BUILT_PRODUCTS_DIR; };
-		AFA33BD00B0587EE002B0E7D /* webcollage-helper-cocoa.m */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.objc; name = "webcollage-helper-cocoa.m"; path = "hacks/webcollage-helper-cocoa.m"; sourceTree = "<group>"; };
+		AFA33BD00B0587EE002B0E7D /* webcollage-helper-cocoa.m */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.objc; name = "webcollage-helper-cocoa.m"; path = "../hacks/webcollage-helper-cocoa.m"; sourceTree = "<group>"; };
 		AFA33C0A0B058E6B002B0E7D /* webcollage */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = webcollage; path = hacks/webcollage; sourceTree = "<group>"; };
-		AFA55864099324D800F3E977 /* minixpm.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = minixpm.c; path = utils/minixpm.c; sourceTree = "<group>"; };
-		AFA55865099324D800F3E977 /* minixpm.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = minixpm.h; path = utils/minixpm.h; sourceTree = "<group>"; };
+		AFA55864099324D800F3E977 /* minixpm.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; path = minixpm.c; sourceTree = "<group>"; };
+		AFA55865099324D800F3E977 /* minixpm.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; path = minixpm.h; sourceTree = "<group>"; };
 		AFA5595A099330B000F3E977 /* Cage.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Cage.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA5595D0993310500F3E977 /* cage.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = cage.c; path = hacks/glx/cage.c; sourceTree = "<group>"; };
 		AFA5597F0993317900F3E977 /* Moebius.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Moebius.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7058,8 +7084,8 @@
 		AFA55A150993340300F3E977 /* Stairs.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Stairs.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA55A1A0993345900F3E977 /* stairs.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = stairs.c; path = hacks/glx/stairs.c; sourceTree = "<group>"; };
 		AFA55A32099334A000F3E977 /* Sproingies.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Sproingies.saver; sourceTree = BUILT_PRODUCTS_DIR; };
-		AFA55A3E0993351F00F3E977 /* gllist.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = gllist.c; path = hacks/glx/gllist.c; sourceTree = "<group>"; };
-		AFA55A3F0993351F00F3E977 /* gllist.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = gllist.h; path = hacks/glx/gllist.h; sourceTree = "<group>"; };
+		AFA55A3E0993351F00F3E977 /* gllist.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = gllist.c; path = ../hacks/glx/gllist.c; sourceTree = "<group>"; };
+		AFA55A3F0993351F00F3E977 /* gllist.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = gllist.h; path = ../hacks/glx/gllist.h; sourceTree = "<group>"; };
 		AFA55A400993351F00F3E977 /* s1_1.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = s1_1.c; path = hacks/glx/s1_1.c; sourceTree = "<group>"; };
 		AFA55A410993351F00F3E977 /* s1_2.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = s1_2.c; path = hacks/glx/s1_2.c; sourceTree = "<group>"; };
 		AFA55A420993351F00F3E977 /* s1_3.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = s1_3.c; path = hacks/glx/s1_3.c; sourceTree = "<group>"; };
@@ -7071,8 +7097,8 @@
 		AFA55A480993351F00F3E977 /* sproingiewrap.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = sproingiewrap.c; path = hacks/glx/sproingiewrap.c; sourceTree = "<group>"; };
 		AFA55A8B0993364300F3E977 /* Lament.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Lament.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA55A8E0993369100F3E977 /* lament.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = lament.c; path = hacks/glx/lament.c; sourceTree = "<group>"; };
-		AFA55A93099336D800F3E977 /* normals.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = normals.c; path = hacks/glx/normals.c; sourceTree = "<group>"; };
-		AFA55A94099336D800F3E977 /* normals.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = normals.h; path = hacks/glx/normals.h; sourceTree = "<group>"; };
+		AFA55A93099336D800F3E977 /* normals.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = normals.c; path = ../hacks/glx/normals.c; sourceTree = "<group>"; };
+		AFA55A94099336D800F3E977 /* normals.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = normals.h; path = ../hacks/glx/normals.h; sourceTree = "<group>"; };
 		AFA55AE109933CEF00F3E977 /* Bubble3D.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Bubble3D.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA55AE409933D3800F3E977 /* bubble3d.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = bubble3d.c; path = hacks/glx/bubble3d.c; sourceTree = "<group>"; };
 		AFA55AE809933D5900F3E977 /* bubble3d.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = bubble3d.h; path = hacks/glx/bubble3d.h; sourceTree = "<group>"; };
@@ -7093,7 +7119,7 @@
 		AFA55BF9099342D500F3E977 /* menger.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = menger.c; path = hacks/glx/menger.c; sourceTree = "<group>"; };
 		AFA55C200993431300F3E977 /* Engine.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Engine.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA55C230993435300F3E977 /* engine.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = engine.c; path = hacks/glx/engine.c; sourceTree = "<group>"; };
-		AFA55C560993482800F3E977 /* glxfonts.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = glxfonts.c; path = hacks/glx/glxfonts.c; sourceTree = "<group>"; };
+		AFA55C560993482800F3E977 /* glxfonts.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = glxfonts.c; path = ../hacks/glx/glxfonts.c; sourceTree = "<group>"; };
 		AFA55C89099349A600F3E977 /* GLSnake.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GLSnake.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA55C8C099349EE00F3E977 /* glsnake.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = glsnake.c; path = hacks/glx/glsnake.c; sourceTree = "<group>"; };
 		AFA55CBB09934BB200F3E977 /* Boxed.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Boxed.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7164,8 +7190,8 @@
 		AFA5607409936F3800F3E977 /* AntSpotlight.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AntSpotlight.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA5607709936FDD00F3E977 /* ants.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = ants.h; path = hacks/glx/ants.h; sourceTree = "<group>"; };
 		AFA5607809936FDD00F3E977 /* antspotlight.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = antspotlight.c; path = hacks/glx/antspotlight.c; sourceTree = "<group>"; };
-		AFA5607909936FDD00F3E977 /* grab-ximage.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = "grab-ximage.c"; path = "hacks/glx/grab-ximage.c"; sourceTree = "<group>"; };
-		AFA5607A09936FDD00F3E977 /* grab-ximage.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = "grab-ximage.h"; path = "hacks/glx/grab-ximage.h"; sourceTree = "<group>"; };
+		AFA5607909936FDD00F3E977 /* grab-ximage.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = "grab-ximage.c"; path = "../hacks/glx/grab-ximage.c"; sourceTree = "<group>"; };
+		AFA5607A09936FDD00F3E977 /* grab-ximage.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = "grab-ximage.h"; path = "../hacks/glx/grab-ximage.h"; sourceTree = "<group>"; };
 		AFA560C00993718D00F3E977 /* Polytopes.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Polytopes.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA560C3099371D500F3E977 /* polytopes.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = polytopes.c; path = hacks/glx/polytopes.c; sourceTree = "<group>"; };
 		AFA5610F0993781600F3E977 /* Molecule.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Molecule.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7178,7 +7204,7 @@
 		AFA561B209937DCB00F3E977 /* polyhedra-gl.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = "polyhedra-gl.c"; path = "hacks/glx/polyhedra-gl.c"; sourceTree = "<group>"; };
 		AFA561B309937DCC00F3E977 /* polyhedra.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = polyhedra.c; path = hacks/glx/polyhedra.c; sourceTree = "<group>"; };
 		AFA561B409937DCC00F3E977 /* polyhedra.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = polyhedra.h; path = hacks/glx/polyhedra.h; sourceTree = "<group>"; };
-		AFA561BA09937E9E00F3E977 /* glxfonts.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = glxfonts.h; path = hacks/glx/glxfonts.h; sourceTree = "<group>"; };
+		AFA561BA09937E9E00F3E977 /* glxfonts.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = glxfonts.h; path = ../hacks/glx/glxfonts.h; sourceTree = "<group>"; };
 		AFA562190993849F00F3E977 /* Providence.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Providence.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA5621C099384F600F3E977 /* providence.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = providence.c; path = hacks/glx/providence.c; sourceTree = "<group>"; };
 		AFA562310993852500F3E977 /* Pinion.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Pinion.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7202,13 +7228,13 @@
 		AFA563B6099398BB00F3E977 /* Juggler3D.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Juggler3D.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFA563B90993991300F3E977 /* juggler3d.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = juggler3d.c; path = hacks/glx/juggler3d.c; sourceTree = "<group>"; };
 		AFAA6B441773F07700DE720C /* ios-function-table.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "ios-function-table.m"; path = "OSX/ios-function-table.m"; sourceTree = "<group>"; };
-		AFAD462209D5F4DA00AB5F95 /* grabclient.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = grabclient.c; path = utils/grabclient.c; sourceTree = "<group>"; };
+		AFAD462209D5F4DA00AB5F95 /* grabclient.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; path = grabclient.c; sourceTree = "<group>"; };
 		AFB591BA178B812C00EA4005 /* Hexadrop.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Hexadrop.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFB591BC178B81E600EA4005 /* hexadrop.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = hexadrop.xml; sourceTree = "<group>"; };
 		AFB591BD178B81E600EA4005 /* hexadrop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hexadrop.c; path = hacks/hexadrop.c; sourceTree = "<group>"; };
-		AFB5A06B0981F4C600871B16 /* screenhack.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = screenhack.h; path = hacks/screenhack.h; sourceTree = "<group>"; };
-		AFB5A0ED0981FF8B00871B16 /* usleep.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; name = usleep.c; path = utils/usleep.c; sourceTree = "<group>"; };
-		AFB5A0EE0981FF8B00871B16 /* usleep.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = usleep.h; path = utils/usleep.h; sourceTree = "<group>"; };
+		AFB5A06B0981F4C600871B16 /* screenhack.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = screenhack.h; path = ../hacks/screenhack.h; sourceTree = "<group>"; };
+		AFB5A0ED0981FF8B00871B16 /* usleep.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; path = usleep.c; sourceTree = "<group>"; };
+		AFB5A0EE0981FF8B00871B16 /* usleep.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = usleep.h; sourceTree = "<group>"; };
 		AFB8A69A1782BA34004EDB85 /* kaleidocycle.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = kaleidocycle.xml; sourceTree = "<group>"; };
 		AFBF893C0E41D930006A2D66 /* fps.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = fps.c; path = hacks/fps.c; sourceTree = "<group>"; };
 		AFBF893D0E41D930006A2D66 /* fps.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = fps.h; path = hacks/fps.h; sourceTree = "<group>"; };
@@ -7218,7 +7244,7 @@
 		AFBFE77E178647FE00432B21 /* Phosphor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Phosphor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFC211930E4E30C800D87B6E /* teapot.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = teapot.c; path = hacks/glx/teapot.c; sourceTree = "<group>"; };
 		AFC211940E4E30C800D87B6E /* teapot.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = teapot.h; path = hacks/glx/teapot.h; sourceTree = "<group>"; };
-		AFC254B909873AF9000655EE /* screenhackI.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = screenhackI.h; path = hacks/screenhackI.h; sourceTree = "<group>"; };
+		AFC254B909873AF9000655EE /* screenhackI.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = screenhackI.h; path = ../hacks/screenhackI.h; sourceTree = "<group>"; };
 		AFC254C409882C97000655EE /* XScreenSaverView.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = XScreenSaverView.h; path = OSX/XScreenSaverView.h; sourceTree = "<group>"; };
 		AFC254C509882C97000655EE /* XScreenSaverView.m */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.objc; name = XScreenSaverView.m; path = OSX/XScreenSaverView.m; sourceTree = "<group>"; };
 		AFC2577F09888F5A000655EE /* XScreenSaverConfigSheet.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = XScreenSaverConfigSheet.h; path = OSX/XScreenSaverConfigSheet.h; sourceTree = "<group>"; };
@@ -7425,10 +7451,10 @@
 		AFC2593F0988A469000655EE /* xspirograph.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = xspirograph.xml; sourceTree = "<group>"; };
 		AFC259430988A469000655EE /* zoom.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = zoom.xml; sourceTree = "<group>"; };
 		AFC25B5E0988BA63000655EE /* deco.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = deco.c; path = hacks/deco.c; sourceTree = "<group>"; };
-		AFC25B990988BC08000655EE /* colors.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = colors.c; path = utils/colors.c; sourceTree = "<group>"; };
-		AFC25B9A0988BC08000655EE /* colors.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = colors.h; path = utils/colors.h; sourceTree = "<group>"; };
-		AFC7592B158D8E8B00C5458E /* textclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = textclient.c; path = utils/textclient.c; sourceTree = "<group>"; };
-		AFC7592C158D8E8B00C5458E /* textclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = textclient.h; path = utils/textclient.h; sourceTree = "<group>"; };
+		AFC25B990988BC08000655EE /* colors.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; path = colors.c; sourceTree = "<group>"; };
+		AFC25B9A0988BC08000655EE /* colors.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; path = colors.h; sourceTree = "<group>"; };
+		AFC7592B158D8E8B00C5458E /* textclient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = textclient.c; sourceTree = "<group>"; };
+		AFC7592C158D8E8B00C5458E /* textclient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = textclient.h; sourceTree = "<group>"; };
 		AFC7592F158D9A7A00C5458E /* iostextclient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iostextclient.m; path = OSX/iostextclient.m; sourceTree = "<group>"; };
 		AFCCCBAD09BFE4B000353F4D /* rdbomb.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = rdbomb.xml; sourceTree = "<group>"; };
 		AFD51B300F063B4A00471C02 /* Photopile.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Photopile.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7436,10 +7462,10 @@
 		AFD51DB80F063BE700471C02 /* photopile.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = photopile.xml; sourceTree = "<group>"; };
 		AFD56E040996A03800BA26F7 /* GLText.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GLText.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFD56E080996A07A00BA26F7 /* gltext.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = gltext.c; path = hacks/glx/gltext.c; sourceTree = "<group>"; };
-		AFD56E0A0996A0ED00BA26F7 /* glut_roman.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glut_roman.h; path = hacks/glx/glut_roman.h; sourceTree = "<group>"; };
-		AFD56E0B0996A0ED00BA26F7 /* glut_stroke.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = glut_stroke.c; path = hacks/glx/glut_stroke.c; sourceTree = "<group>"; };
-		AFD56E0C0996A0ED00BA26F7 /* glut_swidth.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = glut_swidth.c; path = hacks/glx/glut_swidth.c; sourceTree = "<group>"; };
-		AFD56E0D0996A0ED00BA26F7 /* glutstroke.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glutstroke.h; path = hacks/glx/glutstroke.h; sourceTree = "<group>"; };
+		AFD56E0A0996A0ED00BA26F7 /* glut_roman.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glut_roman.h; path = ../hacks/glx/glut_roman.h; sourceTree = "<group>"; };
+		AFD56E0B0996A0ED00BA26F7 /* glut_stroke.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = glut_stroke.c; path = ../hacks/glx/glut_stroke.c; sourceTree = "<group>"; };
+		AFD56E0C0996A0ED00BA26F7 /* glut_swidth.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = glut_swidth.c; path = ../hacks/glx/glut_swidth.c; sourceTree = "<group>"; };
+		AFD56E0D0996A0ED00BA26F7 /* glutstroke.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glutstroke.h; path = ../hacks/glx/glutstroke.h; sourceTree = "<group>"; };
 		AFD56EBE0996A72600BA26F7 /* Braid.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Braid.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFD56EC10996A76F00BA26F7 /* braid.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = braid.c; path = hacks/braid.c; sourceTree = "<group>"; };
 		AFD56EEA0996A95700BA26F7 /* Forest.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Forest.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7515,16 +7541,16 @@
 		AFE1FD440981E32E00F7970E /* jwxyz.m */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.objc; name = jwxyz.m; path = OSX/jwxyz.m; sourceTree = "<group>"; };
 		AFE1FD470981E32E00F7970E /* PrefsReader.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = PrefsReader.h; path = OSX/PrefsReader.h; sourceTree = "<group>"; };
 		AFE1FD480981E32E00F7970E /* PrefsReader.m */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.objc; name = PrefsReader.m; path = OSX/PrefsReader.m; sourceTree = "<group>"; };
-		AFE1FD530981E3CB00F7970E /* erase.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; name = erase.c; path = utils/erase.c; sourceTree = "<group>"; };
-		AFE1FD540981E3CB00F7970E /* erase.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = erase.h; path = utils/erase.h; sourceTree = "<group>"; };
-		AFE1FD550981E3CB00F7970E /* hsv.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; name = hsv.c; path = utils/hsv.c; sourceTree = "<group>"; };
-		AFE1FD560981E3CB00F7970E /* hsv.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = hsv.h; path = utils/hsv.h; sourceTree = "<group>"; };
-		AFE1FD570981E3CB00F7970E /* spline.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; name = spline.c; path = utils/spline.c; sourceTree = "<group>"; };
-		AFE1FD580981E3CB00F7970E /* spline.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = spline.h; path = utils/spline.h; sourceTree = "<group>"; };
-		AFE1FD590981E3CB00F7970E /* utils.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = utils.h; path = utils/utils.h; sourceTree = "<group>"; };
-		AFE1FD5A0981E3CB00F7970E /* version.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = version.h; path = utils/version.h; sourceTree = "<group>"; };
-		AFE1FD5B0981E3CB00F7970E /* yarandom.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; name = yarandom.c; path = utils/yarandom.c; sourceTree = "<group>"; };
-		AFE1FD5C0981E3CB00F7970E /* yarandom.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = yarandom.h; path = utils/yarandom.h; sourceTree = "<group>"; };
+		AFE1FD530981E3CB00F7970E /* erase.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; path = erase.c; sourceTree = "<group>"; };
+		AFE1FD540981E3CB00F7970E /* erase.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = erase.h; sourceTree = "<group>"; };
+		AFE1FD550981E3CB00F7970E /* hsv.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; path = hsv.c; sourceTree = "<group>"; };
+		AFE1FD560981E3CB00F7970E /* hsv.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = hsv.h; sourceTree = "<group>"; };
+		AFE1FD570981E3CB00F7970E /* spline.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; path = spline.c; sourceTree = "<group>"; };
+		AFE1FD580981E3CB00F7970E /* spline.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = spline.h; sourceTree = "<group>"; };
+		AFE1FD590981E3CB00F7970E /* utils.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		AFE1FD5A0981E3CB00F7970E /* version.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
+		AFE1FD5B0981E3CB00F7970E /* yarandom.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; path = yarandom.c; sourceTree = "<group>"; };
+		AFE1FD5C0981E3CB00F7970E /* yarandom.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = yarandom.h; sourceTree = "<group>"; };
 		AFE1FD620981E40800F7970E /* rorschach.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; name = rorschach.c; path = hacks/rorschach.c; sourceTree = "<group>"; };
 		AFE2A46A0E2E904600ADB298 /* SkyTentacles.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkyTentacles.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFE2A4720E2E90E300ADB298 /* skytentacles.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = skytentacles.c; path = hacks/glx/skytentacles.c; sourceTree = "<group>"; };
@@ -7565,7 +7591,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7F31904E30D00BB1BA5 /* libz.dylib in Frameworks */,
 				55EFF6BF1904D67800BB1BA5 /* Cocoa.framework in Frameworks */,
+				55EFF7F61904E46F00BB1BA5 /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10535,7 +10563,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF1FD713158FF96500C40F17 /* libjwxyz.a in Frameworks */,
+				55EFF7D31904E1FF00BB1BA5 /* jwxyz.framework in Frameworks */,
 				AF1FD714158FF96500C40F17 /* ScreenSaver.framework in Frameworks */,
 				AF2C31EA15C0FC9C007A6896 /* QuartzCore.framework in Frameworks */,
 				AF1FD715158FF96500C40F17 /* Cocoa.framework in Frameworks */,
@@ -10624,8 +10652,10 @@
 				AFC254C409882C97000655EE /* XScreenSaverView.h */,
 				AFC254C509882C97000655EE /* XScreenSaverView.m */,
 			);
+			indentWidth = 2;
 			name = libjwxyz;
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
@@ -10882,8 +10912,10 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
+			indentWidth = 2;
 			name = xscreensaver;
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
@@ -10913,13 +10945,9 @@
 				AF78369617DB9F25003B9FC0 /* libz.dylib */,
 				AFEB9C3E1590056A003974F3 /* CoreGraphics.framework */,
 				AFEB9C3F1590056A003974F3 /* QuartzCore.framework */,
-				AF1AD9E718500FA000932759 /* Foundation.framework */,
 				AFEB9C3C15900558003974F3 /* Foundation.framework */,
 				AFEB9C3A1590054B003974F3 /* OpenGLES.framework */,
 				AFEB9C3815900514003974F3 /* UIKit.framework */,
-				AF1AD9E618500FA000932759 /* CoreData.framework */,
-				AF1AD9E518500F9F00932759 /* AppKit.framework */,
-				AF0F46DC104E1809000A929C /* AppKit.framework */,
 				AF976ED30989BF59001F8B92 /* ScreenSaver.framework */,
 				AF2C31E515C0F7FE007A6896 /* QuartzCore.framework */,
 				AF561DF715969C5B007CA5ED /* AssetsLibrary.framework */,
@@ -10930,7 +10958,6 @@
 				AF480FE70990375900FB32B8 /* AGL.framework */,
 				AF84FD4109B1209E00F3AB06 /* GLUT.framework */,
 				AF48112B0990A2C700FB32B8 /* Carbon.framework */,
-				AF1ADA0118500FA100932759 /* XCTest.framework */,
 				55EFF6C01904D67800BB1BA5 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -11642,6 +11669,7 @@
 				AFE1FD5C0981E3CB00F7970E /* yarandom.h */,
 			);
 			name = Utils;
+			path = utils;
 			sourceTree = "<group>";
 		};
 		AFE1FD610981E3E700F7970E /* Hacks */ = {
@@ -16308,7 +16336,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				AFE6A41C0CDD7FAA002805BF /* PBXTargetDependency */,
+				55EFF7D51904E20700BB1BA5 /* PBXTargetDependency */,
 			);
 			name = Abstractile;
 			productName = Abstractile;
@@ -24102,15 +24130,44 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7D71904E23E00BB1BA5 /* fps.c in Sources */,
+				55EFF7EC1904E2ED00BB1BA5 /* textclient.c in Sources */,
 				55EFF7CF1904E04800BB1BA5 /* jwzgles.c in Sources */,
+				55EFF7E61904E2ED00BB1BA5 /* normals.c in Sources */,
+				55EFF7D81904E25400BB1BA5 /* xpm-ximage.c in Sources */,
+				55EFF7DE1904E2ED00BB1BA5 /* gltrackball.c in Sources */,
+				55EFF7E81904E2ED00BB1BA5 /* rotator.c in Sources */,
+				55EFF7E01904E2ED00BB1BA5 /* glut_swidth.c in Sources */,
+				55EFF7F01904E2ED00BB1BA5 /* xlockmore.c in Sources */,
 				55EFF7CB1904DFF800BB1BA5 /* XScreenSaverGLView.m in Sources */,
+				55EFF7EA1904E2ED00BB1BA5 /* spline.c in Sources */,
+				55EFF7E11904E2ED00BB1BA5 /* glxfonts.c in Sources */,
+				55EFF7E31904E2ED00BB1BA5 /* hsv.c in Sources */,
+				55EFF7E41904E2ED00BB1BA5 /* logo.c in Sources */,
+				55EFF7DB1904E2ED00BB1BA5 /* colors.c in Sources */,
+				55EFF7E51904E2ED00BB1BA5 /* minixpm.c in Sources */,
+				55EFF7D61904E22E00BB1BA5 /* fps-gl.c in Sources */,
+				55EFF7E91904E2ED00BB1BA5 /* sphere.c in Sources */,
+				55EFF7EF1904E2ED00BB1BA5 /* usleep.c in Sources */,
+				55EFF7DA1904E2ED00BB1BA5 /* colorbars.c in Sources */,
 				55EFF7CC1904E01F00BB1BA5 /* XScreenSaverConfigSheet.m in Sources */,
+				55EFF7DC1904E2ED00BB1BA5 /* erase.c in Sources */,
+				55EFF7F11904E2ED00BB1BA5 /* xpm-pixmap.c in Sources */,
 				55EFF7D21904E05800BB1BA5 /* InvertedSlider.m in Sources */,
 				55EFF7CE1904E02E00BB1BA5 /* osxgrabscreen.m in Sources */,
+				55EFF7E21904E2ED00BB1BA5 /* grabclient.c in Sources */,
 				55EFF7CA1904DFEC00BB1BA5 /* XScreenSaverView.m in Sources */,
 				55EFF7CD1904E02500BB1BA5 /* PrefsReader.m in Sources */,
+				55EFF7D91904E26D00BB1BA5 /* grab-ximage.c in Sources */,
 				55EFF7D11904E05200BB1BA5 /* jwxyz-timers.m in Sources */,
+				55EFF7DD1904E2ED00BB1BA5 /* gllist.c in Sources */,
+				55EFF7DF1904E2ED00BB1BA5 /* glut_stroke.c in Sources */,
+				55EFF7EE1904E2ED00BB1BA5 /* tube.c in Sources */,
+				55EFF7EB1904E2ED00BB1BA5 /* texfont.c in Sources */,
+				55EFF7F21904E2ED00BB1BA5 /* yarandom.c in Sources */,
+				55EFF7E71904E2ED00BB1BA5 /* resources.c in Sources */,
 				55EFF7D01904E04D00BB1BA5 /* jwxyz.m in Sources */,
+				55EFF7ED1904E2ED00BB1BA5 /* trackball.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -26618,6 +26675,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		55EFF7D51904E20700BB1BA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */;
+			targetProxy = 55EFF7D41904E20700BB1BA5 /* PBXContainerItemProxy */;
+		};
 		AF08399009930B6B00277BE9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
@@ -28938,11 +29000,6 @@
 			target = AFE6A1820CDD7B2E002805BF /* MoebiusGears */;
 			targetProxy = AFE6A19B0CDD7B7F002805BF /* PBXContainerItemProxy */;
 		};
-		AFE6A41C0CDD7FAA002805BF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
-			targetProxy = AFE6A41D0CDD7FAA002805BF /* PBXContainerItemProxy */;
-		};
 		AFE6A4300CDD7FEE002805BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AFE6A41B0CDD7FAA002805BF /* Abstractile */;
@@ -29026,6 +29083,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
+				LD_DYLIB_INSTALL_NAME = "@rpath/$(EXECUTABLE_PATH)";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = jwxyz;
 				WRAPPER_EXTENSION = framework;
@@ -29044,6 +29102,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
+				LD_DYLIB_INSTALL_NAME = "@rpath/$(EXECUTABLE_PATH)";
 				PRODUCT_NAME = jwxyz;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -35006,12 +35065,14 @@
 		AFE6A42B0CDD7FAA002805BF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../..";
 			};
 			name = Debug;
 		};
 		AFE6A42C0CDD7FAA002805BF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../..";
 			};
 			name = Release;
 		};
@@ -35186,7 +35247,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -35261,6 +35322,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Jamie Zawinski";
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "iPhone Distribution: Jamie Zawinski";
 				COMBINE_HIDPI_IMAGES = YES;

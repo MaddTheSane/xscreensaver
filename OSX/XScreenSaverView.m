@@ -1254,9 +1254,9 @@ double current_device_rotation (void)
       UInt32 usize = * (UInt32 *) (data.bytes + data.length - 4);
       data2 = [NSMutableData dataWithLength: usize];
       zs.next_in   = (Bytef *) data.bytes;
-      zs.avail_in  = data.length;
+      zs.avail_in  = (unsigned int)data.length;
       zs.next_out  = (Bytef *) data2.bytes;
-      zs.avail_out = data2.length;
+      zs.avail_out = (unsigned int)data2.length;
       ret = inflate (&zs, Z_FINISH);
       inflateEnd (&zs);
     }
@@ -1344,7 +1344,7 @@ double current_device_rotation (void)
   
   int state = 0;
   
-  int flags = [e modifierFlags];
+  NSUInteger flags = [e modifierFlags];
   if (flags & NSAlphaShiftKeyMask) state |= LockMask;
   if (flags & NSShiftKeyMask)      state |= ShiftMask;
   if (flags & NSControlKeyMask)    state |= ControlMask;
