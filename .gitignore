@@ -1,0 +1,12 @@
+**/*.DS_Store
+**/._*
+
+**/*.mode*
+
+**/*.xccheckout
+**/project.xcworkspace/
+**/xcuserdata/
+
+hacks/glx/molecules.h
+OSX/build
+hacks/m6502.h
