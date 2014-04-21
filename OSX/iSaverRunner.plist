@@ -11,7 +11,7 @@
 	<key>CFBundleGetInfoString</key>
 	<string>5.26</string>
 	<key>CFBundleIdentifier</key>
-	<string>${BUNDLE_IDENTIFIER}</string>
+	<string>org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleLongVersionString</key>

@@ -583,13 +583,13 @@
 		55EFF8071904EF2B00BB1BA5 /* jwxyz.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
 		55EFF80A1904EFCA00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
 		55EFF80D1904F08E00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
-		55EFF80E1904F0FF00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
 		55EFF8141904F15000BB1BA5 /* jwxyz.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
 		55EFF8151904F17400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
 		55EFF8161904F17900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
 		55EFF8181904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
 		55EFF8191904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
 		55EFF81A1904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
+		55EFF81B190564CC00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
 		AF012918157C1E4C00C396E1 /* chessmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55E2309935F2B00F3E977 /* chessmodels.c */; };
 		AF0839A609930BAC00277BE9 /* atlantis.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258700988A468000655EE /* atlantis.xml */; };
 		AF0839B009930C4900277BE9 /* atlantis.c in Sources */ = {isa = PBXBuildFile; fileRef = AF0839A909930C4900277BE9 /* atlantis.c */; };
@@ -6712,8 +6712,8 @@
 		55EFF6CA1904D67800BB1BA5 /* jwxyz-FW-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "jwxyz-FW-Prefix.pch"; sourceTree = "<group>"; };
 		55EFF7FB1904ED1000BB1BA5 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SaverRunner.xib; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = XScreenSaver.plist; sourceTree = "<group>"; };
-		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iSaverRunner.plist; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = XScreenSaver.plist; sourceTree = "<group>"; };
+		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = iSaverRunner.plist; sourceTree = "<group>"; };
 		AF0839A209930B6B00277BE9 /* Atlantis.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Atlantis.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF0839A909930C4900277BE9 /* atlantis.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = atlantis.c; path = hacks/glx/atlantis.c; sourceTree = "<group>"; };
 		AF0839AA09930C4900277BE9 /* dolphin.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = dolphin.c; path = hacks/glx/dolphin.c; sourceTree = "<group>"; };
@@ -6734,8 +6734,8 @@
 		AF0DCA560C4CBB0D00D76972 /* Voronoi.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Voronoi.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF0DCA5F0C4CBB7300D76972 /* voronoi.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = voronoi.c; path = hacks/glx/voronoi.c; sourceTree = "<group>"; };
 		AF0DCA610C4CBB8E00D76972 /* voronoi.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = voronoi.xml; sourceTree = "<group>"; };
-		AF0FAF0B09CA6FF900EE1051 /* xscreensaver-text */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-text"; path = "../driver/xscreensaver-text"; sourceTree = "<group>"; };
-		AF0FAF1209CA712600EE1051 /* xscreensaver-getimage-file */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-getimage-file"; path = "../driver/xscreensaver-getimage-file"; sourceTree = "<group>"; };
+		AF0FAF0B09CA6FF900EE1051 /* xscreensaver-text */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; name = "xscreensaver-text"; path = "../driver/xscreensaver-text"; sourceTree = "<group>"; };
+		AF0FAF1209CA712600EE1051 /* xscreensaver-getimage-file */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; name = "xscreensaver-getimage-file"; path = "../driver/xscreensaver-getimage-file"; sourceTree = "<group>"; };
 		AF0FAF3B159BAC7B00BCE2F7 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
 		AF14EE300E3CEF1A004CBBD2 /* XScreenSaver.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = XScreenSaver.icns; sourceTree = "<group>"; };
 		AF1A17730D6D6EE3008AF328 /* LCDscrub.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LCDscrub.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6775,7 +6775,7 @@
 		AF3633F918530DD90086A439 /* sparkle_dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = sparkle_dsa_pub.pem; path = OSX/sparkle_dsa_pub.pem; sourceTree = "<group>"; };
 		AF3633FA18530DD90086A439 /* Updater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Updater.h; path = OSX/Updater.h; sourceTree = "<group>"; };
 		AF3633FB18530DD90086A439 /* Updater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Updater.m; path = OSX/Updater.m; sourceTree = "<group>"; };
-		AF3633FE18530DFF0086A439 /* Updater.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Updater.plist; path = OSX/Updater.plist; sourceTree = "<group>"; };
+		AF3633FE18530DFF0086A439 /* Updater.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Updater.plist; path = OSX/Updater.plist; sourceTree = "<group>"; };
 		AF3C71590D624BF50030CC0D /* Hypnowheel.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Hypnowheel.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF3C715D0D624C600030CC0D /* hypnowheel.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = hypnowheel.c; path = hacks/glx/hypnowheel.c; sourceTree = "<group>"; };
 		AF3C715F0D624C7C0030CC0D /* hypnowheel.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = hypnowheel.xml; sourceTree = "<group>"; };
@@ -9135,7 +9135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55EFF80E1904F0FF00BB1BA5 /* jwxyz.framework in Frameworks */,
+				55EFF81B190564CC00BB1BA5 /* jwxyz.framework in Frameworks */,
 				AF1FD728158FF96500C40F17 /* ScreenSaver.framework in Frameworks */,
 				AF2C31EF15C0FC9C007A6896 /* QuartzCore.framework in Frameworks */,
 				AF1FD729158FF96500C40F17 /* Cocoa.framework in Frameworks */,
