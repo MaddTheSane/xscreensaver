@@ -579,6 +579,17 @@
 		55EFF7FA1904EC0F00BB1BA5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF480DF1098F528500FB32B8 /* OpenGL.framework */; };
 		55EFF7FC1904ED1000BB1BA5 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF7FB1904ED1000BB1BA5 /* ApplicationServices.framework */; };
 		55EFF7FD1904ED2500BB1BA5 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
+		55EFF8031904EEC600BB1BA5 /* jwxyz.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
+		55EFF8071904EF2B00BB1BA5 /* jwxyz.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
+		55EFF80A1904EFCA00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
+		55EFF80D1904F08E00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
+		55EFF80E1904F0FF00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
+		55EFF8141904F15000BB1BA5 /* jwxyz.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
+		55EFF8151904F17400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF8161904F17900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF8181904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
+		55EFF8191904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
+		55EFF81A1904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
 		AF012918157C1E4C00C396E1 /* chessmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55E2309935F2B00F3E977 /* chessmodels.c */; };
 		AF0839A609930BAC00277BE9 /* atlantis.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258700988A468000655EE /* atlantis.xml */; };
 		AF0839B009930C4900277BE9 /* atlantis.c in Sources */ = {isa = PBXBuildFile; fileRef = AF0839A909930C4900277BE9 /* atlantis.c */; };
@@ -638,7 +649,6 @@
 		AF1ADA161850157400932759 /* Updater.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF1ADA151850157400932759 /* Updater.xib */; };
 		AF1ADA181850180E00932759 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF1ADA171850180E00932759 /* Sparkle.framework */; };
 		AF1ADA1A1850186B00932759 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AF1ADA171850180E00932759 /* Sparkle.framework */; };
-		AF1ADA1B18501B3D00932759 /* SaverRunner.icns in Resources */ = {isa = PBXBuildFile; fileRef = AF2D522513E954A0002AA818 /* SaverRunner.icns */; };
 		AF1ADA1F18504A4F00932759 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
 		AF1FD714158FF96500C40F17 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
 		AF1FD715158FF96500C40F17 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -646,16 +656,13 @@
 		AF1FD718158FF96500C40F17 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
 		AF1FD719158FF96500C40F17 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AF1FD71A158FF96500C40F17 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF48112B0990A2C700FB32B8 /* Carbon.framework */; };
-		AF1FD71B158FF96500C40F17 /* libjwxyz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* libjwxyz.a */; };
 		AF1FD71C158FF96500C40F17 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
 		AF1FD71D158FF96500C40F17 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AF1FD71E158FF96500C40F17 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF48112B0990A2C700FB32B8 /* Carbon.framework */; };
-		AF1FD71F158FF96500C40F17 /* libjwxyz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* libjwxyz.a */; };
 		AF1FD720158FF96500C40F17 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
 		AF1FD721158FF96500C40F17 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AF1FD722158FF96500C40F17 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF48112B0990A2C700FB32B8 /* Carbon.framework */; };
 		AF1FD723158FF96500C40F17 /* libjwxyz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* libjwxyz.a */; };
-		AF1FD727158FF96500C40F17 /* libjwxyz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* libjwxyz.a */; };
 		AF1FD728158FF96500C40F17 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
 		AF1FD729158FF96500C40F17 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AF1FD72A158FF96500C40F17 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF48112B0990A2C700FB32B8 /* Carbon.framework */; };
@@ -1977,7 +1984,6 @@
 		AF51FD3515845D1400E5741F /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
 		AF51FD3615845F9900E5741F /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */; };
 		AF51FD3715845F9F00E5741F /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */; };
-		AF51FD3915845FCB00E5741F /* SaverRunner.icns in Resources */ = {isa = PBXBuildFile; fileRef = AF2D522513E954A0002AA818 /* SaverRunner.icns */; };
 		AF561DF615969BC3007CA5ED /* iosgrabimage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF561DF515969BC3007CA5ED /* iosgrabimage.m */; };
 		AF561DF815969C5B007CA5ED /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF561DF715969C5B007CA5ED /* AssetsLibrary.framework */; };
 		AF6048FB157C07C600CA21E4 /* jwzgles.c in Sources */ = {isa = PBXBuildFile; fileRef = AF6048F8157C07C600CA21E4 /* jwzgles.c */; };
@@ -2322,7 +2328,6 @@
 		AF794FD309974FA60059A8B0 /* XScreenSaverSubclass.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9CC7A0099580E70075E99B /* XScreenSaverSubclass.m */; };
 		AF794FDF09974FD10059A8B0 /* loop.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258DD0988A468000655EE /* loop.xml */; };
 		AF794FE109974FEC0059A8B0 /* loop.c in Sources */ = {isa = PBXBuildFile; fileRef = AF794FE009974FEC0059A8B0 /* loop.c */; };
-		AF7E080415932A1600D81407 /* iSaverRunner29t.png in Resources */ = {isa = PBXBuildFile; fileRef = AF7E080315932A1600D81407 /* iSaverRunner29t.png */; };
 		AF7F54A417DC249500CE1158 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AF78377C17DBA85D003B9FC0 /* libz.dylib */; };
 		AF7F54A517DC24A300CE1158 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AF78377C17DBA85D003B9FC0 /* libz.dylib */; };
 		AF7F54A617DC24B500CE1158 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AF78377C17DBA85D003B9FC0 /* libz.dylib */; };
@@ -2832,7 +2837,6 @@
 		AF9770800989D32E001F8B92 /* attraction.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258710988A468000655EE /* attraction.xml */; };
 		AF9771DF0989DC88001F8B92 /* SaverRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD400981E32E00F7970E /* SaverRunner.m */; };
 		AF9772C80989DCD5001F8B92 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
-		AF9772E30989DFC6001F8B92 /* SaverRunner.nib in Resources */ = {isa = PBXBuildFile; fileRef = AF9772E10989DFC6001F8B92 /* SaverRunner.nib */; };
 		AF998ED60A083A280051049D /* xscreensaver-text in Resources */ = {isa = PBXBuildFile; fileRef = AF0FAF0B09CA6FF900EE1051 /* xscreensaver-text */; };
 		AF998EE10A083DB30051049D /* XScreenSaverSubclass.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9CC7A0099580E70075E99B /* XScreenSaverSubclass.m */; };
 		AF998EF90A083E750051049D /* topblock.c in Sources */ = {isa = PBXBuildFile; fileRef = AF998EF80A083E750051049D /* topblock.c */; };
@@ -3102,7 +3106,6 @@
 		AFA5638F0993980D00F3E977 /* timetunnel.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA5638E0993980D00F3E977 /* timetunnel.c */; };
 		AFA563B8099398F700F3E977 /* juggler3d.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258D10988A468000655EE /* juggler3d.xml */; };
 		AFA563BA0993991300F3E977 /* juggler3d.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA563B90993991300F3E977 /* juggler3d.c */; };
-		AFAA6B2B1773863000DE720C /* iSaverRunner29t.png in Resources */ = {isa = PBXBuildFile; fileRef = AF7E080315932A1600D81407 /* iSaverRunner29t.png */; };
 		AFAA6B2D1773870700DE720C /* apple2-main.c in Sources */ = {isa = PBXBuildFile; fileRef = AF9D4E0509B5BC9D006E59CF /* apple2-main.c */; };
 		AFAA6B2E1773870700DE720C /* apple2.c in Sources */ = {isa = PBXBuildFile; fileRef = AF9D4DD309B5B990006E59CF /* apple2.c */; };
 		AFAA6B2F1773871900DE720C /* analogtv.c in Sources */ = {isa = PBXBuildFile; fileRef = AF9D4CFA09B5AC94006E59CF /* analogtv.c */; };
@@ -3113,7 +3116,6 @@
 		AFAA6B341773877C00DE720C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFEB9C3E1590056A003974F3 /* CoreGraphics.framework */; };
 		AFAA6B351773878000DE720C /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF0FAF3B159BAC7B00BCE2F7 /* CoreText.framework */; };
 		AFAA6B361773878400DE720C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFEB9C3F1590056A003974F3 /* QuartzCore.framework */; };
-		AFAA6B391773923900DE720C /* iSaverRunner29t.png in Resources */ = {isa = PBXBuildFile; fileRef = AF7E080315932A1600D81407 /* iSaverRunner29t.png */; };
 		AFAA6B3B1773926C00DE720C /* phosphor.c in Sources */ = {isa = PBXBuildFile; fileRef = AF77770309B63B5F00EA3033 /* phosphor.c */; };
 		AFAA6B3D177392DD00DE720C /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFEB9C3A1590054B003974F3 /* OpenGLES.framework */; };
 		AFAA6B3E177392E000DE720C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFEB9C3815900514003974F3 /* UIKit.framework */; };
@@ -3143,7 +3145,6 @@
 		AFBF893F0E41D930006A2D66 /* fps.h in Headers */ = {isa = PBXBuildFile; fileRef = AFBF893D0E41D930006A2D66 /* fps.h */; };
 		AFBF89AF0E423FC3006A2D66 /* fps-gl.c in Sources */ = {isa = PBXBuildFile; fileRef = AFBF89AE0E423FC3006A2D66 /* fps-gl.c */; };
 		AFBF89B20E424036006A2D66 /* fpsI.h in Headers */ = {isa = PBXBuildFile; fileRef = AFBF89B10E424036006A2D66 /* fpsI.h */; };
-		AFBFE74F178642DC00432B21 /* SaverRunner.nib in Resources */ = {isa = PBXBuildFile; fileRef = AF9772E10989DFC6001F8B92 /* SaverRunner.nib */; };
 		AFBFE752178642DC00432B21 /* SaverRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD400981E32E00F7970E /* SaverRunner.m */; };
 		AFBFE753178642DC00432B21 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		AFBFE754178642DC00432B21 /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
@@ -3152,8 +3153,6 @@
 		AFBFE758178642DC00432B21 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AFBFE759178642DC00432B21 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF48112B0990A2C700FB32B8 /* Carbon.framework */; };
 		AFBFE765178643B200432B21 /* Apple2.saver in Resources */ = {isa = PBXBuildFile; fileRef = AF9D4DFE09B5BB19006E59CF /* Apple2.saver */; };
-		AFBFE76F178647FE00432B21 /* SaverRunner.nib in Resources */ = {isa = PBXBuildFile; fileRef = AF9772E10989DFC6001F8B92 /* SaverRunner.nib */; };
-		AFBFE770178647FE00432B21 /* SaverRunner.icns in Resources */ = {isa = PBXBuildFile; fileRef = AF2D522513E954A0002AA818 /* SaverRunner.icns */; };
 		AFBFE772178647FE00432B21 /* SaverRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD400981E32E00F7970E /* SaverRunner.m */; };
 		AFBFE773178647FE00432B21 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		AFBFE774178647FE00432B21 /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
@@ -3354,6 +3353,41 @@
 			remoteInfo = "jwxyz-FW";
 		};
 		55EFF8001904EE2B00BB1BA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 55EFF6BD1904D67700BB1BA5;
+			remoteInfo = "jwxyz-FW";
+		};
+		55EFF8041904EF0900BB1BA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 55EFF6BD1904D67700BB1BA5;
+			remoteInfo = "jwxyz-FW";
+		};
+		55EFF8081904EFC500BB1BA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 55EFF6BD1904D67700BB1BA5;
+			remoteInfo = "jwxyz-FW";
+		};
+		55EFF80B1904F08A00BB1BA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 55EFF6BD1904D67700BB1BA5;
+			remoteInfo = "jwxyz-FW";
+		};
+		55EFF80F1904F10300BB1BA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 55EFF6BD1904D67700BB1BA5;
+			remoteInfo = "jwxyz-FW";
+		};
+		55EFF8121904F14700BB1BA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
@@ -3731,13 +3765,6 @@
 			remoteGlobalIDString = AF4808C0098C3B6C00FB32B8;
 			remoteInfo = jwxyz;
 		};
-		AF4773C3099D67B9001F091E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AF4808C0098C3B6C00FB32B8;
-			remoteInfo = jwxyz;
-		};
 		AF477403099D69E7001F091E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -3970,20 +3997,6 @@
 			remoteInfo = jwxyz;
 		};
 		AF480929098C419000FB32B8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AF4808C0098C3B6C00FB32B8;
-			remoteInfo = jwxyz;
-		};
-		AF48092C098C41AE00FB32B8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AF4808C0098C3B6C00FB32B8;
-			remoteInfo = jwxyz;
-		};
-		AF480935098C421200FB32B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
@@ -5789,13 +5802,6 @@
 			remoteGlobalIDString = AF4808C0098C3B6C00FB32B8;
 			remoteInfo = jwxyz;
 		};
-		AF9D4DEE09B5BB19006E59CF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AF4808C0098C3B6C00FB32B8;
-			remoteInfo = jwxyz;
-		};
 		AFA160911052FF87009B93AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -6265,13 +6271,6 @@
 			remoteGlobalIDString = AF9D4DEC09B5BB19006E59CF;
 			remoteInfo = Apple2;
 		};
-		AFBFE76B178647FE00432B21 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AF4808C0098C3B6C00FB32B8;
-			remoteInfo = jwxyz;
-		};
 		AFBFE7801786482B00432B21 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -6653,6 +6652,39 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		55EFF8021904EEA800BB1BA5 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				55EFF8031904EEC600BB1BA5 /* jwxyz.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		55EFF8061904EF1400BB1BA5 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				55EFF8071904EF2B00BB1BA5 /* jwxyz.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		55EFF8111904F13000BB1BA5 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				55EFF8141904F15000BB1BA5 /* jwxyz.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AF1ADA191850185F00932759 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -6679,6 +6711,7 @@
 		55EFF6C81904D67800BB1BA5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55EFF6CA1904D67800BB1BA5 /* jwxyz-FW-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "jwxyz-FW-Prefix.pch"; sourceTree = "<group>"; };
 		55EFF7FB1904ED1000BB1BA5 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SaverRunner.xib; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = XScreenSaver.plist; sourceTree = "<group>"; };
 		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iSaverRunner.plist; sourceTree = "<group>"; };
 		AF0839A209930B6B00277BE9 /* Atlantis.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Atlantis.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6989,7 +7022,6 @@
 		AF795014099751940059A8B0 /* pacman_level.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = pacman_level.h; path = hacks/pacman_level.h; sourceTree = "<group>"; };
 		AF795015099751940059A8B0 /* pacman.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = pacman.c; path = hacks/pacman.c; sourceTree = "<group>"; };
 		AF795016099751940059A8B0 /* pacman.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = pacman.h; path = hacks/pacman.h; sourceTree = "<group>"; };
-		AF7E080315932A1600D81407 /* iSaverRunner29t.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iSaverRunner29t.png; sourceTree = "<group>"; };
 		AF84AF1E15829AF000607E4C /* SaverListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SaverListController.m; path = OSX/SaverListController.m; sourceTree = "<group>"; };
 		AF84FD4109B1209E00F3AB06 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		AF91898F158FC00A002B5D1E /* XScreenSaver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XScreenSaver.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7028,7 +7060,6 @@
 		AF97707D0989D2F6001F8B92 /* Attraction.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Attraction.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9771D70989DC4A001F8B92 /* SaverTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaverTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF9771D90989DC4A001F8B92 /* SaverRunner.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = SaverRunner.plist; sourceTree = "<group>"; };
-		AF9772E20989DFC6001F8B92 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = OSX/English.lproj/SaverRunner.nib; sourceTree = "<group>"; };
 		AF998EEE0A083DB30051049D /* TopBlock.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TopBlock.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF998EF80A083E750051049D /* topblock.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = topblock.c; path = hacks/glx/topblock.c; sourceTree = "<group>"; };
 		AF998EFA0A083E8C0051049D /* topblock.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = topblock.xml; sourceTree = "<group>"; };
@@ -7975,7 +8006,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF1FD71B158FF96500C40F17 /* libjwxyz.a in Frameworks */,
+				55EFF80A1904EFCA00BB1BA5 /* jwxyz.framework in Frameworks */,
 				AF1FD71C158FF96500C40F17 /* ScreenSaver.framework in Frameworks */,
 				AF2C31EC15C0FC9C007A6896 /* QuartzCore.framework in Frameworks */,
 				AF1FD71D158FF96500C40F17 /* Cocoa.framework in Frameworks */,
@@ -9104,7 +9135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF1FD727158FF96500C40F17 /* libjwxyz.a in Frameworks */,
+				55EFF80E1904F0FF00BB1BA5 /* jwxyz.framework in Frameworks */,
 				AF1FD728158FF96500C40F17 /* ScreenSaver.framework in Frameworks */,
 				AF2C31EF15C0FC9C007A6896 /* QuartzCore.framework in Frameworks */,
 				AF1FD729158FF96500C40F17 /* Cocoa.framework in Frameworks */,
@@ -9311,7 +9342,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF1FD71F158FF96500C40F17 /* libjwxyz.a in Frameworks */,
+				55EFF80D1904F08E00BB1BA5 /* jwxyz.framework in Frameworks */,
 				AF1FD720158FF96500C40F17 /* ScreenSaver.framework in Frameworks */,
 				AF2C31ED15C0FC9C007A6896 /* QuartzCore.framework in Frameworks */,
 				AF1FD721158FF96500C40F17 /* Cocoa.framework in Frameworks */,
@@ -10930,10 +10961,9 @@
 				55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				AF14EE300E3CEF1A004CBBD2 /* XScreenSaver.icns */,
-				AF9772E10989DFC6001F8B92 /* SaverRunner.nib */,
+				55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */,
 				AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */,
 				AF2D522513E954A0002AA818 /* SaverRunner.icns */,
-				AF7E080315932A1600D81407 /* iSaverRunner29t.png */,
 				AF9771D90989DC4A001F8B92 /* SaverRunner.plist */,
 				AF01294C157D31DD00C396E1 /* iSaverRunner.plist */,
 				8D1107310486CEB800E47090 /* XScreenSaver.plist */,
@@ -12344,7 +12374,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				AF4773C2099D67B9001F091E /* PBXTargetDependency */,
+				55EFF8091904EFC500BB1BA5 /* PBXTargetDependency */,
 			);
 			name = Anemotaxis;
 			productName = Anemotaxis;
@@ -14083,7 +14113,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				AF48092D098C41AE00FB32B8 /* PBXTargetDependency */,
+				55EFF8101904F10300BB1BA5 /* PBXTargetDependency */,
 			);
 			name = Attraction;
 			productName = Attraction;
@@ -14097,12 +14127,13 @@
 				AF9771D30989DC4A001F8B92 /* Resources */,
 				AF9771D40989DC4A001F8B92 /* Sources */,
 				AF9771D50989DC4A001F8B92 /* Frameworks */,
+				55EFF8061904EF1400BB1BA5 /* Copy Frameworks */,
 				AF578FA11434E918002455DD /* Run Update Info Plist */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				AF480936098C421200FB32B8 /* PBXTargetDependency */,
+				55EFF8051904EF0900BB1BA5 /* PBXTargetDependency */,
 			);
 			name = SaverTester;
 			productName = SaverTester;
@@ -14402,7 +14433,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				AF9D4DED09B5BB19006E59CF /* PBXTargetDependency */,
+				55EFF80C1904F08A00BB1BA5 /* PBXTargetDependency */,
 			);
 			name = Apple2;
 			productName = Apple2;
@@ -15536,6 +15567,7 @@
 				AFBFE751178642DC00432B21 /* Sources */,
 				AFBFE755178642DC00432B21 /* Frameworks */,
 				AFBFE78817894FFA00432B21 /* Copy Standalone Preferences XML File */,
+				55EFF8021904EEA800BB1BA5 /* Copy Frameworks */,
 				AFBFE75A178642DC00432B21 /* Run Update Info Plist */,
 			);
 			buildRules = (
@@ -15557,13 +15589,14 @@
 				AFBFE771178647FE00432B21 /* Sources */,
 				AFBFE775178647FE00432B21 /* Frameworks */,
 				AFBFE78917895AAF00432B21 /* Copy Standalone Preferences XML File */,
+				55EFF8111904F13000BB1BA5 /* Copy Frameworks */,
 				AFBFE77A178647FE00432B21 /* Run Update Info Plist */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				AFBFE7811786482B00432B21 /* PBXTargetDependency */,
-				AFBFE76A178647FE00432B21 /* PBXTargetDependency */,
+				55EFF8131904F14700BB1BA5 /* PBXTargetDependency */,
 			);
 			name = "Phosphor-OSX";
 			productName = SaverTester;
@@ -16760,7 +16793,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF1ADA1B18501B3D00932759 /* SaverRunner.icns in Resources */,
 				55EFF6E81904DE2E00BB1BA5 /* Images.xcassets in Resources */,
 				AF3633FC18530DD90086A439 /* sparkle_dsa_pub.pem in Resources */,
 				AF1ADA161850157400932759 /* Updater.xib in Resources */,
@@ -16772,7 +16804,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF51FD3715845F9F00E5741F /* iSaverRunner.xib in Resources */,
-				AFAA6B391773923900DE720C /* iSaverRunner29t.png in Resources */,
+				55EFF8161904F17900BB1BA5 /* Images.xcassets in Resources */,
 				AF51FD3415845CD500E5741F /* phosphor.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -16782,7 +16814,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF51FD3615845F9900E5741F /* iSaverRunner.xib in Resources */,
-				AFAA6B2B1773863000DE720C /* iSaverRunner29t.png in Resources */,
+				55EFF8151904F17400BB1BA5 /* Images.xcassets in Resources */,
 				AFBFE78B17895CD000432B21 /* apple2.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -17610,7 +17642,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF918983158FC00A002B5D1E /* iSaverRunner.xib in Resources */,
-				AF7E080415932A1600D81407 /* iSaverRunner29t.png in Resources */,
 				AF918AB4158FC53D002B5D1E /* abstractile.xml in Resources */,
 				AF918AB5158FC53D002B5D1E /* anemone.xml in Resources */,
 				AF918AB6158FC53D002B5D1E /* anemotaxis.xml in Resources */,
@@ -17973,8 +18004,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				55EFF6E91904DE2E00BB1BA5 /* Images.xcassets in Resources */,
-				AF9772E30989DFC6001F8B92 /* SaverRunner.nib in Resources */,
-				AF51FD3915845FCB00E5741F /* SaverRunner.icns in Resources */,
+				55EFF81A1904F33E00BB1BA5 /* SaverRunner.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18632,7 +18662,7 @@
 			files = (
 				AFBFE765178643B200432B21 /* Apple2.saver in Resources */,
 				55EFF6E61904DDFF00BB1BA5 /* Images.xcassets in Resources */,
-				AFBFE74F178642DC00432B21 /* SaverRunner.nib in Resources */,
+				55EFF8181904F33E00BB1BA5 /* SaverRunner.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18642,8 +18672,7 @@
 			files = (
 				AFBFE7831786483B00432B21 /* Phosphor.saver in Resources */,
 				55EFF6E71904DE0300BB1BA5 /* Images.xcassets in Resources */,
-				AFBFE76F178647FE00432B21 /* SaverRunner.nib in Resources */,
-				AFBFE770178647FE00432B21 /* SaverRunner.icns in Resources */,
+				55EFF8191904F33E00BB1BA5 /* SaverRunner.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -26698,6 +26727,31 @@
 			target = 55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */;
 			targetProxy = 55EFF8001904EE2B00BB1BA5 /* PBXContainerItemProxy */;
 		};
+		55EFF8051904EF0900BB1BA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */;
+			targetProxy = 55EFF8041904EF0900BB1BA5 /* PBXContainerItemProxy */;
+		};
+		55EFF8091904EFC500BB1BA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */;
+			targetProxy = 55EFF8081904EFC500BB1BA5 /* PBXContainerItemProxy */;
+		};
+		55EFF80C1904F08A00BB1BA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */;
+			targetProxy = 55EFF80B1904F08A00BB1BA5 /* PBXContainerItemProxy */;
+		};
+		55EFF8101904F10300BB1BA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */;
+			targetProxy = 55EFF80F1904F10300BB1BA5 /* PBXContainerItemProxy */;
+		};
+		55EFF8131904F14700BB1BA5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 55EFF6BD1904D67700BB1BA5 /* jwxyz-FW */;
+			targetProxy = 55EFF8121904F14700BB1BA5 /* PBXContainerItemProxy */;
+		};
 		AF08399009930B6B00277BE9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
@@ -26963,11 +27017,6 @@
 			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
 			targetProxy = AF47739C099D6648001F091E /* PBXContainerItemProxy */;
 		};
-		AF4773C2099D67B9001F091E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
-			targetProxy = AF4773C3099D67B9001F091E /* PBXContainerItemProxy */;
-		};
 		AF477402099D69E7001F091E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
@@ -27137,16 +27186,6 @@
 			isa = PBXTargetDependency;
 			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
 			targetProxy = AF480929098C419000FB32B8 /* PBXContainerItemProxy */;
-		};
-		AF48092D098C41AE00FB32B8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
-			targetProxy = AF48092C098C41AE00FB32B8 /* PBXContainerItemProxy */;
-		};
-		AF480936098C421200FB32B8 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
-			targetProxy = AF480935098C421200FB32B8 /* PBXContainerItemProxy */;
 		};
 		AF480C4A098E301400FB32B8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -28433,11 +28472,6 @@
 			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
 			targetProxy = AF9D4DB109B5B71E006E59CF /* PBXContainerItemProxy */;
 		};
-		AF9D4DED09B5BB19006E59CF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
-			targetProxy = AF9D4DEE09B5BB19006E59CF /* PBXContainerItemProxy */;
-		};
 		AFA160921052FF87009B93AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AF6425CC09A18855000F4CD4 /* HyperCube */;
@@ -28773,11 +28807,6 @@
 			target = AF9D4DEC09B5BB19006E59CF /* Apple2 */;
 			targetProxy = AFBFE7631786438900432B21 /* PBXContainerItemProxy */;
 		};
-		AFBFE76A178647FE00432B21 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
-			targetProxy = AFBFE76B178647FE00432B21 /* PBXContainerItemProxy */;
-		};
 		AFBFE7811786482B00432B21 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AF7776E409B63ABF00EA3033 /* Phosphor */;
@@ -29068,15 +29097,6 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		AF9772E10989DFC6001F8B92 /* SaverRunner.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				AF9772E20989DFC6001F8B92 /* English */,
-			);
-			name = SaverRunner.nib;
-			path = ..;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -29092,6 +29112,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
 				LD_DYLIB_INSTALL_NAME = "@rpath/$(EXECUTABLE_PATH)";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = jwxyz;
 				WRAPPER_EXTENSION = framework;
@@ -29111,6 +29132,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
 				LD_DYLIB_INSTALL_NAME = "@rpath/$(EXECUTABLE_PATH)";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				PRODUCT_NAME = jwxyz;
 				WRAPPER_EXTENSION = framework;
 			};
@@ -29302,6 +29324,7 @@
 					/Users/jwz/src/xscreensaver/OSX,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/OSX/Updater.plist";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				"OTHER_CFLAGS[sdk=macosx*]" = "-fno-objc-gc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -29318,6 +29341,7 @@
 					/Users/jwz/src/xscreensaver/OSX,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/OSX/Updater.plist";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				"OTHER_CFLAGS[sdk=macosx*]" = "-fno-objc-gc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -29327,7 +29351,6 @@
 		AF2D4D8D13E902F5002AA818 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"PHOSPHOR_ONLY=1",
@@ -29335,6 +29358,7 @@
 				);
 				INFOPLIST_FILE = OSX/iSaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				PRODUCT_NAME = Phosphor;
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -29344,7 +29368,6 @@
 		AF2D4D8E13E902F5002AA818 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"PHOSPHOR_ONLY=1",
@@ -29352,6 +29375,7 @@
 				);
 				INFOPLIST_FILE = OSX/iSaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				PRODUCT_NAME = Phosphor;
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -29361,7 +29385,6 @@
 		AF2D4F7C13E91093002AA818 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"APPLE2_ONLY=1",
@@ -29369,6 +29392,7 @@
 				);
 				INFOPLIST_FILE = OSX/iSaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				PRODUCT_NAME = Apple2;
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -29378,7 +29402,6 @@
 		AF2D4F7D13E91093002AA818 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"APPLE2_ONLY=1",
@@ -29386,6 +29409,7 @@
 				);
 				INFOPLIST_FILE = OSX/iSaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				PRODUCT_NAME = Apple2;
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -30201,20 +30225,22 @@
 		AF4808C3098C3B8B00FB32B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				INSTALL_PATH = /usr/local/lib;
+				LD_RUNPATH_SEARCH_PATHS = "";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
-				VALID_ARCHS = "i386 x86_64 armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
 		AF4808C4098C3B8B00FB32B8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				INSTALL_PATH = /usr/local/lib;
+				LD_RUNPATH_SEARCH_PATHS = "";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
-				VALID_ARCHS = "i386 x86_64 armv7 armv7s arm64";
 			};
 			name = Release;
 		};
@@ -31379,6 +31405,7 @@
 				);
 				INFOPLIST_FILE = OSX/iSaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				PRODUCT_NAME = XScreenSaver;
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -31396,6 +31423,7 @@
 				);
 				INFOPLIST_FILE = OSX/iSaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "";
 				PRODUCT_NAME = XScreenSaver;
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -31612,6 +31640,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -31622,6 +31651,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -34366,6 +34396,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				"OTHER_CFLAGS[sdk=macosx*]" = "";
 				PRODUCT_NAME = Apple2;
 				WRAPPER_EXTENSION = app;
@@ -34378,6 +34409,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				"OTHER_CFLAGS[sdk=macosx*]" = "";
 				PRODUCT_NAME = Apple2;
 				WRAPPER_EXTENSION = app;
@@ -34390,6 +34422,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				"OTHER_CFLAGS[sdk=macosx*]" = "";
 				PRODUCT_NAME = Phosphor;
 				WRAPPER_EXTENSION = app;
@@ -34402,6 +34435,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				"OTHER_CFLAGS[sdk=macosx*]" = "";
 				PRODUCT_NAME = Phosphor;
 				WRAPPER_EXTENSION = app;
@@ -35073,14 +35107,12 @@
 		AFE6A42B0CDD7FAA002805BF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../..";
 			};
 			name = Debug;
 		};
 		AFE6A42C0CDD7FAA002805BF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../..";
 			};
 			name = Release;
 		};
@@ -35300,12 +35332,12 @@
 				INFOPLIST_FILE = OSX/XScreenSaver.plist;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../..";
 				LIBRARY_SEARCH_PATHS = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				"SDKROOT[arch=arm*]" = iphoneos;
 				SYMROOT = OSX/build;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR) $(USER_HEADER_SEARCH_PATHS)";
@@ -35376,13 +35408,13 @@
 				INFOPLIST_FILE = OSX/XScreenSaver.plist;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../..";
 				LIBRARY_SEARCH_PATHS = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				LLVM_LTO = NO;
 				"LLVM_LTO[sdk=macosx*]" = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				"SDKROOT[arch=arm*]" = iphoneos;
 				SYMROOT = OSX/build;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR) $(USER_HEADER_SEARCH_PATHS)";
