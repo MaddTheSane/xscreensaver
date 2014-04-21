@@ -315,9 +315,9 @@ more_bits (state *st, scroller *sc)
    */
   unsigned int vv, pv;
 
-  unsigned int rmsk = st->scrollers[0].image->red_mask;
-  unsigned int gmsk = st->scrollers[0].image->green_mask;
-  unsigned int bmsk = st->scrollers[0].image->blue_mask;
+  unsigned int rmsk = (unsigned int)st->scrollers[0].image->red_mask;
+  unsigned int gmsk = (unsigned int)st->scrollers[0].image->green_mask;
+  unsigned int bmsk = (unsigned int)st->scrollers[0].image->blue_mask;
   unsigned int amsk = ~(rmsk | gmsk | bmsk);
 
   vv = sc->value;
@@ -505,7 +505,7 @@ draw_string (state *st)
       if (! st->fonts[i]) continue;
 
       sprintf (buf, fmt, 0);
-      XTextExtents (st->fonts[i], buf, strlen(buf), 
+      XTextExtents (st->fonts[i], buf, (int)strlen(buf),
                     &direction, &ascent, &descent, &overall);
       sprintf (buf, "%08X", st->scrollers[0].value);
 
@@ -520,7 +520,7 @@ draw_string (state *st)
           XFillRectangle (st->dpy, st->window, st->erase_gc,
                           x-w, y, w*3, h);
           XDrawString (st->dpy, st->window, st->text_gc,
-                       x, y + ascent, buf, strlen(buf));
+                       x, y + ascent, buf, (int)strlen(buf));
           break;
         }
     }

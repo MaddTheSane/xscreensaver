@@ -482,7 +482,7 @@ init_demon (ModeInfo * mi)
 		}
 	}
 
-	dp->states = MI_COUNT(mi);
+	dp->states = (int)(MI_COUNT(mi));
 	if (dp->states < -MINSTATES)
 		dp->states = NRAND(-dp->states - MINSTATES + 1) + MINSTATES;
 	else if (dp->states < MINSTATES)

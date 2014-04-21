@@ -76,7 +76,7 @@ set (struct state *st,
   height = height + (random () % rang) - rang / 2;
   height = HEIGHT_TO_PIXEL(height);
   CELL (l, c) = height;
-  return st->colors[height].pixel;
+  return (unsigned int)st->colors[height].pixel;
 }
 
 
@@ -140,7 +140,7 @@ draw (struct state *st,
 
   if (! (st->last_valid && pixel == st->last_pixel))
     XSetForeground (st->dpy, st->gc, pixel);
-  st->last_valid = 1, st->last_pixel = pixel;
+  st->last_valid = 1, st->last_pixel = (unsigned int)pixel;
   if (grid_size == 1)
     XDrawPoint (st->dpy, st->window, st->gc, x, y);
   else
@@ -305,10 +305,10 @@ imsmap_draw (Display *dpy, Window window, void *closure)
           else if (y2 >= st->ymax)
             y2 = 0;
 
-          qpixels [0] = st->colors [HEIGHT_TO_PIXEL (CELL (x, y))].pixel;
-          qpixels [1] = st->colors [HEIGHT_TO_PIXEL (CELL (x, y2))].pixel;
-          qpixels [2] = st->colors [HEIGHT_TO_PIXEL (CELL (x2, y))].pixel;
-          qpixels [3] = st->colors [HEIGHT_TO_PIXEL (CELL (x2, y2))].pixel;
+          qpixels [0] = (unsigned int)st->colors [HEIGHT_TO_PIXEL (CELL (x, y))].pixel;
+          qpixels [1] = (unsigned int)st->colors [HEIGHT_TO_PIXEL (CELL (x, y2))].pixel;
+          qpixels [2] = (unsigned int)st->colors [HEIGHT_TO_PIXEL (CELL (x2, y))].pixel;
+          qpixels [3] = (unsigned int)st->colors [HEIGHT_TO_PIXEL (CELL (x2, y2))].pixel;
 
           pixel = set (st, x, y1, st->iteration,
                        ((int) CELL (x, y) + (int) CELL (x, y2) + 1) / 2);

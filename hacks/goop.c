@@ -108,7 +108,7 @@ make_blob (Display *dpy, int maxx, int maxy, int size)
   b->min_r = size/10;
 
   if (b->min_r < (5*SCALE)) b->min_r = (5*SCALE);
-  mid = ((b->min_r + b->max_r) / 2);
+  mid = (int)((b->min_r + b->max_r) / 2);
 
   b->torque       = get_float_resource (dpy, "torque", "Torque");
   b->elasticity   = SCALE * get_float_resource (dpy, "elasticity", "Elasticity");
@@ -431,7 +431,7 @@ make_goop (Screen *screen, Visual *visual, Window window, Colormap cmap,
     }
 
   goop->pixmap = XCreatePixmap (dpy, window, width, height,
-				(goop->mode == xor ? 1L : depth));
+				(goop->mode == xor ? 1 : (int)depth));
 
   gcv.background = goop->background;
   gcv.foreground = get_pixel_resource (dpy, cmap, "foreground", "Foreground");

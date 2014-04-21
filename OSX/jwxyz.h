@@ -614,7 +614,7 @@ struct jwxyz_XButtonEvent {
   int x_root, y_root;
 #endif
   unsigned int state;
-  unsigned long button;
+  unsigned int button;
 #if 0
   Bool same_screen;
 #endif

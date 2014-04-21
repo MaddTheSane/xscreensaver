@@ -506,7 +506,7 @@ boing_handle_event (ModeInfo *mi, XEvent *event)
             event->xbutton.button == Button6 ||
             event->xbutton.button == Button7))
     {
-      gltrackball_mousewheel (bp->trackball, event->xbutton.button, 10,
+      gltrackball_mousewheel (bp->trackball, (int)event->xbutton.button, 10,
                               !!event->xbutton.state);
       return True;
     }

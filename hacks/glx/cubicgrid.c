@@ -115,7 +115,7 @@ cubicgrid_handle_event (ModeInfo *mi, XEvent *event)
             event->xbutton.button == Button6 ||
             event->xbutton.button == Button7))
     {
-      gltrackball_mousewheel (cp->trackball, event->xbutton.button, 2,
+      gltrackball_mousewheel (cp->trackball, (int)event->xbutton.button, 2,
                               !!event->xbutton.state);
       return True;
     }

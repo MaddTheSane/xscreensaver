@@ -300,6 +300,7 @@ sub set_icon($) {
 
 
 sub set_thumb($) {
+  if (0) {
   my ($app_dir) = @_;
 
   return unless ($app_dir =~ m@\.saver/?$@s);
@@ -311,6 +312,7 @@ sub set_thumb($) {
   system (@cmd);
   my $exit  = $? >> 8;
   exit ($exit) if $exit;
+  }
 }
 
 

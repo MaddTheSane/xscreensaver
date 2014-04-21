@@ -441,7 +441,7 @@ carousel_handle_event (ModeInfo *mi, XEvent *event)
              frames, so that mouse-dragging doesn't count against
              image expiration.
            */
-          int secs = time((time_t *) 0) - ss->button_down_time;
+          time_t secs = time((time_t *) 0) - ss->button_down_time;
           int i;
           for (i = 0; i < ss->nframes; i++)
             ss->frames[i]->expires += secs;
@@ -455,7 +455,7 @@ carousel_handle_event (ModeInfo *mi, XEvent *event)
             event->xbutton.button == Button6 ||
             event->xbutton.button == Button7))
     {
-      gltrackball_mousewheel (ss->trackball, event->xbutton.button, 5,
+      gltrackball_mousewheel (ss->trackball, (int)event->xbutton.button, 5,
                               !event->xbutton.state);
       return True;
     }

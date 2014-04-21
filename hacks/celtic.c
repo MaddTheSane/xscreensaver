@@ -25,16 +25,16 @@
 struct params {
   unsigned long curve_width, shadow_width;
   double shape1, shape2;
-  unsigned long margin;
+  unsigned int margin;
 
   enum graph_type { polar, tgrid, kennicott, triangle } type;
-  unsigned long edge_size;
-  unsigned long cluster_size; /* only used if type is kennicott */
-  unsigned long delay;        /* controls curve drawing speed (step delay 
+  unsigned int edge_size;
+  unsigned int cluster_size; /* only used if type is kennicott */
+  unsigned int delay;        /* controls curve drawing speed (step delay
 			       * in microsecs) */
-  unsigned long nsteps; /* only if triangle: number of subdivisions along the side */
-  unsigned long nb_orbits;          /* only used if type is polar */
-  unsigned long nb_nodes_per_orbit; /* only used if type is polar */
+  unsigned int nsteps; /* only if triangle: number of subdivisions along the side */
+  unsigned int nb_orbits;          /* only used if type is polar */
+  unsigned int nb_nodes_per_orbit; /* only used if type is polar */
 
   double angle; /* angle of rotation of the graph around the centre */
 };
@@ -767,8 +767,8 @@ static void pattern_animate(struct state *st)
                         */
   Spline s;
 
-  XSetLineAttributes(st->dpy,st->gc,st->params.curve_width,LineSolid,CapRound,JoinRound);
-  XSetLineAttributes(st->dpy,st->shadow_gc,st->params.shadow_width,LineSolid,CapRound,JoinRound);
+  XSetLineAttributes(st->dpy,st->gc,(unsigned int)st->params.curve_width,LineSolid,CapRound,JoinRound);
+  XSetLineAttributes(st->dpy,st->shadow_gc,(unsigned int)st->params.shadow_width,LineSolid,CapRound,JoinRound);
 
   for (ticks=0;ticks<100 && t<1;ticks++) {
     for (i=0;i<p->splines->nb_elements;i++) 
@@ -942,7 +942,7 @@ celtic_init (Display *d_arg, Window w_arg)
   /* graphic context for curves */
   gcv.foreground = st->colors[0].pixel;
   gcv.background = st->colors[1].pixel;
-  gcv.line_width = st->params.curve_width;
+  gcv.line_width = (int)st->params.curve_width;
   gcv.cap_style=CapRound;
   st->gc = XCreateGC (st->dpy, st->window, GCForeground|GCBackground|GCLineWidth|GCCapStyle, &gcv);
   
@@ -953,7 +953,7 @@ celtic_init (Display *d_arg, Window w_arg)
   
   /* graphic context for shadows */
   gcv.foreground = st->colors[1].pixel;
-  gcv.line_width = st->params.shadow_width;
+  gcv.line_width = (int)st->params.shadow_width;
   gcv.cap_style=CapRound;
   st->shadow_gc = XCreateGC(st->dpy, st->window, GCForeground|GCLineWidth|GCCapStyle, &gcv);
 
@@ -1045,9 +1045,9 @@ celtic_draw (Display *dpy, Window window, void *closure)
     
     switch (st->params.type) {
     case tgrid:
-      st->graph=make_grid_graph(st, st->params.margin,st->params.margin,
-                        st->xgwa.width-2*st->params.margin, 
-			st->xgwa.height-2*st->params.margin, 
+      st->graph=make_grid_graph(st, st->params.margin, st->params.margin,
+                        st->xgwa.width-2*st->params.margin,
+			st->xgwa.height-2*st->params.margin,
 			st->params.edge_size);
       break;
     case kennicott:

@@ -359,7 +359,7 @@ cube_handle_event (ModeInfo *mi, XEvent *event)
             event->xbutton.button == Button6 ||
             event->xbutton.button == Button7))
     {
-      gltrackball_mousewheel (cc->trackball, event->xbutton.button, 10,
+      gltrackball_mousewheel (cc->trackball, (int)event->xbutton.button, 10,
                               !!event->xbutton.state);
       return True;
     }
@@ -470,7 +470,7 @@ init_cube (ModeInfo *mi)
                           False, 0, False);
   }
 
-  cc->ncubes = MI_COUNT (mi);
+  cc->ncubes = (int)(MI_COUNT (mi));
   cc->cubes = (cube *) calloc (sizeof(cube), cc->ncubes);
   for (i = 0; i < cc->ncubes; i++)
     {

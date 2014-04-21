@@ -793,7 +793,7 @@ static unsigned long do_inter(struct inter_context* c)
       }
 
 #ifdef USE_XIMAGE
-      c->row[i] = c->pal[result].pixel;
+      c->row[i] = (unsigned int)c->pal[result].pixel;
 #else
       XFillRectangle(c->dpy, TARGET(c), c->gcs[result], g*i, g*j, g, g);
 #endif /* USE_XIMAGE */

@@ -1375,7 +1375,7 @@ double current_device_rotation (void)
                              [e deltaX] < 0 ? Button7 :
                              0);
       else
-        xe.xbutton.button = [e buttonNumber] + 1;
+        xe.xbutton.button = (unsigned int)([e buttonNumber] + 1);
       break;
     case MotionNotify:
       xe.xmotion.x = x;

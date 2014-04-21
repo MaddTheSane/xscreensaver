@@ -199,7 +199,7 @@ cow_handle_event (ModeInfo *mi, XEvent *event)
             event->xbutton.button == Button6 ||
             event->xbutton.button == Button7))
     {
-      gltrackball_mousewheel (bp->trackball, event->xbutton.button, 10,
+      gltrackball_mousewheel (bp->trackball, (int)event->xbutton.button, 10,
                               !event->xbutton.state);
       return True;
     }
@@ -406,7 +406,7 @@ init_cow (ModeInfo *mi)
       glEndList ();
     }
 
-  bp->nfloaters = MI_COUNT (mi);
+  bp->nfloaters = (int)(MI_COUNT (mi));
   bp->floaters = (floater *) calloc (bp->nfloaters, sizeof (floater));
 
   for (i = 0; i < bp->nfloaters; i++)

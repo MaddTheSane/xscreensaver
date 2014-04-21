@@ -1291,7 +1291,7 @@ enumerate_ring_vertices( int steps, unsigned short *data, void *h,
 	process_vertex( h, r * cos(theta), y, r * sin(theta));
   }
 
-  return pts + patlen * 2 - data;
+  return (int)(pts + patlen * 2 - data);
 }
 
 static void

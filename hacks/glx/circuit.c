@@ -616,7 +616,7 @@ static int sphere(Circuit *ci, GLfloat r, float stacks, float slices,
   return polys;
 }
 
-static int DrawComponent(Circuit *ci, Component *c, unsigned long *polysP)
+static int DrawComponent(Circuit *ci, Component *c, unsigned int *polysP)
 {
   int polys = *polysP;
   int ret = 0; /* return 1 if component is freed */
@@ -1832,8 +1832,8 @@ static Resistor  * NewResistor(void)
   int v, m, t; /* value, multiplier, tolerance */
   Resistor *ret;
 
-  v = RAND(9);
-  m = RAND(5);
+  v = (int)(RAND(9));
+  m = (int)(RAND(5));
   t = (RAND(10) < 5) ? 10 : 11; 
   ret = malloc(sizeof(Resistor));
 

@@ -119,7 +119,7 @@ struct ModeInfo {
   /* Used only by OpenGL programs, since FPS is tricky there. */
   fps_state *fpst;
   Bool fps_p;
-  unsigned long polygon_count;  /* These values are for -fps display only */
+  unsigned int polygon_count;  /* These values are for -fps display only */
   double recursion_depth;
 
 #ifdef HAVE_XSHM_EXTENSION
