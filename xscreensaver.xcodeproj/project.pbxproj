@@ -306,7 +306,243 @@
 		55EFF6B81904D5BD00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
 		55EFF6BF1904D67800BB1BA5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		55EFF6C91904D67800BB1BA5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6C71904D67800BB1BA5 /* InfoPlist.strings */; };
-		55EFF6CD1904D67800BB1BA5 /* jwxyz_FW.m in Sources */ = {isa = PBXBuildFile; fileRef = 55EFF6CC1904D67800BB1BA5 /* jwxyz_FW.m */; };
+		55EFF6E61904DDFF00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6E71904DE0300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6E81904DE2E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6E91904DE2E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6EA1904DEB700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6EB1904DEB800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6EC1904DEB900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6ED1904DEBA00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6EE1904DEBB00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6EF1904DEBC00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F01904DEBD00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F11904DEBD00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F21904DEBE00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F31904DEBF00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F41904DEBF00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F51904DEC000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F61904DEC100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F71904DEC100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F81904DEC300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6F91904DEC400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6FA1904DEC500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6FB1904DEC600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6FC1904DEC600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6FD1904DEC700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6FE1904DEC700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF6FF1904DEC800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7001904DEC900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7011904DEC900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7021904DECA00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7031904DECB00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7041904DECD00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7051904DECD00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7061904DECE00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7071904DECF00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7081904DED000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7091904DED000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF70A1904DED100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF70B1904DED200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF70C1904DED300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF70D1904DED300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF70E1904DED400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF70F1904DED400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7101904DED600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7111904DED700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7121904DED800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7131904DED900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7141904DED900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7151904DEEA00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7161904DEEA00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7171904DEEB00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7181904DEEC00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7191904DEED00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF71A1904DEEE00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF71B1904DEEE00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF71C1904DEEF00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF71D1904DEF000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF71E1904DEF200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF71F1904DEF200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7201904DEF300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7211904DEF400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7221904DEF600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7231904DEF700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7241904DEF700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7251904DEF800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7261904DEF800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7271904DEF900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7281904DEFA00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7291904DEFA00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF72A1904DEFB00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF72B1904DEFC00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF72C1904DEFC00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF72D1904DEFE00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF72E1904DEFF00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF72F1904DF0000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7301904DF0000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7311904DF0100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7321904DF0200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7331904DF0200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7341904DF0300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7351904DF0400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7361904DF0400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7371904DF0500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7381904DF0600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7391904DF0800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF73A1904DF0900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF73B1904DF0900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF73C1904DF0B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF73D1904DF0C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF73E1904DF0D00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF73F1904DF0E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7401904DF0E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7411904DF0F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7421904DF0F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7431904DF1200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7441904DF1300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7451904DF1400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7461904DF1400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7471904DF1500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7481904DF1600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7491904DF1600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF74A1904DF1700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF74B1904DF1700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF74C1904DF1800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF74D1904DF1900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF74E1904DF1A00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF74F1904DF1A00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7501904DF1B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7511904DF1C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7521904DF1C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7531904DF1E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7541904DF1F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7551904DF1F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7561904DF2000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7571904DF2100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7581904DF2100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7591904DF2200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF75A1904DF2200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF75B1904DF2300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF75C1904DF2500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF75D1904DF2500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF75E1904DF2600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF75F1904DF2700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7601904DF2800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7611904DF2900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7621904DF2A00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7631904DF2A00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7641904DF2B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7651904DF2C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7661904DF2C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7671904DF2D00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7681904DF2F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7691904DF3000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF76A1904DF3000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF76B1904DF3100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF76C1904DF3200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF76D1904DF3300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF76E1904DF3300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF76F1904DF3400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7701904DF3500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7711904DF3600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7721904DF3700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7731904DF3800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7741904DF3900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7751904DF3A00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7761904DF3B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7771904DF3C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7781904DF3D00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7791904DF3D00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF77A1904DF3E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF77B1904DF3F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF77C1904DF4000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF77D1904DF4000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF77E1904DF4100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF77F1904DF4300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7801904DF4400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7811904DF4400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7821904DF4500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7831904DF4600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7841904DF4600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7851904DF4700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7861904DF4800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7871904DF4900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7881904DF4B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7891904DF4C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF78A1904DF4C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF78B1904DF4D00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF78C1904DF4D00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF78D1904DF4E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF78E1904DF4F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF78F1904DF4F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7901904DF5000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7911904DF5100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7921904DF5100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7931904DF5200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7941904DF5300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7951904DF5500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7961904DF5600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7971904DF5600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7981904DF5700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7991904DF5700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF79A1904DF5800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF79B1904DF5900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF79C1904DF5900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF79D1904DF5A00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF79E1904DF5C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF79F1904DF5D00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A01904DF5D00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A11904DF5E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A21904DF5E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A31904DF5F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A41904DF5F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A51904DF6000BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A61904DF6100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A71904DF6100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A81904DF6200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7A91904DF6300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7AA1904DF6600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7AB1904DF6600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7AC1904DF6700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7AD1904DF6700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7AE1904DF6800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7AF1904DF6900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B01904DF6900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B11904DF6A00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B21904DF6B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B31904DF6B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B41904DF6C00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B51904DF6E00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B61904DF6F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B71904DF6F00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B81904DF7100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7B91904DF7100BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7BA1904DF7200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7BB1904DF7200BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7BC1904DF7300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7BD1904DF7300BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7BE1904DF7400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7BF1904DF7500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C01904DF7500BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C11904DF7600BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C21904DF7700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C31904DF7700BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C41904DF7800BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C51904DF7900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C61904DF7900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C71904DF7A00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C81904DF7B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7C91904DF7B00BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
+		55EFF7CA1904DFEC00BB1BA5 /* XScreenSaverView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC254C509882C97000655EE /* XScreenSaverView.m */; };
+		55EFF7CB1904DFF800BB1BA5 /* XScreenSaverGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF4812F80990D9AE00FB32B8 /* XScreenSaverGLView.m */; };
+		55EFF7CC1904E01F00BB1BA5 /* XScreenSaverConfigSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC2578009888F5A000655EE /* XScreenSaverConfigSheet.m */; };
+		55EFF7CD1904E02500BB1BA5 /* PrefsReader.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD480981E32E00F7970E /* PrefsReader.m */; };
+		55EFF7CE1904E02E00BB1BA5 /* osxgrabscreen.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9D468E09B51567006E59CF /* osxgrabscreen.m */; };
+		55EFF7CF1904E04800BB1BA5 /* jwzgles.c in Sources */ = {isa = PBXBuildFile; fileRef = AF6048F8157C07C600CA21E4 /* jwzgles.c */; };
+		55EFF7D01904E04D00BB1BA5 /* jwxyz.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD440981E32E00F7970E /* jwxyz.m */; };
+		55EFF7D11904E05200BB1BA5 /* jwxyz-timers.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9D4E2109B63413006E59CF /* jwxyz-timers.m */; };
+		55EFF7D21904E05800BB1BA5 /* InvertedSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD420981E32E00F7970E /* InvertedSlider.m */; };
 		AF012918157C1E4C00C396E1 /* chessmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55E2309935F2B00F3E977 /* chessmodels.c */; };
 		AF0839A609930BAC00277BE9 /* atlantis.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258700988A468000655EE /* atlantis.xml */; };
 		AF0839B009930C4900277BE9 /* atlantis.c in Sources */ = {isa = PBXBuildFile; fileRef = AF0839A909930C4900277BE9 /* atlantis.c */; };
@@ -2874,7 +3110,6 @@
 		AFBF89AF0E423FC3006A2D66 /* fps-gl.c in Sources */ = {isa = PBXBuildFile; fileRef = AFBF89AE0E423FC3006A2D66 /* fps-gl.c */; };
 		AFBF89B20E424036006A2D66 /* fpsI.h in Headers */ = {isa = PBXBuildFile; fileRef = AFBF89B10E424036006A2D66 /* fpsI.h */; };
 		AFBFE74F178642DC00432B21 /* SaverRunner.nib in Resources */ = {isa = PBXBuildFile; fileRef = AF9772E10989DFC6001F8B92 /* SaverRunner.nib */; };
-		AFBFE750178642DC00432B21 /* SaverRunner.icns in Resources */ = {isa = PBXBuildFile; fileRef = AF2D522513E954A0002AA818 /* SaverRunner.icns */; };
 		AFBFE752178642DC00432B21 /* SaverRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD400981E32E00F7970E /* SaverRunner.m */; };
 		AFBFE753178642DC00432B21 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		AFBFE754178642DC00432B21 /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
@@ -6409,8 +6644,6 @@
 		55EFF6C61904D67800BB1BA5 /* jwxyz-FW-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "jwxyz-FW-Info.plist"; sourceTree = "<group>"; };
 		55EFF6C81904D67800BB1BA5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55EFF6CA1904D67800BB1BA5 /* jwxyz-FW-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "jwxyz-FW-Prefix.pch"; sourceTree = "<group>"; };
-		55EFF6CB1904D67800BB1BA5 /* jwxyz_FW.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = jwxyz_FW.h; sourceTree = "<group>"; };
-		55EFF6CC1904D67800BB1BA5 /* jwxyz_FW.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = jwxyz_FW.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = XScreenSaver.plist; sourceTree = "<group>"; };
 		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iSaverRunner.plist; sourceTree = "<group>"; };
 		AF0839A209930B6B00277BE9 /* Atlantis.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Atlantis.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -10716,8 +10949,6 @@
 		55EFF6C41904D67800BB1BA5 /* jwxyz-FW */ = {
 			isa = PBXGroup;
 			children = (
-				55EFF6CB1904D67800BB1BA5 /* jwxyz_FW.h */,
-				55EFF6CC1904D67800BB1BA5 /* jwxyz_FW.m */,
 				55EFF6C51904D67800BB1BA5 /* Supporting Files */,
 			);
 			path = "jwxyz-FW";
@@ -16448,6 +16679,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF0839A609930BAC00277BE9 /* atlantis.xml in Resources */,
+				55EFF75F1904DF2700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16456,6 +16688,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF083A4B0993120900277BE9 /* atunnel.xml in Resources */,
+				55EFF7601904DF2800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16464,6 +16697,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF0DCA380C4C74B700D76972 /* m6502.xml in Resources */,
+				55EFF7151904DEEA00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16472,6 +16706,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF0DCA620C4CBB8E00D76972 /* voronoi.xml in Resources */,
+				55EFF7B41904DF6C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16479,6 +16714,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7141904DED900BB1BA5 /* Images.xcassets in Resources */,
 				AF1A17660D6D6EE3008AF328 /* xscreensaver-getimage-file in Resources */,
 				AF1A17810D6D6F62008AF328 /* lcdscrub.xml in Resources */,
 			);
@@ -16489,6 +16725,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF1ADA1B18501B3D00932759 /* SaverRunner.icns in Resources */,
+				55EFF6E81904DE2E00BB1BA5 /* Images.xcassets in Resources */,
 				AF3633FC18530DD90086A439 /* sparkle_dsa_pub.pem in Resources */,
 				AF1ADA161850157400932759 /* Updater.xib in Resources */,
 			);
@@ -16519,6 +16756,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF32D9FD0F3AD1330080F535 /* rubikblocks.xml in Resources */,
+				55EFF7A31904DF5F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16526,6 +16764,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF76A1904DF3000BB1BA5 /* Images.xcassets in Resources */,
 				AF3581C31431D47B00E09C51 /* voronoi.xml in Resources */,
 				AF3581E81431D61D00E09C51 /* companioncube.xml in Resources */,
 			);
@@ -16535,6 +16774,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7B21904DF6B00BB1BA5 /* Images.xcassets in Resources */,
 				AF3581FF143330F900E09C51 /* voronoi.xml in Resources */,
 				AF3582221433318500E09C51 /* tronbit.xml in Resources */,
 			);
@@ -16544,6 +16784,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF78B1904DF4D00BB1BA5 /* Images.xcassets in Resources */,
 				AF35EB240E63829600691F2F /* jigsaw.xml in Resources */,
 				AF4A8CA010B609B50074B062 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -16554,6 +16795,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF3C71600D624C7C0030CC0D /* hypnowheel.xml in Resources */,
+				55EFF7891904DF4C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16562,6 +16804,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF476FCF099D1587001F091E /* interference.xml in Resources */,
+				55EFF7101904DED600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16570,6 +16813,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF476FEF099D16E4001F091E /* truchet.xml in Resources */,
+				55EFF7341904DF0300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16578,6 +16822,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47705E099D43B7001F091E /* deluxe.xml in Resources */,
+				55EFF6FE1904DEC700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16586,6 +16831,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47717B099D47B7001F091E /* compass.xml in Resources */,
+				55EFF6F81904DEC300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16594,6 +16840,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477191099D4846001F091E /* wander.xml in Resources */,
+				55EFF7371904DF0500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16602,6 +16849,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4771B9099D4981001F091E /* t3d.xml in Resources */,
+				55EFF7C61904DF7900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16610,6 +16858,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4771EE099D4DE5001F091E /* ccurve.xml in Resources */,
+				55EFF6F51904DEC000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16618,6 +16867,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477204099D4EA2001F091E /* nerverot.xml in Resources */,
+				55EFF71C1904DEEF00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16626,6 +16876,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47721A099D4F27001F091E /* whirlygig.xml in Resources */,
+				55EFF7C81904DF7B00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16634,6 +16885,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477230099D4FBD001F091E /* anemone.xml in Resources */,
+				55EFF6EB1904DEB800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16642,6 +16894,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477265099D5752001F091E /* halftone.xml in Resources */,
+				55EFF7091904DED000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16650,6 +16903,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47727D099D57F5001F091E /* popsquares.xml in Resources */,
+				55EFF7241904DEF700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16658,6 +16912,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477296099D596A001F091E /* piecewise.xml in Resources */,
+				55EFF7221904DEF600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16666,6 +16921,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477394099D65EB001F091E /* wormhole.xml in Resources */,
+				55EFF73A1904DF0900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16674,6 +16930,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4773AC099D6762001F091E /* fuzzyflakes.xml in Resources */,
+				55EFF7061904DECE00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16682,6 +16939,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4773D3099D6804001F091E /* anemotaxis.xml in Resources */,
+				55EFF6EC1904DEB900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16690,6 +16948,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47741B099D6A58001F091E /* intermomentary.xml in Resources */,
+				55EFF7111904DED700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16698,6 +16957,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477439099D7CD0001F091E /* ifs.xml in Resources */,
+				55EFF70D1904DED300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16705,6 +16965,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF73F1904DF0E00BB1BA5 /* Images.xcassets in Resources */,
 				AF477454099D7D75001F091E /* xmatrix.xml in Resources */,
 				AF998ED60A083A280051049D /* xscreensaver-text in Resources */,
 			);
@@ -16715,6 +16976,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477495099D8A3A001F091E /* flame.xml in Resources */,
+				55EFF7031904DECB00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16723,6 +16985,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4774AB099D8AF3001F091E /* kaleidescope.xml in Resources */,
+				55EFF7121904DED800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16731,6 +16994,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4774CA099D8BAE001F091E /* lmorph.xml in Resources */,
+				55EFF7C21904DF7700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16739,6 +17003,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4774E0099D8C74001F091E /* maze.xml in Resources */,
+				55EFF7161904DEEA00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16747,6 +17012,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47756F099D9A70001F091E /* pedal.xml in Resources */,
+				55EFF71E1904DEF200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16755,6 +17021,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47759B099D9C8D001F091E /* pyro.xml in Resources */,
+				55EFF7251904DEF800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16763,6 +17030,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4775B1099D9D51001F091E /* starfish.xml in Resources */,
+				55EFF7321904DF0200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16771,6 +17039,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4775EC099D9FDB001F091E /* coral.xml in Resources */,
+				55EFF6F91904DEC400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16779,6 +17048,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477604099DA083001F091E /* epicycle.xml in Resources */,
+				55EFF7001904DEC900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16787,6 +17057,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477629099DA2D2001F091E /* kumppa.xml in Resources */,
+				55EFF7131904DED900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16795,6 +17066,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477656099DA738001F091E /* squiral.xml in Resources */,
+				55EFF7311904DF0100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16803,6 +17075,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47766C099DA7F3001F091E /* critical.xml in Resources */,
+				55EFF7B81904DF7100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16811,6 +17084,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477682099DA8AC001F091E /* petri.xml in Resources */,
+				55EFF7201904DEF300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16819,6 +17093,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4776A1099DAAC9001F091E /* blaster.xml in Resources */,
+				55EFF6F01904DEBD00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16827,6 +17102,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4776BC099DAC29001F091E /* xspirograph.xml in Resources */,
+				55EFF7411904DF0F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16835,6 +17111,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4776D2099DACD6001F091E /* xrayswarm.xml in Resources */,
+				55EFF7401904DF0E00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16843,6 +17120,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4776ED099DAE38001F091E /* whirlwindwarp.xml in Resources */,
+				55EFF7391904DF0800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16851,6 +17129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477703099DAF24001F091E /* vermiculate.xml in Resources */,
+				55EFF7361904DF0400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16859,6 +17138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47771F099DB000001F091E /* cloudlife.xml in Resources */,
+				55EFF6F71904DEC100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16867,6 +17147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477735099DB0ED001F091E /* substrate.xml in Resources */,
+				55EFF7331904DF0200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16875,6 +17156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477768099DB6FD001F091E /* interaggregate.xml in Resources */,
+				55EFF70F1904DED400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16883,6 +17165,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF477786099DBA11001F091E /* celtic.xml in Resources */,
+				55EFF6F61904DEC100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16891,6 +17174,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4777A3099DBAF8001F091E /* fluidballs.xml in Resources */,
+				55EFF7041904DECD00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16898,6 +17182,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF6F21904DEBE00BB1BA5 /* Images.xcassets in Resources */,
 				AF4778A2099DDA76001F091E /* boxfit.xml in Resources */,
 				AF0FAF1609CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -16908,6 +17193,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4778BD099DDC1B001F091E /* penetrate.xml in Resources */,
+				55EFF71F1904DEF200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16916,6 +17202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4778D9099DDD14001F091E /* xjack.xml in Resources */,
+				55EFF73D1904DF0C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16924,6 +17211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4778FA099DDE5F001F091E /* cynosure.xml in Resources */,
+				55EFF6FB1904DEC600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16932,6 +17220,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF47791B099DE3D9001F091E /* flag.xml in Resources */,
+				55EFF7B91904DF7100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16939,6 +17228,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF72E1904DEFF00BB1BA5 /* Images.xcassets in Resources */,
 				AF47793C099DE535001F091E /* slip.xml in Resources */,
 				AF0FAF2509CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -16949,6 +17239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF480C69098E309E00FB32B8 /* helix.xml in Resources */,
+				55EFF70B1904DED200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16957,6 +17248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF480D85098EEE3100FB32B8 /* drift.xml in Resources */,
+				55EFF7491904DF1600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16965,6 +17257,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4811440990A35B00FB32B8 /* dangerball.xml in Resources */,
+				55EFF7701904DF3500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16973,6 +17266,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF48126D0990CE8600FB32B8 /* gears.xml in Resources */,
+				55EFF7791904DF3D00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16981,6 +17275,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4812C80990D41700FB32B8 /* pipes.xml in Resources */,
+				55EFF79B1904DF5900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16989,6 +17284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF48E16C0A0C26A400F94CF9 /* glschool.xml in Resources */,
+				55EFF7831904DF4600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16997,6 +17293,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4A3462102A59EB00A81B2A /* surfaces.xml in Resources */,
+				55EFF7AE1904DF6800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17005,6 +17302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4FD7030CE7A5BC005EE58E /* lockward.xml in Resources */,
+				55EFF7911904DF5100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17013,6 +17311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4FF4D40D52CCAA00666F98 /* cubicgrid.xml in Resources */,
+				55EFF76F1904DF3400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17021,6 +17320,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF642408099FFAB0000F4CD4 /* extrusion.xml in Resources */,
+				55EFF7741904DF3900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17029,6 +17329,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF6425DE09A188D7000F4CD4 /* hypercube.xml in Resources */,
+				55EFF7BC1904DF7300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17037,6 +17338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF6425FE09A18A77000F4CD4 /* qix.xml in Resources */,
+				55EFF7261904DEF800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17045,6 +17347,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF64262109A18DFF000F4CD4 /* hyperball.xml in Resources */,
+				55EFF7BB1904DF7200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17053,6 +17356,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF64263E09A18FCE000F4CD4 /* moire2.xml in Resources */,
+				55EFF71A1904DEEE00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17061,6 +17365,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF64266109A1929A000F4CD4 /* munch.xml in Resources */,
+				55EFF71B1904DEEE00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17069,6 +17374,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF64268D09A19525000F4CD4 /* goop.xml in Resources */,
+				55EFF7071904DECF00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17077,6 +17383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF64278309A1D418000F4CD4 /* speedmine.xml in Resources */,
+				55EFF72F1904DF0000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17085,6 +17392,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF6427BA09A2DF09000F4CD4 /* bubbles.xml in Resources */,
+				55EFF7B71904DF6F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17093,6 +17401,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFB8A69B1782BA34004EDB85 /* kaleidocycle.xml in Resources */,
+				55EFF78D1904DF4E00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17100,6 +17409,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7211904DEF400BB1BA5 /* Images.xcassets in Resources */,
 				AF77770209B63B3900EA3033 /* phosphor.xml in Resources */,
 				AF0FAF1009CA6FF900EE1051 /* xscreensaver-text in Resources */,
 			);
@@ -17110,6 +17420,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF77772C09B641C800EA3033 /* pacman.xml in Resources */,
+				55EFF7541904DF1F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17117,6 +17428,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7761904DF3B00BB1BA5 /* Images.xcassets in Resources */,
 				AF77775309B644E300EA3033 /* flipscreen3d.xml in Resources */,
 				AF0FAF1C09CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17126,6 +17438,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF77E1904DF4100BB1BA5 /* Images.xcassets in Resources */,
 				AF77778A09B64A0D00EA3033 /* gleidescope.xml in Resources */,
 				AF0FAF1E09CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17135,6 +17448,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7931904DF5200BB1BA5 /* Images.xcassets in Resources */,
 				AF7777A409B64AE200EA3033 /* mirrorblob.xml in Resources */,
 				AF0FAF2109CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17145,6 +17459,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF7777BE09B64BAC00EA3033 /* stonerview.xml in Resources */,
+				55EFF7AC1904DF6700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17152,6 +17467,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7841904DF4600BB1BA5 /* Images.xcassets in Resources */,
 				AF7777E609B64CD800EA3033 /* glslideshow.xml in Resources */,
 				AF0FAF1F09CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17161,6 +17477,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7771904DF3C00BB1BA5 /* Images.xcassets in Resources */,
 				AF77780009B64EA800EA3033 /* fliptext.xml in Resources */,
 				AF0FAF0D09CA6FF900EE1051 /* xscreensaver-text in Resources */,
 			);
@@ -17170,6 +17487,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7AB1904DF6600BB1BA5 /* Images.xcassets in Resources */,
 				AF77782709B650D200EA3033 /* starwars.xml in Resources */,
 				AF0FAF1109CA6FF900EE1051 /* xscreensaver-text in Resources */,
 			);
@@ -17179,6 +17497,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7681904DF2F00BB1BA5 /* Images.xcassets in Resources */,
 				AF77787D09B654FE00EA3033 /* carousel.xml in Resources */,
 				AF0FAF1909CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17189,6 +17508,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF77787A09B6545E00EA3033 /* dnalogo.xml in Resources */,
+				55EFF7711904DF3600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17196,6 +17516,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7051904DECD00BB1BA5 /* Images.xcassets in Resources */,
 				AF77789109B656A900EA3033 /* fontglide.xml in Resources */,
 				AF0FAF0E09CA6FF900EE1051 /* xscreensaver-text in Resources */,
 			);
@@ -17205,6 +17526,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF6F11904DEBD00BB1BA5 /* Images.xcassets in Resources */,
 				AF7778B909B65A6E00EA3033 /* blitspin.xml in Resources */,
 				AF0FAF1509CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17214,6 +17536,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7871904DF4900BB1BA5 /* Images.xcassets in Resources */,
 				AF78D179142DD8F3002AAF77 /* voronoi.xml in Resources */,
 				AF78D191142DD99B002AAF77 /* hilbert.xml in Resources */,
 			);
@@ -17224,6 +17547,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF794F7D0997486C0059A8B0 /* demon.xml in Resources */,
+				55EFF7471904DF1500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17232,6 +17556,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF794FA809974AC60059A8B0 /* fiberlamp.xml in Resources */,
+				55EFF74C1904DF1800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17240,6 +17565,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF794FDF09974FD10059A8B0 /* loop.xml in Resources */,
+				55EFF7521904DF1C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17457,6 +17783,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF97573F099C31BB00B05160 /* imsmap.xml in Resources */,
+				55EFF70E1904DED400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17465,6 +17792,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975788099C378B00B05160 /* moire.xml in Resources */,
+				55EFF7191904DEED00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17473,6 +17801,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFCCCBB009BFE4B000353F4D /* rdbomb.xml in Resources */,
+				55EFF7271904DEF900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17481,6 +17810,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF97581B099C423600B05160 /* xflame.xml in Resources */,
+				55EFF73B1904DF0900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17489,6 +17819,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975879099C490500B05160 /* shadebobs.xml in Resources */,
+				55EFF72C1904DEFC00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17497,6 +17828,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975A48099C688B00B05160 /* metaballs.xml in Resources */,
+				55EFF7181904DEEC00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17505,6 +17837,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975A82099C6B2700B05160 /* eruption.xml in Resources */,
+				55EFF7011904DEC900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17513,6 +17846,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975A98099C6C2000B05160 /* barcode.xml in Resources */,
+				55EFF6EF1904DEBC00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17521,6 +17855,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975AED099C6EFE00B05160 /* fireworkx.xml in Resources */,
+				55EFF7021904DECA00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17529,6 +17864,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975B16099C70B200B05160 /* memscroller.xml in Resources */,
+				55EFF7171904DEEB00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17537,6 +17873,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975C28099C8C6A00B05160 /* halo.xml in Resources */,
+				55EFF70A1904DED100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17545,6 +17882,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975C55099C8E2800B05160 /* greynetic.xml in Resources */,
+				55EFF7081904DED000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17552,6 +17890,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF71D1904DEF000BB1BA5 /* Images.xcassets in Resources */,
 				AF975C75099C8FAC00B05160 /* noseguy.xml in Resources */,
 				AF0FAF0F09CA6FF900EE1051 /* xscreensaver-text in Resources */,
 			);
@@ -17562,6 +17901,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF975D65099CA14B00B05160 /* rocks.xml in Resources */,
+				55EFF7291904DEFA00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17570,6 +17910,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF976FCD0989CAEA001F8B92 /* deco.xml in Resources */,
+				55EFF6FD1904DEC700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17578,6 +17919,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF9770430989D226001F8B92 /* rorschach.xml in Resources */,
+				55EFF72A1904DEFB00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17586,6 +17928,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF9770800989D32E001F8B92 /* attraction.xml in Resources */,
+				55EFF6EE1904DEBB00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17593,6 +17936,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF6E91904DE2E00BB1BA5 /* Images.xcassets in Resources */,
 				AF9772E30989DFC6001F8B92 /* SaverRunner.nib in Resources */,
 				AF51FD3915845FCB00E5741F /* SaverRunner.icns in Resources */,
 			);
@@ -17603,6 +17947,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF998EFB0A083E8C0051049D /* topblock.xml in Resources */,
+				55EFF7B11904DF6A00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17610,6 +17955,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF6FC1904DEC600BB1BA5 /* Images.xcassets in Resources */,
 				AF9D467A09B51126006E59CF /* decayscreen.xml in Resources */,
 				AF0FAF1A09CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17619,6 +17965,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF72D1904DEFE00BB1BA5 /* Images.xcassets in Resources */,
 				AF9D475609B5306A006E59CF /* slidescreen.xml in Resources */,
 				AF0FAF2409CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17628,6 +17975,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7421904DF0F00BB1BA5 /* Images.xcassets in Resources */,
 				AF9D48D309B53214006E59CF /* zoom.xml in Resources */,
 				AF0FAF2909CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17637,6 +17985,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF6F41904DEBF00BB1BA5 /* Images.xcassets in Resources */,
 				AF9D48ED09B5338A006E59CF /* bumps.xml in Resources */,
 				AF0FAF1809CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17646,6 +17995,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF6FF1904DEC800BB1BA5 /* Images.xcassets in Resources */,
 				AF9D490609B536DE006E59CF /* distort.xml in Resources */,
 				AF0FAF1B09CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17655,6 +18005,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7281904DEFA00BB1BA5 /* Images.xcassets in Resources */,
 				AF9D493D09B53D3B006E59CF /* ripples.xml in Resources */,
 				AF0FAF2209CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17664,6 +18015,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF72B1904DEFC00BB1BA5 /* Images.xcassets in Resources */,
 				AF9D496609B54087006E59CF /* rotzoomer.xml in Resources */,
 				AF0FAF2309CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17673,6 +18025,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7351904DF0400BB1BA5 /* Images.xcassets in Resources */,
 				AF9D497E09B541CE006E59CF /* twang.xml in Resources */,
 				AF0FAF2709CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17682,6 +18035,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7301904DF0000BB1BA5 /* Images.xcassets in Resources */,
 				AF9D49A909B5457B006E59CF /* spotlight.xml in Resources */,
 				AF0FAF2609CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17692,6 +18046,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF9D4C7B09B5A02D006E59CF /* xlyap.xml in Resources */,
+				55EFF73E1904DF0D00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17700,6 +18055,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF9D4CF909B5AC73006E59CF /* pong.xml in Resources */,
+				55EFF7231904DEF700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17707,6 +18063,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF73C1904DF0B00BB1BA5 /* Images.xcassets in Resources */,
 				AF9D4D9109B5B42B006E59CF /* xanalogtv.xml in Resources */,
 				AF0FAF2809CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17716,6 +18073,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF6F31904DEBF00BB1BA5 /* Images.xcassets in Resources */,
 				AF9D4DC209B5B862006E59CF /* bsod.xml in Resources */,
 				AF0FAF1709CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17726,6 +18084,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF9D4E0409B5BC85006E59CF /* apple2.xml in Resources */,
+				55EFF6ED1904DEBA00BB1BA5 /* Images.xcassets in Resources */,
 				AF0FAF0C09CA6FF900EE1051 /* xscreensaver-text in Resources */,
 				AF0FAF1409CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17736,6 +18095,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA33BB00B05860F002B0E7D /* webcollage.xml in Resources */,
+				55EFF7381904DF0600BB1BA5 /* Images.xcassets in Resources */,
 				AFA33BDD0B058A30002B0E7D /* webcollage-helper in Resources */,
 				AFA33C0C0B058ED2002B0E7D /* webcollage in Resources */,
 			);
@@ -17746,6 +18106,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA5595C099330E500F3E977 /* cage.xml in Resources */,
+				55EFF7671904DF2D00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17754,6 +18115,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55981099331AC00F3E977 /* moebius.xml in Resources */,
+				55EFF7941904DF5300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17762,6 +18124,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA559A70993325200F3E977 /* superquadrics.xml in Resources */,
+				55EFF7AD1904DF6700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17770,6 +18133,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA559CB099332CF00F3E977 /* morph3d.xml in Resources */,
+				55EFF7971904DF5600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17778,6 +18142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA559E90993333D00F3E977 /* rubik.xml in Resources */,
+				55EFF7A21904DF5E00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17786,6 +18151,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55A190993344100F3E977 /* stairs.xml in Resources */,
+				55EFF7AA1904DF6600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17794,6 +18160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55A34099334CB00F3E977 /* sproingies.xml in Resources */,
+				55EFF7A91904DF6300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17802,6 +18169,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55A8D0993366F00F3E977 /* lament.xml in Resources */,
+				55EFF78F1904DF4F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17810,6 +18178,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55AE309933D1C00F3E977 /* bubble3d.xml in Resources */,
+				55EFF7661904DF2C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17818,6 +18187,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55B2009933E3100F3E977 /* glplanet.xml in Resources */,
+				55EFF7821904DF4500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17826,6 +18196,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55B3909933EB400F3E977 /* pulsar.xml in Resources */,
+				55EFF79F1904DF5D00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17834,6 +18205,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55B8D09933FAA00F3E977 /* sierpinski3d.xml in Resources */,
+				55EFF7A51904DF6000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17841,6 +18213,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF77B1904DF3F00BB1BA5 /* Images.xcassets in Resources */,
 				AFA55BA50993400200F3E977 /* gflux.xml in Resources */,
 				AF0FAF1D09CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -17851,6 +18224,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55BBF0993410100F3E977 /* circuit.xml in Resources */,
+				55EFF7691904DF3000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17859,6 +18233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55BF8099342BF00F3E977 /* menger.xml in Resources */,
+				55EFF7921904DF5100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17867,6 +18242,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55C220993433D00F3E977 /* engine.xml in Resources */,
+				55EFF7731904DF3800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17875,6 +18251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55C8B099349CC00F3E977 /* glsnake.xml in Resources */,
+				55EFF7851904DF4700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17883,6 +18260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55CBD09934BDD00F3E977 /* boxed.xml in Resources */,
+				55EFF7651904DF2C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17891,6 +18269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55CE009934D1500F3E977 /* glforestfire.xml in Resources */,
+				55EFF7B51904DF6E00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17899,6 +18278,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55D500993568200F3E977 /* sballs.xml in Resources */,
+				55EFF7A41904DF5F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17907,6 +18287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55D760993587600F3E977 /* cubenetic.xml in Resources */,
+				55EFF76D1904DF3300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17915,6 +18296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55D93099358FB00F3E977 /* spheremonics.xml in Resources */,
+				55EFF7A81904DF6200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17923,6 +18305,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55DDC09935D9D00F3E977 /* lavalite.xml in Resources */,
+				55EFF7901904DF5000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17931,6 +18314,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55E0509935E7E00F3E977 /* queens.xml in Resources */,
+				55EFF7A11904DF5E00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17939,6 +18323,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55E2109935F0B00F3E977 /* endgame.xml in Resources */,
+				55EFF7721904DF3700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17947,6 +18332,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55E4409935FBA00F3E977 /* glblur.xml in Resources */,
+				55EFF77C1904DF4000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17955,6 +18341,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55E970993602F00F3E977 /* flyingtoasters.xml in Resources */,
+				55EFF7781904DF3D00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17963,6 +18350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55EE50993610F00F3E977 /* bouncingcow.xml in Resources */,
+				55EFF7641904DF2B00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17971,6 +18359,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55F20099361E800F3E977 /* jigglypuff.xml in Resources */,
+				55EFF78A1904DF4C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17979,6 +18368,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55F3E0993625B00F3E977 /* klein.xml in Resources */,
+				55EFF78E1904DF4F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17987,6 +18377,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55F57099362C500F3E977 /* hypertorus.xml in Resources */,
+				55EFF7881904DF4B00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17995,6 +18386,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55F860993646900F3E977 /* glmatrix.xml in Resources */,
+				55EFF7811904DF4400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18003,6 +18395,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA55FF209936C2F00F3E977 /* cubestorm.xml in Resources */,
+				55EFF76E1904DF3300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18011,6 +18404,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA5600D09936C9D00F3E977 /* glknots.xml in Resources */,
+				55EFF7801904DF4400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18019,6 +18413,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA5602809936CF700F3E977 /* blocktube.xml in Resources */,
+				55EFF7621904DF2A00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18026,6 +18421,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7751904DF3A00BB1BA5 /* Images.xcassets in Resources */,
 				AF0D117D0E41566300BB14A4 /* xscreensaver-getimage-file in Resources */,
 				AFA5604609936DAB00F3E977 /* flipflop.xml in Resources */,
 			);
@@ -18036,6 +18432,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA560820993700500F3E977 /* antinspect.xml in Resources */,
+				55EFF75C1904DF2500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18043,6 +18440,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF75E1904DF2600BB1BA5 /* Images.xcassets in Resources */,
 				AFA560830993700900F3E977 /* antspotlight.xml in Resources */,
 				AF0FAF1309CA712600EE1051 /* xscreensaver-getimage-file in Resources */,
 			);
@@ -18053,6 +18451,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA560C2099371BE00F3E977 /* polytopes.xml in Resources */,
+				55EFF79D1904DF5A00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18061,6 +18460,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA561110993784D00F3E977 /* molecule.xml in Resources */,
+				55EFF7961904DF5600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18069,6 +18469,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA5616C09937C6800F3E977 /* blinkbox.xml in Resources */,
+				55EFF7611904DF2900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18077,6 +18478,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA5618F09937D2100F3E977 /* noof.xml in Resources */,
+				55EFF7981904DF5700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18085,6 +18487,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA561B109937DB400F3E977 /* polyhedra.xml in Resources */,
+				55EFF79C1904DF5900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18093,6 +18496,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA5621B099384DA00F3E977 /* providence.xml in Resources */,
+				55EFF79E1904DF5C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18101,6 +18505,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA562330993855500F3E977 /* pinion.xml in Resources */,
+				55EFF79A1904DF5800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18109,6 +18514,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA562D3099392F900F3E977 /* boing.xml in Resources */,
+				55EFF7631904DF2A00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18117,6 +18523,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA562EE0993940400F3E977 /* antmaze.xml in Resources */,
+				55EFF75D1904DF2500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18125,6 +18532,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA563060993947300F3E977 /* tangram.xml in Resources */,
+				55EFF7AF1904DF6900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18133,6 +18541,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA563280993955000F3E977 /* crackberg.xml in Resources */,
+				55EFF76B1904DF3100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18141,6 +18550,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA563740993977100F3E977 /* glhanoi.xml in Resources */,
+				55EFF77F1904DF4300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18149,6 +18559,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA563770993979A00F3E977 /* cube21.xml in Resources */,
+				55EFF76C1904DF3200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18157,6 +18568,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA5638D099397ED00F3E977 /* timetunnel.xml in Resources */,
+				55EFF7B01904DF6900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18165,6 +18577,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFA563B8099398F700F3E977 /* juggler3d.xml in Resources */,
+				55EFF78C1904DF4D00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18173,6 +18586,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFB591BE178B81E600EA4005 /* hexadrop.xml in Resources */,
+				55EFF70C1904DED300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18181,8 +18595,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFBFE765178643B200432B21 /* Apple2.saver in Resources */,
+				55EFF6E61904DDFF00BB1BA5 /* Images.xcassets in Resources */,
 				AFBFE74F178642DC00432B21 /* SaverRunner.nib in Resources */,
-				AFBFE750178642DC00432B21 /* SaverRunner.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18191,6 +18605,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFBFE7831786483B00432B21 /* Phosphor.saver in Resources */,
+				55EFF6E71904DE0300BB1BA5 /* Images.xcassets in Resources */,
 				AFBFE76F178647FE00432B21 /* SaverRunner.nib in Resources */,
 				AFBFE770178647FE00432B21 /* SaverRunner.icns in Resources */,
 			);
@@ -18200,6 +18615,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF7991904DF5700BB1BA5 /* Images.xcassets in Resources */,
 				AFD51B200F063B4A00471C02 /* xscreensaver-getimage-file in Resources */,
 				AFD51DB90F063BE700471C02 /* photopile.xml in Resources */,
 			);
@@ -18210,6 +18626,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56E9F0996A23800BA26F7 /* gltext.xml in Resources */,
+				55EFF7861904DF4800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18218,6 +18635,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF642330099F45CA000F4CD4 /* braid.xml in Resources */,
+				55EFF7451904DF1400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18226,6 +18644,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56F1D0996AB1D00BA26F7 /* forest.xml in Resources */,
+				55EFF7BA1904DF7200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18234,6 +18653,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56F1E0996AB4000BA26F7 /* vines.xml in Resources */,
+				55EFF7C71904DF7A00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18242,6 +18662,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56F350996ABB300BA26F7 /* galaxy.xml in Resources */,
+				55EFF74E1904DF1A00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18250,6 +18671,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56F610996AF1500BA26F7 /* grav.xml in Resources */,
+				55EFF74F1904DF1A00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18258,6 +18680,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56F870996B04D00BA26F7 /* hopalong.xml in Resources */,
+				55EFF7501904DF1B00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18266,6 +18689,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56F9F0996B0D000BA26F7 /* laser.xml in Resources */,
+				55EFF7BE1904DF7400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18274,6 +18698,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56FB50996B15000BA26F7 /* lightning.xml in Resources */,
+				55EFF7BF1904DF7500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18282,6 +18707,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56FCB0996B1BE00BA26F7 /* lisa.xml in Resources */,
+				55EFF7C01904DF7500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18290,6 +18716,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD56FE10996B24B00BA26F7 /* lissie.xml in Resources */,
+				55EFF7C11904DF7600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18298,6 +18725,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD5700B0996B47E00BA26F7 /* penrose.xml in Resources */,
+				55EFF7551904DF1F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18306,6 +18734,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD570210996B51100BA26F7 /* sierpinski.xml in Resources */,
+				55EFF7571904DF2100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18314,6 +18743,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD5703A0996B5D000BA26F7 /* sphere.xml in Resources */,
+				55EFF7C41904DF7800BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18322,6 +18752,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD570550996B65A00BA26F7 /* spiral.xml in Resources */,
+				55EFF7C51904DF7900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18330,6 +18761,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD5706B0996B6E700BA26F7 /* fadeplot.xml in Resources */,
+				55EFF74B1904DF1700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18338,6 +18770,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD570810996B77F00BA26F7 /* mountain.xml in Resources */,
+				55EFF7531904DF1E00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18346,6 +18779,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD570970996B84E00BA26F7 /* triangle.xml in Resources */,
+				55EFF75B1904DF2300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18354,6 +18788,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD570AD0996B8DC00BA26F7 /* worm.xml in Resources */,
+				55EFF7C91904DF7B00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18362,6 +18797,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD570C30996B96F00BA26F7 /* rotor.xml in Resources */,
+				55EFF7C31904DF7700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18370,6 +18806,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD570DD0996BA4600BA26F7 /* ant.xml in Resources */,
+				55EFF7B61904DF6F00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18378,6 +18815,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD570FE0996BC2000BA26F7 /* flow.xml in Resources */,
+				55EFF74D1904DF1900BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18386,6 +18824,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD571270996BEE100BA26F7 /* discrete.xml in Resources */,
+				55EFF7481904DF1600BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18394,6 +18833,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD5713E0996BFA500BA26F7 /* apollonian.xml in Resources */,
+				55EFF7431904DF1200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18402,6 +18842,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD571550996C05F00BA26F7 /* euler2d.xml in Resources */,
+				55EFF74A1904DF1700BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18410,6 +18851,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFCCCBB309BFE51900353F4D /* thornbird.xml in Resources */,
+				55EFF75A1904DF2200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18418,6 +18860,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD571C70996DA3300BA26F7 /* juggle.xml in Resources */,
+				55EFF7BD1904DF7300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18426,6 +18869,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD572340996E52B00BA26F7 /* swirl.xml in Resources */,
+				55EFF7591904DF2200BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18434,6 +18878,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD5727F0996EF1900BA26F7 /* polyominoes.xml in Resources */,
+				55EFF7561904DF2000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18442,6 +18887,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD572B80996FAF900BA26F7 /* bouboule.xml in Resources */,
+				55EFF7441904DF1300BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18450,6 +18896,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD572EC0997005900BA26F7 /* crystal.xml in Resources */,
+				55EFF7461904DF1400BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18458,6 +18905,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD5730B099702AF00BA26F7 /* julia.xml in Resources */,
+				55EFF7511904DF1C00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18466,6 +18914,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD573700997418D00BA26F7 /* strange.xml in Resources */,
+				55EFF7581904DF2100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18474,6 +18923,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFDA65A5178A541A0070D24B /* unknownpleasures.xml in Resources */,
+				55EFF7B31904DF6B00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18482,6 +18932,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFE2A4750E2E911200ADB298 /* skytentacles.xml in Resources */,
+				55EFF7A61904DF6100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18490,6 +18941,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFE30BFE0E52B18300CCF4A5 /* sonar.xml in Resources */,
+				55EFF7A71904DF6100BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18498,6 +18950,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFE6A40E0CDD7BDC002805BF /* moebiusgears.xml in Resources */,
+				55EFF7951904DF5500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18505,6 +18958,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EFF6EA1904DEB700BB1BA5 /* Images.xcassets in Resources */,
 				AFE6A4200CDD7FAA002805BF /* xscreensaver-getimage-file in Resources */,
 				AFE6A4370CDD8027002805BF /* abstractile.xml in Resources */,
 			);
@@ -18515,6 +18969,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFF28696178611720050A578 /* quasicrystal.xml in Resources */,
+				55EFF7A01904DF5D00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18523,6 +18978,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFF3C9FE17CCAD9A0028F240 /* geodesic.xml in Resources */,
+				55EFF77A1904DF3E00BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18531,6 +18987,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFF4634C0C44046500EE6509 /* cwaves.xml in Resources */,
+				55EFF6FA1904DEC500BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -18539,6 +18996,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFF463740C440BAC00EE6509 /* glcells.xml in Resources */,
+				55EFF77D1904DF4000BB1BA5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -23644,7 +24102,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55EFF6CD1904D67800BB1BA5 /* jwxyz_FW.m in Sources */,
+				55EFF7CF1904E04800BB1BA5 /* jwzgles.c in Sources */,
+				55EFF7CB1904DFF800BB1BA5 /* XScreenSaverGLView.m in Sources */,
+				55EFF7CC1904E01F00BB1BA5 /* XScreenSaverConfigSheet.m in Sources */,
+				55EFF7D21904E05800BB1BA5 /* InvertedSlider.m in Sources */,
+				55EFF7CE1904E02E00BB1BA5 /* osxgrabscreen.m in Sources */,
+				55EFF7CA1904DFEC00BB1BA5 /* XScreenSaverView.m in Sources */,
+				55EFF7CD1904E02500BB1BA5 /* PrefsReader.m in Sources */,
+				55EFF7D11904E05200BB1BA5 /* jwxyz-timers.m in Sources */,
+				55EFF7D01904E04D00BB1BA5 /* jwxyz.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -28553,36 +29019,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "jwxyz-FW/jwxyz-FW-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = jwxyz;
@@ -28594,33 +29036,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_VERSION = A;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "jwxyz-FW/jwxyz-FW-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "jwxyz-FW/jwxyz-FW-Info.plist";
 				PRODUCT_NAME = jwxyz;
 				WRAPPER_EXTENSION = framework;
@@ -28806,6 +29228,7 @@
 		AF1ADA0F18500FA200932759 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.updater";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -28821,6 +29244,7 @@
 		AF1ADA1018500FA200932759 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.updater";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -28836,6 +29260,7 @@
 		AF2D4D8D13E902F5002AA818 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"PHOSPHOR_ONLY=1",
@@ -28852,6 +29277,7 @@
 		AF2D4D8E13E902F5002AA818 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"PHOSPHOR_ONLY=1",
@@ -28868,6 +29294,7 @@
 		AF2D4F7C13E91093002AA818 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"APPLE2_ONLY=1",
@@ -28884,6 +29311,7 @@
 		AF2D4F7D13E91093002AA818 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
 					"APPLE2_ONLY=1",
@@ -30876,7 +31304,7 @@
 		AF91898D158FC00A002B5D1E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
@@ -30893,7 +31321,7 @@
 		AF91898E158FC00A002B5D1E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_IPHONE=1",
@@ -31114,6 +31542,7 @@
 		AF9771DB0989DC4B001F8B92 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				WRAPPER_EXTENSION = app;
@@ -31123,6 +31552,7 @@
 		AF9771DC0989DC4B001F8B92 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				WRAPPER_EXTENSION = app;
@@ -31358,6 +31788,7 @@
 		AFA33BCC0B058754002B0E7D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				INSTALL_PATH = "$(HOME)/bin";
 				OTHER_LDFLAGS = (
@@ -31371,6 +31802,7 @@
 		AFA33BCD0B058754002B0E7D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				INSTALL_PATH = "$(HOME)/bin";
 				OTHER_LDFLAGS = (
@@ -33864,6 +34296,7 @@
 		AFBFE75C178642DC00432B21 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				"OTHER_CFLAGS[sdk=macosx*]" = "";
@@ -33875,6 +34308,7 @@
 		AFBFE75D178642DC00432B21 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				"OTHER_CFLAGS[sdk=macosx*]" = "";
@@ -33886,6 +34320,7 @@
 		AFBFE77C178647FE00432B21 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				"OTHER_CFLAGS[sdk=macosx*]" = "";
@@ -33897,6 +34332,7 @@
 		AFBFE77D178647FE00432B21 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				INFOPLIST_FILE = OSX/SaverRunner.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				"OTHER_CFLAGS[sdk=macosx*]" = "";
@@ -34736,11 +35172,26 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OSX/xscreensaver_Prefix.pch;
@@ -34762,16 +35213,11 @@
 					"$(GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
-				GCC_WARN_SHADOW = NO;
-				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
@@ -34802,11 +35248,26 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = SaverRunner;
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Jamie Zawinski";
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "iPhone Distribution: Jamie Zawinski";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OSX/xscreensaver_Prefix.pch;
@@ -34827,16 +35288,11 @@
 					"CLASS=XScreenSaver${EXECUTABLE_NAME}View",
 					"$(GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS)",
 				);
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
-				GCC_WARN_SHADOW = NO;
-				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VALUE = YES;

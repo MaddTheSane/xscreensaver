@@ -25,17 +25,6 @@
 #import "jwxyz-timers.h"
 
 
-/* Garbage collection only exists if we are being compiled against the 
-   10.6 SDK or newer, not if we are building against the 10.4 SDK.
- */
-#ifndef  MAC_OS_X_VERSION_10_6
-# define MAC_OS_X_VERSION_10_6 1060  /* undefined in 10.4 SDK, grr */
-#endif
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6  /* 10.6 SDK */
-# import <objc/objc-auto.h>
-# define DO_GC_HACKERY
-#endif
-
 extern struct xscreensaver_function_table *xscreensaver_function_table;
 
 /* Global variables used by the screen savers
@@ -1054,36 +1043,6 @@ double current_device_rotation (void)
   if (delay < [self animationTimeInterval])
     [self setAnimationTimeInterval:(delay / 1000000.0)];
 # endif
-
-# ifdef DO_GC_HACKERY
-  /* Current theory is that the 10.6 garbage collector sucks in the
-     following way:
-
-     It only does a collection when a threshold of outstanding
-     collectable allocations has been surpassed.  However, CoreGraphics
-     creates lots of small collectable allocations that contain pointers
-     to very large non-collectable allocations: a small CG object that's
-     collectable referencing large malloc'd allocations (non-collectable)
-     containing bitmap data.  So the large allocation doesn't get freed
-     until GC collects the small allocation, which triggers its finalizer
-     to run which frees the large allocation.  So GC is deciding that it
-     doesn't really need to run, even though the process has gotten
-     enormous.  GC eventually runs once pageouts have happened, but by
-     then it's too late, and the machine's resident set has been
-     sodomized.
-
-     So, we force an exhaustive garbage collection in this process
-     approximately every 5 seconds whether the system thinks it needs 
-     one or not.
-  */
-  {
-    static int tick = 0;
-    if (++tick > 5*30) {
-      tick = 0;
-      objc_collect (OBJC_EXHAUSTIVE_COLLECTION);
-    }
-  }
-# endif // DO_GC_HACKERY
 
 # ifdef USE_IPHONE
   }
