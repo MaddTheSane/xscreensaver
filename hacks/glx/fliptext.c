@@ -197,7 +197,7 @@ untabify (const char *string)
 static void
 strip (char *s, Bool leading, Bool trailing)
 {
-  int L = strlen(s);
+  int L = (int)strlen(s);
   if (trailing)
     while (L > 0 && (s[L-1] == ' ' || s[L-1] == '\t'))
       s[L--] = 0;
@@ -266,7 +266,7 @@ get_one_line (fliptext_configuration *sc)
       if (*s == '\r' || *s == '\n' ||
           col_pix + cw >= wrap_pix)
         {
-          int L = s - sc->buf;
+          int L = (int)(s - sc->buf);
 
           if (*s == '\r' || *s == '\n')
             {
@@ -286,7 +286,7 @@ get_one_line (fliptext_configuration *sc)
                 {
                   s = s2;
                   *s++ = 0;
-                  L = s - sc->buf;
+                  L = (int)(s - sc->buf);
                 }
             }
 
@@ -306,7 +306,7 @@ get_one_line (fliptext_configuration *sc)
 
           if (sc->buf_tail > (s - sc->buf))
             {
-              int i = sc->buf_tail - (s - sc->buf);
+              int i = (int)(sc->buf_tail - (s - sc->buf));
               memmove (sc->buf, s, i);
               sc->buf_tail = i;
               sc->buf[sc->buf_tail] = 0;
