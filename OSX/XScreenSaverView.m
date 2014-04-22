@@ -99,18 +99,14 @@ extern NSDictionary *make_function_table_dict(void);  // ios-function-table.m
   NSBundle *nsb = [NSBundle bundleForClass:[self class]];
   NSAssert1 (nsb, @"no bundle for class %@", [self class]);
 
-  NSString *path = [nsb bundlePath];
-  CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
-                                               (CFStringRef) path,
-                                               kCFURLPOSIXPathStyle,
-                                               true);
+  CFURLRef url = CFBridgingRetain([nsb bundleURL]);
   CFBundleRef cfb = CFBundleCreate (kCFAllocatorDefault, url);
   CFRelease (url);
-  NSAssert1 (cfb, @"no CFBundle for \"%@\"", path);
+  NSAssert1 (cfb, @"no CFBundle for \"%@\"", url);
   // #### Analyze says "Potential leak of an object stored into cfb"
   
   if (! name)
-    name = [[path lastPathComponent] stringByDeletingPathExtension];
+    name = [[[nsb bundleURL] lastPathComponent] stringByDeletingPathExtension];
 
   name = [[name lowercaseString]
            stringByReplacingOccurrencesOfString:@" "
@@ -121,18 +117,18 @@ extern NSDictionary *make_function_table_dict(void);  // ios-function-table.m
   // I'm guessing that symbol-stripping is mandatory.  Fuck.
   NSString *table_name = [name stringByAppendingString:
                                  @"_xscreensaver_function_table"];
-  void *addr = CFBundleGetDataPointerForName (cfb, (CFStringRef) table_name);
+  void *addr = CFBundleGetDataPointerForName (cfb, (__bridge CFStringRef) table_name);
   CFRelease (cfb);
 
   if (! addr)
-    NSLog (@"no symbol \"%@\" for \"%@\"", table_name, path);
+    NSLog (@"no symbol \"%@\" for \"%@\"", table_name, [nsb bundleURL]);
 
 # else  // USE_IPHONE
   // Remember: any time you add a new saver to the iOS app,
   // manually run "make ios-function-table.m"!
   if (! function_tables)
-    function_tables = [make_function_table_dict() retain];
-  NSValue *v = [function_tables objectForKey: name];
+    function_tables = make_function_table_dict();
+  NSValue *v = function_tables[name];
   void *addr = v ? [v pointerValue] : 0;
 # endif // USE_IPHONE
 
@@ -150,20 +146,21 @@ extern NSDictionary *make_function_table_dict(void);  // ios-function-table.m
   
   NSString *nsdir = [nsb resourcePath];
   NSAssert1 (nsdir, @"no resourcePath for class %@", [self class]);
-  const char *dir = [nsdir cStringUsingEncoding:NSUTF8StringEncoding];
+  const char *dir = [nsdir fileSystemRepresentation];
   const char *opath = getenv ("PATH");
   if (!opath) opath = "/bin"; // $PATH is unset when running under Shark!
-  char *npath = (char *) malloc (strlen (opath) + strlen (dir) + 30);
-  strcpy (npath, "PATH=");
+  char *npath = (char *) calloc (strlen (opath) + strlen (dir) + 30, 1);
   strcat (npath, dir);
   strcat (npath, ":");
   strcat (npath, opath);
-  if (putenv (npath)) {
-    perror ("putenv");
-    NSAssert1 (0, @"putenv \"%s\" failed", npath);
+  unsetenv("PATH");
+  if (setenv ("PATH", npath, 1)) {
+    perror ("setenv");
+    NSAssert1 (0, @"setenv \"%s\" failed", npath);
   }
 
   /* Don't free (npath) -- MacOS's putenv() does not copy it. */
+  free(npath);
 }
 
 
@@ -176,14 +173,10 @@ extern NSDictionary *make_function_table_dict(void);  // ios-function-table.m
   NSAssert1 (nsb, @"no bundle for class %@", [self class]);
   
   const char *s = [name cStringUsingEncoding:NSUTF8StringEncoding];
-  char *env = (char *) malloc (strlen (s) + 40);
-  strcpy (env, "XSCREENSAVER_CLASSPATH=");
-  strcat (env, s);
-  if (putenv (env)) {
-    perror ("putenv");
-    NSAssert1 (0, @"putenv \"%s\" failed", env);
+  if (setenv ("XSCREENSAVER_CLASSPATH", s, 1)) {
+    perror ("setenv");
+    NSAssert1 (0, @"setenv \"%s\" failed", s);
   }
-  /* Don't free (env) -- MacOS's putenv() does not copy it. */
 }
 
 
@@ -357,12 +350,11 @@ double_time (void)
 # endif
 
   if (! (self = [super initWithFrame:frame isPreview:isPreview]))
-    return 0;
+    return nil;
   
   xsft = [self findFunctionTable: saverName];
   if (! xsft) {
-    [self release];
-    return 0;
+    return nil;
   }
 
   [self setShellPath];
@@ -451,12 +443,8 @@ double_time (void)
 
 # endif // USE_BACKBUFFER
 
-  [prefsReader release];
-
   // xsft
   // fpst
-
-  [super dealloc];
 }
 
 - (PrefsReader *) prefsReader
@@ -884,7 +872,7 @@ double current_device_rotation (void)
     if (! xdpy) {
 # ifdef USE_BACKBUFFER
       NSAssert (backbuffer, @"no back buffer");
-      xdpy = jwxyz_make_display (self, backbuffer);
+      xdpy = jwxyz_make_display ((__bridge void *)(self), backbuffer);
 # else
       xdpy = jwxyz_make_display (self, 0);
 # endif
@@ -1306,7 +1294,6 @@ double current_device_rotation (void)
   // #### am I expected to retain this, or not? wtf.
   //      I thought not, but if I don't do this, we (sometimes) crash.
   // #### Analyze says "potential leak of an object stored into sheet"
-  [sheet retain];
 
   return sheet;
 }
@@ -1954,7 +1941,7 @@ double current_device_rotation (void)
 static PrefsReader *
 get_prefsReader (Display *dpy)
 {
-  XScreenSaverView *view = jwxyz_window_view (XRootWindow (dpy, 0));
+  XScreenSaverView *view = (__bridge XScreenSaverView *)(jwxyz_window_view (XRootWindow (dpy, 0)));
   if (!view) return 0;
   return [view prefsReader];
 }

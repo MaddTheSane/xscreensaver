@@ -272,7 +272,7 @@ osx_grab_desktop_image (Screen *screen, Window xwindow, Drawable drawable,
   if (! img)
     return False;
   jwxyz_draw_NSImage_or_CGImage (DisplayOfScreen (screen), drawable,
-                                 True, img, geom_ret, 0);
+                                 True, (__bridge void *)(img), geom_ret, 0);
   return True;
 }
 
@@ -293,7 +293,7 @@ osx_grab_desktop_image (Screen *screen, Window xwindow, Drawable drawable,
                         XRectangle *geom_ret)
 {
   Display *dpy = DisplayOfScreen (screen);
-  NSView *nsview = jwxyz_window_view (xwindow);
+  NSView *nsview = (__bridge NSView *)(jwxyz_window_view (xwindow));
   XWindowAttributes xgwa;
   int window_x, window_y;
   Window unused;
@@ -425,15 +425,13 @@ osx_load_image_file (Screen *screen, Window xwindow, Drawable drawable,
 # ifndef USE_IPHONE
 
   NSImage *img = [[NSImage alloc] initWithContentsOfFile:
-                                    [NSString stringWithCString:filename
-                                              encoding:NSUTF8StringEncoding]];
+                                    @(filename)];
   if (!img)
     return False;
 
   jwxyz_draw_NSImage_or_CGImage (DisplayOfScreen (screen), drawable, 
-                                 True, img, geom_ret,
+                                 True, (__bridge void *)(img), geom_ret,
                                  exif_rotation (filename));
-  [img release];
   return True;
 
 # else  /* USE_IPHONE */

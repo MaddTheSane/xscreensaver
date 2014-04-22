@@ -19,10 +19,9 @@ int
 main (int argc, char *argv[])
 {
 # ifdef USE_IPHONE
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  int ret = UIApplicationMain (argc, argv, nil, nil);
-  [pool release];
-  return ret;
+  @autoreleasepool {
+    return UIApplicationMain (argc, argv, nil, nil);
+  }
 # else
   return NSApplicationMain(argc, (const char **) argv);
 # endif

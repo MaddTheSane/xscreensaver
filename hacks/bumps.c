@@ -289,7 +289,7 @@ static void CreateBumps( SBumps *pBumps, Display *dpy, Window NewWin )
 	{
 		pBumps->pXImage = XCreateImage( pBumps->dpy, XWinAttribs.visual, XWinAttribs.depth, 
 									ZPixmap, 0, NULL, iDiameter, iDiameter, BitmapPad( pBumps->dpy ), 0 );
-		pBumps->pXImage->data = malloc( pBumps->pXImage->bytes_per_line * pBumps->pXImage->height * sizeof(int8_t) );
+		pBumps->pXImage->data = malloc( pBumps->pXImage->bytes_per_line * pBumps->pXImage->height * sizeof(char) );
 	}
 
 	/* For speed, access the XImage data directly using my own PutPixel routine. */

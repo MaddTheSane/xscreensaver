@@ -51,29 +51,24 @@
 @implementation GlobalDefaults
 - (id) initWithDomain:(NSString *)_domain
 {
-  self = [super init];
-  domain = [_domain retain];
+  if (self = [super init]) {
+    domain = _domain;
+  }
   return self;
 }
 
-- (void) dealloc
-{
-  [domain release];
-  [defaults release];
-  [super dealloc];
-}
 
 - (void)registerDefaults:(NSDictionary *)dict
 {
-  defaults = [dict retain];
+  defaults = dict;
 }
 
 - (id)objectForKey:(NSString *)key
 {
-  NSObject *obj = (NSObject *)
-    CFPreferencesCopyAppValue ((CFStringRef) key, (CFStringRef) domain);
+  NSObject *obj =
+    CFBridgingRelease(CFPreferencesCopyAppValue ((__bridge CFStringRef) key, (__bridge CFStringRef) domain));
   if (!obj && defaults)
-    obj = [defaults objectForKey:key];
+    obj = defaults[key];
   return obj;
 }
 
@@ -81,19 +76,19 @@
 {
   if (value && defaults) {
     // If the value is the default, then remove it instead.
-    NSObject *def = [defaults objectForKey:key];
+    NSObject *def = defaults[key];
     if (def && [def isEqual:value])
       value = NULL;
   }
-  CFPreferencesSetAppValue ((CFStringRef) key,
-                            (CFPropertyListRef) value,
-                            (CFStringRef) domain);
+  CFPreferencesSetAppValue ((__bridge CFStringRef) key,
+                            (__bridge CFPropertyListRef) value,
+                            (__bridge CFStringRef) domain);
 }
 
 
 - (BOOL)synchronize
 {
-  return CFPreferencesAppSynchronize ((CFStringRef) domain);
+  return CFPreferencesAppSynchronize ((__bridge CFStringRef) domain);
 }
 
 
@@ -155,22 +150,22 @@
 
 - (void)setInteger:(NSInteger)value forKey:(NSString *)key
 {
-  [self setObject:[NSNumber numberWithInteger:value] forKey:key];
+  [self setObject:@(value) forKey:key];
 }
 
 - (void)setFloat:(float)value forKey:(NSString *)key
 {
-  [self setObject:[NSNumber numberWithFloat:value] forKey:key];
+  [self setObject:@(value) forKey:key];
 }
 
 - (void)setDouble:(double)value forKey:(NSString *)key
 {
-  [self setObject:[NSNumber numberWithDouble:value] forKey:key];
+  [self setObject:@(value) forKey:key];
 }
 
 - (void)setBool:(BOOL)value forKey:(NSString *)key
 {
-  [self setObject:[NSNumber numberWithBool:value] forKey:key];
+  [self setObject:@(value) forKey:key];
 }
 @end
 
@@ -199,8 +194,7 @@
 
 - (NSString *) makeCKey:(const char *)key
 {
-  return [self makeKey:[NSString stringWithCString:key
-                                 encoding:NSUTF8StringEncoding]];
+  return [self makeKey:@(key)];
 }
 
 
@@ -237,15 +231,15 @@
     double ff;
     char cc;
     if (!strcasecmp (val, "true") || !strcasecmp (val, "yes"))
-      nsval = [NSNumber numberWithBool:YES];
+      nsval = @YES;
     else if (!strcasecmp (val, "false") || !strcasecmp (val, "no"))
-      nsval = [NSNumber numberWithBool:NO];
+      nsval = @NO;
     else if (1 == sscanf (val, " %d %c", &dd, &cc))
-      nsval = [NSNumber numberWithInt:dd];
+      nsval = @(dd);
     else if (1 == sscanf (val, " %lf %c", &ff, &cc))
-      nsval = [NSNumber numberWithDouble:ff];
+      nsval = @(ff);
     else
-      nsval = [NSString stringWithCString:val encoding:NSUTF8StringEncoding];
+      nsval = @(val);
       
 //    NSLog (@"default: \"%@\" = \"%@\" [%@]", nskey, nsval, [nsval class]);
     [dict setValue:nsval forKey:nskey];
@@ -273,12 +267,9 @@
   // Save a copy of the default options, since iOS doesn't have
   // [userDefaultsController initialValues].
   //
-  if (defaultOptions) 
-    [defaultOptions release];
-  defaultOptions = [[NSMutableDictionary dictionaryWithCapacity:20]
-                     retain];
+  defaultOptions = [NSMutableDictionary dictionaryWithCapacity:20];
   for (NSString *key in defsdict) {
-    [defaultOptions setValue:[defsdict objectForKey:key] forKey:key];
+    [defaultOptions setValue:defsdict[key] forKey:key];
   }
 
 # ifndef USE_IPHONE
@@ -304,7 +295,7 @@
     NSString *nsresource = [self makeCKey:resource];
     
     // make sure there's no resource mentioned in options and not defaults.
-    if (![defsdict objectForKey:nsresource]) {
+    if (!defsdict[nsresource]) {
       if (! (!strcmp(resource, "font")        ||    // don't warn about these
              !strcmp(resource, "foreground")  ||
              !strcmp(resource, "textLiteral") ||
@@ -449,7 +440,7 @@
   // Kludge: assume that any string that begins with "~" and has a "/"
   // anywhere in it should be expanded as if it is a pathname.
   if (result[0] == '~' && strchr (result, '/')) {
-    os = [NSString stringWithCString:result encoding:NSUTF8StringEncoding];
+    os = @(result);
     free (result);
     result = strdup ([[os stringByExpandingTildeInPath]
                        cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -542,8 +533,7 @@
 
 # ifndef USE_IPHONE
   userDefaults = [ScreenSaverDefaults defaultsForModuleWithName:name];
-  globalDefaults = [[[GlobalDefaults alloc] initWithDomain:@UPDATER_DOMAIN]
-                     retain];
+  globalDefaults = [[GlobalDefaults alloc] initWithDomain:@UPDATER_DOMAIN];
 # else  // USE_IPHONE
   userDefaults = [NSUserDefaults standardUserDefaults];
   globalDefaults = userDefaults;
@@ -554,18 +544,10 @@
   if (r.length)
     name = [name substringFromIndex:r.location+1];
   name = [name stringByReplacingOccurrencesOfString:@" " withString:@""];
-  saver_name = [name retain];
+  saver_name = name;
 
   [self registerXrmKeys:opts defaults:defs];
   return self;
-}
-
-- (void) dealloc
-{
-  [saver_name release];
-  [userDefaultsController release];
-  [globalDefaultsController release];
-  [super dealloc];
 }
 
 @end

@@ -129,8 +129,7 @@ jwxyz_abort (const char *fmt, ...)
       va_end (args);
     }
   [[NSException exceptionWithName: NSInternalInconsistencyException
-                reason: [NSString stringWithCString: s
-                                  encoding:NSUTF8StringEncoding]
+                reason: @(s)
                 userInfo: nil]
     raise];
   abort();  // not reached
@@ -2712,8 +2711,7 @@ try_font (BOOL fixed, BOOL bold, BOOL ital, BOOL serif, float size,
     else              name = "Verdana";
   }
 
-  NSString *nsname = [NSString stringWithCString:name
-                                        encoding:NSUTF8StringEncoding];
+  NSString *nsname = @(name);
   NSFont *f = [NSFont fontWithName:nsname size:size];
   if (f)
     *name_ret = strdup(name);
@@ -2737,8 +2735,7 @@ try_native_font (const char *name, float scale,
 
   char *name2 = strdup (name);
   name2[strlen(name2) - strlen(spc)] = 0;
-  NSString *nsname = [NSString stringWithCString:name2
-                                        encoding:NSUTF8StringEncoding];
+  NSString *nsname = @(name2);
   NSFont *f = [NSFont fontWithName:nsname size:size];
   if (f) {
     *name_ret = name2;
@@ -2769,7 +2766,7 @@ random_font (BOOL bold, BOOL ital, float size, char **name_ret)
   int j;
   for (j = 0; j < n; j++) {
     int i = random() % n;
-    NSString *name = [fonts objectAtIndex:i];
+    NSString *name = fonts[i];
     NSFont *f = [NSFont fontWithName:name size:size];
     if (!f) continue;
 
@@ -2802,7 +2799,7 @@ random_font (BOOL bold, BOOL ital, float size, char **name_ret)
   NSArray *families = [UIFont familyNames];
   NSMutableDictionary *famdict = [NSMutableDictionary 
                                    dictionaryWithCapacity:100];
-  NSObject *y = [NSNumber numberWithBool:YES];
+  NSObject *y = @YES;
   for (NSString *name in families) {
     // There are many dups in the families array -- uniquify it.
     [famdict setValue:y forKey:name];
@@ -2846,7 +2843,7 @@ random_font (BOOL bold, BOOL ital, float size, char **name_ret)
   if (! [fonts count]) return 0;	// Nothing suitable?
 
   int i = random() % [fonts count];
-  NSString *name = [fonts objectAtIndex:i];
+  NSString *name = fonts[i];
   UIFont *ff = [UIFont fontWithName:name size:size];
   *name_ret = strdup ([name cStringUsingEncoding:NSUTF8StringEncoding]);
 
@@ -3329,7 +3326,7 @@ XQueryPointer (Display *dpy, Window w, Window *root_ret, Window *child_ret,
   // get top left of view on screen, from top left
   NSArray *screens = [NSScreen screens];
   NSScreen *screen = (screens && [screens count] > 0
-                      ? [screens objectAtIndex:0]
+                      ? screens[0]
                       : [NSScreen mainScreen]);
 #ifdef USE_IPHONE
   double s = w->window.view.contentScaleFactor;
@@ -3399,7 +3396,7 @@ XTranslateCoordinates (Display *dpy, Window w, Window dest_w,
   // get top left of view on screen, from top left
   NSArray *screens = [NSScreen screens];
   NSScreen *screen = (screens && [screens count] > 0
-                      ? [screens objectAtIndex:0]
+                      ? screens[0]
                       : [NSScreen mainScreen]);
 # ifdef USE_IPHONE
   double s = w->window.view.contentScaleFactor;

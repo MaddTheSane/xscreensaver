@@ -157,7 +157,7 @@ find_saverView_child (NSView *v)
   NSUInteger nkids = [kids count];
   NSUInteger i;
   for (i = 0; i < nkids; i++) {
-    NSObject *kid = [kids objectAtIndex:i];
+    NSObject *kid = kids[i];
     if ([kid isKindOfClass:[ScreenSaverView class]]) {
       return (ScreenSaverView *) kid;
     } else {
@@ -195,7 +195,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     NSUInteger nkids = [kids count];
     NSUInteger i;
     for (i = 0; i < nkids; i++) {
-      relabel_menus ([kids objectAtIndex:i], old_str, new_str);
+      relabel_menus (kids[i], old_str, new_str);
     }
   } else if ([v isKindOfClass:[NSMenuItem class]]) {
     NSMenuItem *mi = (NSMenuItem *)v;
@@ -216,7 +216,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     NSInteger i;
     NSWindow *w = 0;
     for (i = [windows count]-1; i >= 0; i--) {	// Sent from menubar
-      w = [windows objectAtIndex:i];
+      w = windows[i];
       if ([w isKeyWindow]) break;
     }
     sv = find_saverView ([w contentView]);
@@ -347,9 +347,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     }
   }
 
-  if (saved_screenshot)
-    [saved_screenshot release];
-  saved_screenshot = [UIGraphicsGetImageFromCurrentImageContext() retain];
+  saved_screenshot = UIGraphicsGetImageFromCurrentImageContext();
 
   UIGraphicsEndImageContext();
 }
@@ -413,7 +411,6 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     [sup addSubview: new_view];
     [win makeFirstResponder:new_view];
     [new_view setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-    [new_view retain];
     if (launch)
       [new_view startAnimation];
   }
@@ -471,7 +468,6 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
   }
 
   [saverView setFrame: [window frame]];
-  [saverView retain];
   [[NSNotificationCenter defaultCenter]
     addObserver:saverView
     selector:@selector(didRotate:)
@@ -503,14 +499,14 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
   NSDictionary *bd = [saverBundle infoDictionary];
   NSMutableDictionary *d = [NSMutableDictionary dictionaryWithCapacity:20];
 
-  [d setValue:[bd objectForKey:@"CFBundleName"] forKey:@"ApplicationName"];
-  [d setValue:[bd objectForKey:@"CFBundleVersion"] forKey:@"Version"];
-  [d setValue:[bd objectForKey:@"CFBundleShortVersionString"] 
+  [d setValue:bd[@"CFBundleName"] forKey:@"ApplicationName"];
+  [d setValue:bd[@"CFBundleVersion"] forKey:@"Version"];
+  [d setValue:bd[@"CFBundleShortVersionString"] 
      forKey:@"ApplicationVersion"];
-  [d setValue:[bd objectForKey:@"NSHumanReadableCopyright"] forKey:@"Copy"];
+  [d setValue:bd[@"NSHumanReadableCopyright"] forKey:@"Copy"];
   [d setValue:[[NSAttributedString alloc]
                 initWithString: (NSString *) 
-                  [bd objectForKey:@"CFBundleGetInfoString"]]
+                  bd[@"CFBundleGetInfoString"]]
      forKey:@"Credits"];
 
   [[NSApplication sharedApplication]
@@ -625,7 +621,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
                             : [UIColor blackColor]);
 
       CALayer *textLayer = (CALayer *)
-        [textview.layer.sublayers objectAtIndex:0];
+        (textview.layer.sublayers)[0];
       textLayer.shadowColor   = [UIColor blackColor].CGColor;
       textLayer.shadowOffset  = CGSizeMake(0, 0);
       textLayer.shadowOpacity = 1;
@@ -640,8 +636,8 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
   anim.duration     = 0.3;
   anim.repeatCount  = 1;
   anim.autoreverses = NO;
-  anim.fromValue    = [NSNumber numberWithFloat:0.0];
-  anim.toValue      = [NSNumber numberWithFloat:1.0];
+  anim.fromValue    = @0.0f;
+  anim.toValue      = @1.0f;
   [aboutBox.layer addAnimation:anim forKey:@"animateOpacity"];
 
   [backgroundView addSubview:aboutBox];
@@ -672,8 +668,8 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     anim.duration     = 0.3;
     anim.repeatCount  = 1;
     anim.autoreverses = NO;
-    anim.fromValue    = [NSNumber numberWithFloat: 1];
-    anim.toValue      = [NSNumber numberWithFloat: 0];
+    anim.fromValue    = @1.0f;
+    anim.toValue      = @0.0f;
     anim.delegate     = self;
     aboutBox.layer.opacity = 0;
     [aboutBox.layer addAnimation:anim forKey:@"animateOpacity"];
@@ -712,7 +708,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
   if (! files) return 0;
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: [files count]+1];
 
-  for (NSString *p in files) {
+  for (__strong NSString *p in files) {
     if ([[p pathExtension] caseInsensitiveCompare: ext]) 
       continue;
 
@@ -777,23 +773,23 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
 
   int i;
   for (i = 0; i < [dirs count]; i++) {
-    NSString *dir = [dirs objectAtIndex:i];
+    NSString *dir = dirs[i];
     NSArray *names = [self listSaverBundleNamesInDir:dir];
     if (! names) continue;
-    saverDir   = [dir retain];
-    saverNames = [names retain];
+    saverDir   = dir;
+    saverNames = names;
     return names;
   }
 
   NSString *err = @"no .saver bundles found in: ";
   for (i = 0; i < [dirs count]; i++) {
     if (i) err = [err stringByAppendingString:@", "];
-    err = [err stringByAppendingString:[[dirs objectAtIndex:i] 
+    err = [err stringByAppendingString:[dirs[i] 
                                          stringByAbbreviatingWithTildeInPath]];
     err = [err stringByAppendingString:@"/"];
   }
   NSLog (@"%@", err);
-  return [NSArray array];
+  return @[];
 }
 
 
@@ -812,7 +808,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
   int i;
   float max_width = 0;
   for (i = 0; i < [saverNames count]; i++) {
-    NSString *name = [saverNames objectAtIndex:i];
+    NSString *name = saverNames[i];
     [popup addItemWithTitle:name];
     [[popup itemWithTitle:name] setRepresentedObject:name];
     [popup sizeToFit];
@@ -853,6 +849,7 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
                                  stringByReplacingOccurrencesOfString:@" "
                                  withString:@""]];
   NSRange r;
+  NSString *year = 0;
 
   path = [path stringByAppendingPathExtension:@"xml"];
   NSData *xmld = [NSData dataWithContentsOfFile:path];
@@ -878,7 +875,6 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
 
   // Let's see if we can find a year on the last line.
   r = [desc rangeOfString:@"\n" options:NSBackwardsSearch];
-  NSString *year = 0;
   for (NSString *word in
          [[desc substringFromIndex:r.location + r.length]
            componentsSeparatedByCharactersInSet:
@@ -932,7 +928,7 @@ FAIL:
   NSMutableDictionary *dict = 
     [NSMutableDictionary dictionaryWithCapacity:[saverNames count]];
   for (NSString *saver in saverNames) {
-    [dict setObject:[self makeDesc:saver] forKey:saver];
+    dict[saver] = [self makeDesc:saver];
   }
   return dict;
 }
@@ -1099,8 +1095,7 @@ FAIL:
 
 # ifndef USE_IPHONE
   int window_count = ([saverNames count] <= 1 ? 1 : 2);
-  NSMutableArray *a = [[NSMutableArray arrayWithCapacity: window_count+1]
-                        retain];
+  NSMutableArray *a = [NSMutableArray arrayWithCapacity: window_count+1];
   windows = a;
 
   int i;
@@ -1121,7 +1116,7 @@ FAIL:
 # undef ya_rand_init
   ya_rand_init (0);	// Now's a good time.
 
-  rootViewController = [[[RotateyViewController alloc] init] retain];
+  rootViewController = [[RotateyViewController alloc] init];
   [window setRootViewController: rootViewController];
 
   SaverListController *menu = [[SaverListController alloc] 
@@ -1149,8 +1144,7 @@ FAIL:
    */
   const char *f = getenv ("SELECTED_SAVER");
   if (f && *f)
-    forced = [NSString stringWithCString:(char *)f
-                       encoding:NSUTF8StringEncoding];
+    forced = @((char *)f);
 
   if (forced && ![saverNames containsObject:forced]) {
     NSLog(@"forced saver \"%@\" does not exist", forced);
@@ -1159,7 +1153,7 @@ FAIL:
 
   // If there's only one saver, run that.
   if (!forced && [saverNames count] == 1)
-    forced = [saverNames objectAtIndex:0];
+    forced = saverNames[0];
 
   NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
 
@@ -1173,7 +1167,7 @@ FAIL:
   // then scroll randomly instead of starting up at "A".
   //
   if (!prev)
-    prev = [saverNames objectAtIndex: (random() % [saverNames count])];
+    prev = saverNames[(random() % [saverNames count])];
 
   if (prev)
     [menu scrollTo: prev];
@@ -1208,7 +1202,7 @@ FAIL:
     Class ssm = NSClassFromString (@"ScreenSaverModule");
     if (ssm && [ssm instancesRespondToSelector:
                       @selector(needsAnimationTimer)]) {
-      NSWindow *win = [windows objectAtIndex:0];
+      NSWindow *win = windows[0];
       ScreenSaverView *sv = find_saverView ([win contentView]);
       anim_timer = [NSTimer scheduledTimerWithTimeInterval:
                               [sv animationTimeInterval]

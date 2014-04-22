@@ -85,11 +85,11 @@ typedef enum { SimpleXMLCommentKind,
 }
 
 @property(nonatomic) SimpleXMLKind kind;
-@property(nonatomic, retain) NSString *name;
-@property(nonatomic, retain) SimpleXMLNode *parent;
-@property(nonatomic, retain) NSMutableArray *children;
-@property(nonatomic, retain) NSMutableArray *attributes;
-@property(nonatomic, retain, getter=objectValue, setter=setObjectValue:)
+@property(nonatomic, strong) NSString *name;
+@property(nonatomic, strong) SimpleXMLNode *parent;
+@property(nonatomic, strong) NSMutableArray *children;
+@property(nonatomic, strong) NSMutableArray *attributes;
+@property(nonatomic, strong, getter=objectValue, setter=setObjectValue:)
   id object;
 
 @end
@@ -123,7 +123,7 @@ typedef enum { SimpleXMLCommentKind,
 - (void) setAttributesAsDictionary:(NSDictionary *)dict
 {
   for (NSString *key in dict) {
-    NSObject *val = [dict objectForKey:key];
+    NSObject *val = dict[key];
     SimpleXMLNode *n = [[SimpleXMLNode alloc] init];
     [n setKind:SimpleXMLAttributeKind];
     [n setName:key];
@@ -160,7 +160,7 @@ typedef enum { SimpleXMLCommentKind,
 
 @interface RadioButton : UILabel
 @property(nonatomic) NSInteger index;
-@property(nonatomic, retain) NSArray *items;
+@property(nonatomic, strong) NSArray *items;
 
 @end
 
@@ -175,7 +175,7 @@ typedef enum { SimpleXMLCommentKind,
   index = _index;
   self.items = _items;
 
-  [self setText: [[items objectAtIndex:index] objectAtIndex:0]];
+  [self setText: items[index][0]];
   [self setBackgroundColor:[UIColor clearColor]];
   [self sizeToFit];
 
@@ -199,8 +199,8 @@ typedef enum { SimpleXMLCommentKind,
   UIWebView *webView;
 }
 
-@property(nonatomic, retain) NSString *html;
-@property(nonatomic, retain) UIWebView *webView;
+@property(nonatomic, strong) NSString *html;
+@property(nonatomic, strong) UIWebView *webView;
 
 - (id) initWithHTML:(NSString *)h font:(UIFont *)f;
 - (id) initWithText:(NSString *)t font:(UIFont *)f;
@@ -219,7 +219,7 @@ typedef enum { SimpleXMLCommentKind,
 {
   self = [super init];
   if (! self) return 0;
-  font = [f retain];
+  font = f;
   webView = [[UIWebView alloc] init];
   webView.delegate = self;
   webView.dataDetectorTypes = UIDataDetectorTypeNone;
@@ -244,8 +244,6 @@ typedef enum { SimpleXMLCommentKind,
 - (void) setHTML: (NSString *)h
 {
   if (! h) return;
-  [h retain];
-  if (html) [html release];
   html = h;
   NSString *h2 =
     [NSString stringWithFormat:
@@ -295,14 +293,13 @@ static char *anchorize (const char *url);
          withString:@"<BR> &nbsp; &nbsp; &nbsp; &nbsp; "];
 
   NSString *h = @"";
-  for (NSString *s in
+  for (__strong NSString *s in
          [t componentsSeparatedByCharactersInSet:
               [NSCharacterSet whitespaceAndNewlineCharacterSet]]) {
     if ([s hasPrefix:@"http://"] ||
         [s hasPrefix:@"https://"]) {
       char *anchor = anchorize ([s cStringUsingEncoding:NSUTF8StringEncoding]);
-      NSString *a2 = [NSString stringWithCString: anchor
-                               encoding: NSUTF8StringEncoding];
+      NSString *a2 = @(anchor);
       s = [NSString stringWithFormat: @"<A HREF=\"%@\">%@</A><BR>", s, a2];
       free (anchor);
     }
@@ -349,7 +346,7 @@ static char *anchorize (const char *url);
              options:NSCaseInsensitiveSearch
              range:NSMakeRange(0, [str length])];
 
-  for (NSString *s in [str componentsSeparatedByString: @"<"]) {
+  for (__strong NSString *s in [str componentsSeparatedByString: @"<"]) {
     NSRange r = [s rangeOfString:@">"];
     if (r.length > 0)
       s = [s substringFromIndex: r.location + r.length];
@@ -389,15 +386,6 @@ static char *anchorize (const char *url);
 # endif
 
   [self setFrame: r];
-}
-
-
-- (void) dealloc
-{
-  [html release];
-  [font release];
-  [webView release];
-  [super dealloc];
 }
 
 @end
@@ -457,8 +445,7 @@ static void layout_group (NSView *group, BOOL horiz_p);
 
 - (NSString *) makeCKey:(const char *)key
 {
-  return [self makeKey:[NSString stringWithCString:key
-                                 encoding:NSUTF8StringEncoding]];
+  return [self makeKey:@(key)];
 }
 
 
@@ -503,8 +490,7 @@ static void layout_group (NSView *group, BOOL horiz_p);
 
       if (val_ret)
         *val_ret = (ret
-                    ? [NSString stringWithCString:ret
-                                         encoding:NSUTF8StringEncoding]
+                    ? @(ret)
                     : 0);
       
       const char *res = opts_array[0].specifier;
@@ -525,9 +511,8 @@ static void layout_group (NSView *group, BOOL horiz_p);
   static NSDictionary *a = 0;
   if (! a) {
     a = UPDATER_DEFAULTS;
-    [a retain];
   }
-  if ([a objectForKey:key])
+  if (a[key])
     // These preferences are global to all xscreensavers.
     return globalDefaultsController;
   else
@@ -544,7 +529,7 @@ static void layout_group (NSView *group, BOOL horiz_p);
 {
   if ([active_text_field canResignFirstResponder])
     [active_text_field resignFirstResponder];
-  NSString *pref_key = [pref_keys objectAtIndex: [sender tag]];
+  NSString *pref_key = pref_keys[[sender tag]];
 
   // Hacky API. See comment in InvertedSlider.m.
   double v = ([sender isKindOfClass: [InvertedSlider class]]
@@ -553,8 +538,8 @@ static void layout_group (NSView *group, BOOL horiz_p);
 
   [[self controllerForKey:pref_key]
     setObject:((v == (int) v)
-               ? [NSNumber numberWithInt:(int) v]
-               : [NSNumber numberWithDouble: v])
+               ? @((int) v)
+               : @(v))
     forKey:pref_key];
 }
 
@@ -564,7 +549,7 @@ static void layout_group (NSView *group, BOOL horiz_p);
 {
   if ([active_text_field canResignFirstResponder])
     [active_text_field resignFirstResponder];
-  NSString *pref_key = [pref_keys objectAtIndex: [sender tag]];
+  NSString *pref_key = pref_keys[[sender tag]];
   NSString *v = ([sender isOn] ? @"true" : @"false");
   [[self controllerForKey:pref_key] setObject:v forKey:pref_key];
 }
@@ -599,9 +584,9 @@ static void layout_group (NSView *group, BOOL horiz_p);
   if ([active_text_field canResignFirstResponder])
     [active_text_field resignFirstResponder];
 
-  NSArray *item = [[sender items] objectAtIndex: [sender index]];
-  NSString *pref_key = [item objectAtIndex:1];
-  NSObject *pref_val = [item objectAtIndex:2];
+  NSArray *item = [sender items][[sender index]];
+  NSString *pref_key = item[1];
+  NSObject *pref_val = item[2];
   [[self controllerForKey:pref_key] setObject:pref_val forKey:pref_key];
 }
 
@@ -613,7 +598,7 @@ static void layout_group (NSView *group, BOOL horiz_p);
 
 - (void)textFieldDidEndEditing:(UITextField *)tf
 {
-  NSString *pref_key = [pref_keys objectAtIndex: [tf tag]];
+  NSString *pref_key = pref_keys[[tf tag]];
   NSString *txt = [tf text];
   [[self controllerForKey:pref_key] setObject:txt forKey:pref_key];
 }
@@ -660,12 +645,12 @@ static void layout_group (NSView *group, BOOL horiz_p);
 # else  // USE_IPHONE
 
   for (NSString *key in defaultOptions) {
-    NSObject *val = [defaultOptions objectForKey:key];
+    NSObject *val = defaultOptions[key];
     [[self controllerForKey:key] setObject:val forKey:key];
   }
 
   for (UIControl *ctl in pref_ctls) {
-    NSString *pref_key = [pref_keys objectAtIndex: ctl.tag];
+    NSString *pref_key = pref_keys[ctl.tag];
     [self bindResource:ctl key:pref_key reload:YES];
   }
 
@@ -740,8 +725,8 @@ static void layout_group (NSView *group, BOOL horiz_p);
 
   if (!reload_p) {
     if (! pref_keys) {
-      pref_keys = [[NSMutableArray arrayWithCapacity:10] retain];
-      pref_ctls = [[NSMutableArray arrayWithCapacity:10] retain];
+      pref_keys = [[NSMutableArray alloc] initWithCapacity:10];
+      pref_ctls = [[NSMutableArray alloc] initWithCapacity:10];
     }
 
     [pref_keys addObject: [self makeKey:pref_key]];
@@ -799,7 +784,7 @@ unwrap (NSString *text)
 
   // skip trailing blank lines in file
   for (i = nlines-1; i > 0; i--) {
-    NSString *s = (NSString *) [lines objectAtIndex:i];
+    NSString *s = (NSString *) lines[i];
     if ([s length] > 0)
       break;
     nlines--;
@@ -807,7 +792,7 @@ unwrap (NSString *text)
 
   // skip leading blank lines in file
   for (i = 0; i < nlines; i++) {
-    NSString *s = (NSString *) [lines objectAtIndex:i];
+    NSString *s = (NSString *) lines[i];
     if ([s length] > 0)
       break;
   }
@@ -815,7 +800,7 @@ unwrap (NSString *text)
   // unwrap
   Bool any = NO;
   for (; i < nlines; i++) {
-    NSString *s = (NSString *) [lines objectAtIndex:i];
+    NSString *s = (NSString *) lines[i];
     if ([s length] == 0) {
       text = [text stringByAppendingString:@"\n\n"];
       eolp = YES;
@@ -1037,10 +1022,10 @@ hreffify (NSText *nstext)
   // an attribute is specified twice.
   //
   for (i = 0; i < n; i++) {
-    NSXMLNode *attr = [attrs objectAtIndex:i];
+    NSXMLNode *attr = attrs[i];
     NSString *key = [attr name];
     NSString *val = [attr objectValue];
-    NSString *old = [dict objectForKey:key];
+    NSString *old = dict[key];
     
     if (! old) {
       NSAssert2 (0, @"unknown attribute \"%@\" in \"%@\"", key, [node name]);
@@ -1057,8 +1042,8 @@ hreffify (NSText *nstext)
   NSArray *keys = [dict allKeys];
   n = [keys count];
   for (i = 0; i < n; i++) {
-    NSString *key = [keys objectAtIndex:i];
-    NSString *val = [dict objectForKey:key];
+    NSString *key = keys[i];
+    NSString *val = dict[key];
     if ([val length] == 0)
       [dict removeObjectForKey:key];
   }
@@ -1067,8 +1052,8 @@ hreffify (NSText *nstext)
   // Kludge for starwars.xml:
   // If there is a "_low-label" and no "_label", but "_low-label" contains
   // spaces, divide them.
-  NSString *lab = [dict objectForKey:@"_label"];
-  NSString *low = [dict objectForKey:@"_low-label"];
+  NSString *lab = dict[@"_label"];
+  NSString *low = dict[@"_low-label"];
   if (low && !lab) {
     NSArray *split =
       [[[low stringByTrimmingCharactersInSet:
@@ -1077,8 +1062,8 @@ hreffify (NSText *nstext)
         filteredArrayUsingPredicate:
           [NSPredicate predicateWithFormat:@"length > 0"]];
     if (split && [split count] == 2) {
-      [dict setValue:[split objectAtIndex:0] forKey:@"_label"];
-      [dict setValue:[split objectAtIndex:1] forKey:@"_low-label"];
+      [dict setValue:split[0] forKey:@"_label"];
+      [dict setValue:split[1] forKey:@"_low-label"];
     }
   }
 # endif // USE_IPHONE
@@ -1094,8 +1079,8 @@ hreffify (NSText *nstext)
                                   @"gl":     @"" }
                                 mutableCopy];
   [self parseAttrs:dict node:node];
-  NSString *name  = [dict objectForKey:@"name"];
-  NSString *label = [dict objectForKey:@"_label"];
+  NSString *name  = dict[@"name"];
+  NSString *label = dict[@"_label"];
     
   NSAssert1 (label, @"no _label in %@", [node name]);
   NSAssert1 (name, @"no name in \"%@\"", label);
@@ -1143,9 +1128,9 @@ hreffify (NSText *nstext)
                                   @"arg-unset": @"" }
                                 mutableCopy];
   [self parseAttrs:dict node:node];
-  NSString *label     = [dict objectForKey:@"_label"];
-  NSString *arg_set   = [dict objectForKey:@"arg-set"];
-  NSString *arg_unset = [dict objectForKey:@"arg-unset"];
+  NSString *label     = dict[@"_label"];
+  NSString *arg_set   = dict[@"arg-set"];
+  NSString *arg_unset = dict[@"arg-unset"];
   
   if (!label) {
     NSAssert1 (0, @"no _label in %@", [node name]);
@@ -1189,12 +1174,10 @@ hreffify (NSText *nstext)
   [self placeChild:lab on:parent];
   UISwitch *button = [[UISwitch alloc] initWithFrame:rect];
   [self placeChild:button on:parent right:YES];
-  [lab release];
 
 # endif // USE_IPHONE
   
   [self bindSwitch:button cmdline:(arg_set ? arg_set : arg_unset)];
-  [button release];
 }
 
 
@@ -1216,15 +1199,15 @@ hreffify (NSText *nstext)
                                   @"convert":     @"" }
                                 mutableCopy];
   [self parseAttrs:dict node:node];
-  NSString *label      = [dict objectForKey:@"_label"];
-  NSString *low_label  = [dict objectForKey:@"_low-label"];
-  NSString *high_label = [dict objectForKey:@"_high-label"];
-  NSString *type       = [dict objectForKey:@"type"];
-  NSString *arg        = [dict objectForKey:@"arg"];
-  NSString *low        = [dict objectForKey:@"low"];
-  NSString *high       = [dict objectForKey:@"high"];
-  NSString *def        = [dict objectForKey:@"default"];
-  NSString *cvt        = [dict objectForKey:@"convert"];
+  NSString *label      = dict[@"_label"];
+  NSString *low_label  = dict[@"_low-label"];
+  NSString *high_label = dict[@"_high-label"];
+  NSString *type       = dict[@"type"];
+  NSString *arg        = dict[@"arg"];
+  NSString *low        = dict[@"low"];
+  NSString *high       = dict[@"high"];
+  NSString *def        = dict[@"default"];
+  NSString *cvt        = dict[@"convert"];
   
   NSAssert1 (arg,  @"no arg in %@", label);
   NSAssert1 (type, @"no type in %@", label);
@@ -1309,7 +1292,6 @@ hreffify (NSText *nstext)
         [lab setFont:[NSFont boldSystemFontOfSize:s]];
       }
 # endif
-      [lab release];
     }
     
     if (low_label) {
@@ -1328,7 +1310,6 @@ hreffify (NSText *nstext)
       [self placeChild:lab on:parent right:(label ? YES : NO)];
 # endif // USE_IPHONE
 
-      [lab release];
      }
     
 # ifndef USE_IPHONE
@@ -1360,11 +1341,9 @@ hreffify (NSText *nstext)
       rect.size.height = [slider frame].size.height;
       [lab setFrame:rect];
       [self placeChild:lab on:parent right:YES];
-      [lab release];
      }
 
     [self bindSwitch:slider cmdline:arg];
-    [slider release];
     
 #ifndef USE_IPHONE  // On iPhone, we use sliders for all numeric values.
 
@@ -1400,7 +1379,6 @@ hreffify (NSText *nstext)
       rect.size.height = [txt frame].size.height;
       [lab setFrame:rect];
       [self placeChild:lab on:parent];
-      [lab release];
      }
     
     [self placeChild:txt on:parent right:(label ? YES : NO)];
@@ -1434,11 +1412,11 @@ hreffify (NSText *nstext)
     else
       [step setIncrement:1.0];
 
-    NSNumberFormatter *fmt = [[[NSNumberFormatter alloc] init] autorelease];
+    NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
     [fmt setFormatterBehavior:NSNumberFormatterBehavior10_4];
     [fmt setNumberStyle:NSNumberFormatterDecimalStyle];
-    [fmt setMinimum:[NSNumber numberWithDouble:[low  doubleValue]]];
-    [fmt setMaximum:[NSNumber numberWithDouble:[high doubleValue]]];
+    [fmt setMinimum:@([low  doubleValue])];
+    [fmt setMaximum:@([high doubleValue])];
     [fmt setMinimumFractionDigits: (float_p ? 1 : 0)];
     [fmt setMaximumFractionDigits: (float_p ? 2 : 0)];
 
@@ -1447,9 +1425,6 @@ hreffify (NSText *nstext)
 
     [self bindSwitch:step cmdline:arg];
     [self bindSwitch:txt  cmdline:arg];
-    
-    [step release];
-    [txt release];
 
 # endif // USE_IPHONE
 
@@ -1471,10 +1446,10 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
     NSString *string = (NSString *) obj;
     if (NSOrderedSame == [string caseInsensitiveCompare:@"true"] ||
         NSOrderedSame == [string caseInsensitiveCompare:@"yes"])
-      obj = [NSNumber numberWithBool:YES];
+      obj = @YES;
     else if (NSOrderedSame == [string caseInsensitiveCompare:@"false"] ||
              NSOrderedSame == [string caseInsensitiveCompare:@"no"])
-      obj = [NSNumber numberWithBool:NO];
+      obj = @NO;
     else
       obj = string;
   }
@@ -1535,7 +1510,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 # endif // USE_IPHONE
   
   for (i = 0; i < count; i++) {
-    NSXMLNode *child = [children objectAtIndex:i];
+    NSXMLNode *child = children[i];
 
     if ([child kind] == NSXMLCommentKind)
       continue;
@@ -1551,8 +1526,8 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
                                      @"arg-set": @"" }
                                    mutableCopy];
     [self parseAttrs:dict2 node:child];
-    NSString *label   = [dict2 objectForKey:@"_label"];
-    NSString *arg_set = [dict2 objectForKey:@"arg-set"];
+    NSString *label   = dict2[@"_label"];
+    NSString *arg_set = dict2[@"arg-set"];
     
     if (!label) {
       NSAssert1 (0, @"no _label in %@", [child name]);
@@ -1614,7 +1589,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   }
   
   if (!menu_key) {
-    NSAssert1 (0, @"no switches in menu \"%@\"", [dict objectForKey:@"id"]);
+    NSAssert1 (0, @"no switches in menu \"%@\"", dict[@"id"]);
     return;
   }
 
@@ -1625,7 +1600,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
      yet know what resource was associated with this menu.)
    */
   if (def_item) {
-    NSObject *def_obj = [defaultOptions objectForKey:menu_key];
+    NSObject *def_obj = defaultOptions[menu_key];
     NSAssert2 (def_obj, 
                @"no default value for resource \"%@\" in menu item \"%@\"",
                menu_key,
@@ -1641,11 +1616,11 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 # else  // !USE_IPHONE
     for (NSMutableArray *a in items) {
       // Make sure each array contains the resource key.
-      [a replaceObjectAtIndex:1 withObject:menu_key];
+      a[1] = menu_key;
       // Make sure the default item contains the default resource value.
       if (def_obj && def_item &&
-          [def_item isEqualToString:[a objectAtIndex:0]])
-        [a replaceObjectAtIndex:2 withObject:def_obj];
+          [def_item isEqualToString:a[0]])
+        a[2] = def_obj;
     }
 # endif // !USE_IPHONE
   }
@@ -1665,7 +1640,6 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 # if !defined(USE_IPHONE) || defined(USE_PICKER_VIEW)
   [self placeChild:popup on:parent];
   [self bindResource:popup key:menu_key];
-  [popup release];
 # endif
 
 # ifdef USE_IPHONE
@@ -1713,7 +1687,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   NSInteger i, count = [children count];
 
   for (i = 0; i < count; i++) {
-    NSXMLNode *child = [children objectAtIndex:i];
+    NSXMLNode *child = children[i];
     NSString *s = [child objectValue];
     if (text)
       text = [text stringByAppendingString:s];
@@ -1759,7 +1733,6 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 # endif // USE_IPHONE
 
   [self placeChild:lab on:parent];
-  [lab release];
 }
 
 
@@ -1775,8 +1748,8 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
                                   @"arg":    @"" }
                                 mutableCopy];
   [self parseAttrs:dict node:node];
-  NSString *label = [dict objectForKey:@"_label"];
-  NSString *arg   = [dict objectForKey:@"arg"];
+  NSString *label = dict[@"_label"];
+  NSString *arg   = dict[@"arg"];
 
   if (!label && label_p) {
     NSAssert1 (0, @"no _label in %@", [node name]);
@@ -1827,13 +1800,11 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   if (label) {
     LABEL *lab = [self makeLabel:label];
     [self placeChild:lab on:parent];
-    [lab release];
   }
 
   [self placeChild:txt on:parent right:(label ? YES : NO)];
 
   [self bindSwitch:txt cmdline:arg];
-  [txt release];
 }
 
 
@@ -1852,8 +1823,8 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
                                   @"arg":    @"" }
                                 mutableCopy];
   [self parseAttrs:dict node:node];
-  NSString *label = [dict objectForKey:@"_label"];
-  NSString *arg   = [dict objectForKey:@"arg"];
+  NSString *label = dict[@"_label"];
+  NSString *arg   = dict[@"arg"];
 
   if (!label && label_p) {
     NSAssert1 (0, @"no _label in %@", [node name]);
@@ -1885,13 +1856,11 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   if (label) {
     lab = [self makeLabel:label];
     [self placeChild:lab on:parent];
-    [lab release];
   }
 
   [self placeChild:txt on:parent right:(label ? YES : NO)];
 
   [self bindSwitch:txt cmdline:arg];
-  [txt release];
 
   // Make the text field and label be the same height, whichever is taller.
   if (lab) {
@@ -1925,7 +1894,6 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   else
     [choose setAction:@selector(fileSelectorChooseAction:)];
 
-  [choose release];
 # endif // !USE_IPHONE
 }
 
@@ -1957,7 +1925,7 @@ do_file_selector (NSTextField *txt, BOOL dirs_p)
                                      types:nil];
   if (result == NSOKButton) {
     NSArray *files = [panel URLs];
-    file = ([files count] > 0 ? [[files objectAtIndex:0] path] : @"");
+    file = ([files count] > 0 ? [files[0] path] : @"");
     file = [file stringByAbbreviatingWithTildeInPath];
     [txt setStringValue:file];
 
@@ -1965,8 +1933,8 @@ do_file_selector (NSTextField *txt, BOOL dirs_p)
     // that to end up in the preferences!
     //
     NSDictionary *dict = [txt infoForBinding:@"value"];
-    NSUserDefaultsController *prefs = [dict objectForKey:@"NSObservedObject"];
-    NSString *path = [dict objectForKey:@"NSObservedKeyPath"];
+    NSUserDefaultsController *prefs = dict[@"NSObservedObject"];
+    NSString *path = dict[@"NSObservedKeyPath"];
     if ([path hasPrefix:@"values."])  // WTF.
       path = [path substringFromIndex:7];
     [[prefs values] setValue:file forKey:path];
@@ -2001,7 +1969,7 @@ find_text_field_of_button (NSButton *button)
   int i;
   NSTextField *f = 0;
   for (i = 0; i < nkids; i++) {
-    NSObject *kid = [kids objectAtIndex:i];
+    NSObject *kid = kids[i];
     if ([kid isKindOfClass:[NSTextField class]]) {
       f = (NSTextField *) kid;
     } else if (kid == button) {
@@ -2083,7 +2051,6 @@ find_text_field_of_button (NSButton *button)
           toObject:cnames
           withKeyPath:@"arrangedObjects"
           options:nil];
-  [cnames release];
 
   [self bindSwitch:matrix cmdline:@"-text-mode %"];
 
@@ -2326,7 +2293,6 @@ find_text_field_of_button (NSButton *button)
   r2.origin.x += 20;
   r2.origin.y += 14;
   [lab2 setFrameOrigin:r2.origin];
-  [lab2 release];
 # endif // USE_IPHONE
 }
 
@@ -2443,7 +2409,7 @@ last_child (NSView *parent)
   if (nkids == 0)
     return 0;
   else
-    return [kids objectAtIndex:nkids-1];
+    return kids[nkids-1];
 }
 #endif // USE_IPHONE
 
@@ -2483,17 +2449,17 @@ last_child (NSView *parent)
 
   // Controls is an array of arrays of the controls, divided into sections.
   if (! controls)
-    controls = [[NSMutableArray arrayWithCapacity:10] retain];
+    controls = [[NSMutableArray alloc] initWithCapacity:10];
   if ([controls count] == 0)
-    [controls addObject: [NSMutableArray arrayWithCapacity:10]];
-  NSMutableArray *current = [controls objectAtIndex:[controls count]-1];
+    [controls addObject: [[NSMutableArray alloc] initWithCapacity:10]];
+  NSMutableArray *current = controls[[controls count]-1];
 
   if (!right_p || [current count] == 0) {
     // Nothing on the current line. Add this object.
     [current addObject: child];
   } else {
     // Something's on the current line already.
-    NSObject *old = [current objectAtIndex:[current count]-1];
+    NSObject *old = current[[current count]-1];
     if ([old isKindOfClass:[NSMutableArray class]]) {
       // Already an array in this cell. Append.
       NSAssert ([(NSArray *) old count] < 4, @"internal error");
@@ -2501,7 +2467,7 @@ last_child (NSView *parent)
     } else {
       // Replace the control in this cell with an array, then app
       NSMutableArray *a = [NSMutableArray arrayWithObjects: old, child, nil];
-      [current replaceObjectAtIndex:[current count]-1 withObject:a];
+      current[[current count]-1] = a;
     }
   }
 # endif // USE_IPHONE
@@ -2523,7 +2489,7 @@ last_child (NSView *parent)
 {
   if (! controls) return;
   if ([controls count] == 0) return;
-  if ([[controls objectAtIndex:[controls count]-1]
+  if ([controls[[controls count]-1]
         count] > 0)
     [controls addObject: [NSMutableArray arrayWithCapacity:10]];
 }
@@ -2573,7 +2539,7 @@ layout_group (NSView *group, BOOL horiz_p)
   int i;
   double maxx = 0, miny = 0;
   for (i = 0; i < nkids; i++) {
-    NSView *kid = [kids objectAtIndex:i];
+    NSView *kid = kids[i];
     NSRect r = [kid frame];
     
     if (horiz_p) {
@@ -2594,7 +2560,7 @@ layout_group (NSView *group, BOOL horiz_p)
 
   double x = 0;
   for (i = 0; i < nkids; i++) {
-    NSView *kid = [kids objectAtIndex:i];
+    NSView *kid = kids[i];
     NSRect r = [kid frame];
     if (horiz_p) {
       r.origin.y = rect.size.height - r.size.height;
@@ -2683,7 +2649,7 @@ layout_group (NSView *group, BOOL horiz_p)
   NSArray *children = [node children];
   NSInteger i, count = [children count];
   for (i = 0; i < count; i++) {
-    NSXMLNode *child = [children objectAtIndex:i];
+    NSXMLNode *child = children[i];
     [self makeControl:child on:parent];
   }
 }
@@ -2707,7 +2673,7 @@ fix_contentview_size (NSView *parent)
      except the final "NSText" child.
   */
   for (i = 0; i < nkids; i++) {
-    NSView *kid = [kids objectAtIndex:i];
+    NSView *kid = kids[i];
     if ([kid isKindOfClass:[NSText class]]) {
       text = kid;
       continue;
@@ -2791,7 +2757,7 @@ fix_contentview_size (NSView *parent)
   float shift = f.size.height;
 //  NSLog(@"shift: %3.0f", shift);
   for (i = 0; i < nkids; i++) {
-    NSView *kid = [kids objectAtIndex:i];
+    NSView *kid = kids[i];
     f = [kid frame];
     f.origin.y += shift;
     [kid setFrame:f];
@@ -2823,7 +2789,7 @@ fix_contentview_size (NSView *parent)
      Set the NSText to track the bottom right corner as well.
    */
   for (i = 0; i < nkids; i++) {
-    NSView *kid = [kids objectAtIndex:i];
+    NSView *kid = kids[i];
     unsigned long mask = NSViewMaxXMargin | NSViewMinYMargin;
     if ([kid isKindOfClass:[NSText class]])
       mask |= NSViewWidthSizable|NSViewHeightSizable;
@@ -2965,7 +2931,6 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   saver_name = [self parseXScreenSaverTag: node];
   saver_name = [saver_name stringByReplacingOccurrencesOfString:@" "
                            withString:@""];
-  [saver_name retain];
   
 # ifndef USE_IPHONE
 
@@ -3142,7 +3107,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 {
   // Number of lines in each vertically-stacked white box.
   NSAssert (controls, @"internal error");
-  return [[controls objectAtIndex:section] count];
+  return [controls[section] count];
 }
 
 - (NSString *)tableView:(UITableView *)tv
@@ -3160,8 +3125,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 {
   CGFloat h = [tv rowHeight];
 
-  NSView *ctl = [[controls objectAtIndex:[ip indexAtPosition:0]]
-                  objectAtIndex:[ip indexAtPosition:1]];
+  NSView *ctl = controls[[ip indexAtPosition:0]][[ip indexAtPosition:1]];
 
   if ([ctl isKindOfClass:[NSArray class]]) {
     NSArray *set = (NSArray *) ctl;
@@ -3172,7 +3136,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 # endif
     case 3: h *= 1.2; break;	// left/slider/right: 1 1/2 lines
     case 2:
-      if ([[set objectAtIndex:1] isKindOfClass:[UITextField class]])
+      if ([set[1] isKindOfClass:[UITextField class]])
         h *= 1.2;
       break;
     }
@@ -3245,9 +3209,9 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 - (void)updateRadioGroupCell:(UITableViewCell *)cell
                       button:(RadioButton *)b
 {
-  NSArray *item = [[b items] objectAtIndex: [b index]];
-  NSString *pref_key = [item objectAtIndex:1];
-  NSObject *pref_val = [item objectAtIndex:2];
+  NSArray *item = [b items][[b index]];
+  NSString *pref_key = item[1];
+  NSObject *pref_val = item[2];
 
   NSObject *current = [[self controllerForKey:pref_key] objectForKey:pref_key];
 
@@ -3275,8 +3239,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 - (void)tableView:(UITableView *)tv
         didSelectRowAtIndexPath:(NSIndexPath *)ip
 {
-  RadioButton *ctl = [[controls objectAtIndex:[ip indexAtPosition:0]]
-                       objectAtIndex:[ip indexAtPosition:1]];
+  RadioButton *ctl = controls[[ip indexAtPosition:0]][[ip indexAtPosition:1]];
   if (! [ctl isKindOfClass:[RadioButton class]])
     return;
 
@@ -3308,9 +3271,8 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   UITableViewCell *cell;
 #endif
 
-  cell = [[[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault
-                                   reuseIdentifier: id]
-           autorelease];
+  cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault
+                                   reuseIdentifier: id];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   CGRect p = [cell frame];
@@ -3330,8 +3292,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   CGFloat right_edge = p.origin.x + p.size.width - LEFT_MARGIN;
 
 
-  NSView *ctl = [[controls objectAtIndex:[ip indexAtPosition:0]]
-                  objectAtIndex:[ip indexAtPosition:1]];
+  NSView *ctl = controls[[ip indexAtPosition:0]][[ip indexAtPosition:1]];
 
   if ([ctl isKindOfClass:[NSArray class]]) {
     // This cell has a set of objects in it.
@@ -3340,9 +3301,9 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
     case 2:
       {
         // With 2 elements, the first of the pair must be a label.
-        UILabel *label = (UILabel *) [set objectAtIndex: 0];
+        UILabel *label = (UILabel *) set[0];
         NSAssert ([label isKindOfClass:[UILabel class]], @"unhandled type");
-        ctl = [set objectAtIndex: 1];
+        ctl = set[1];
 
         r = [ctl frame];
         if ([ctl isKindOfClass:[UISwitch class]]) {
@@ -3385,11 +3346,11 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
         // With 4 elements, the first, second and last must be labels.
         int i = 0;
         UILabel *top  = ([set count] == 4
-                         ? [set objectAtIndex: i++]
+                         ? set[i++]
                          : 0);
-        UILabel *left  = [set objectAtIndex: i++];
-        NSView  *mid   = [set objectAtIndex: i++];
-        UILabel *right = [set objectAtIndex: i++];
+        UILabel *left  = set[i++];
+        NSView  *mid   = set[i++];
+        UILabel *right = set[i++];
         NSAssert (!top || [top   isKindOfClass:[UILabel class]], @"WTF");
         NSAssert (        [left  isKindOfClass:[UILabel class]], @"WTF");
         NSAssert (       ![mid   isKindOfClass:[UILabel class]], @"WTF");
@@ -3526,8 +3487,8 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   // instance variables
   opts = _opts;
   defaultOptions = _defs;
-  userDefaultsController   = [_prefs retain];
-  globalDefaultsController = [_globalPrefs retain];
+  userDefaultsController   = _prefs;
+  globalDefaultsController = _globalPrefs;
 
   NSXMLParser *xmlDoc = [[NSXMLParser alloc] initWithData:xml_data];
 
@@ -3555,23 +3516,6 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 # endif
 
   return self;
-}
-
-
-- (void) dealloc
-{
-  [saver_name release];
-  [userDefaultsController release];
-  [globalDefaultsController release];
-# ifdef USE_IPHONE
-  [controls release];
-  [pref_keys release];
-  [pref_ctls release];
-#  ifdef USE_PICKER_VIEW
-  [picker_values release];
-#  endif
-# endif
-  [super dealloc];
 }
 
 @end

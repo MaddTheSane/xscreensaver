@@ -250,15 +250,6 @@ extern void check_gl_error (const char *type);
 }
 # endif // USE_BACKBUFFER
 
-
-- (void)dealloc {
-  // ogl_ctx
-  // gl_framebuffer
-  // gl_renderbuffer
-  // gl_depthbuffer
-  [super dealloc];
-}
-
 @end
 
 
@@ -287,7 +278,7 @@ GLXContext *
 init_GL (ModeInfo *mi)
 {
   Window win = mi->window;
-  XScreenSaverGLView *view = (XScreenSaverGLView *) jwxyz_window_view (win);
+  XScreenSaverGLView *view = (__bridge XScreenSaverGLView *) jwxyz_window_view (win);
   NSAssert1 ([view isKindOfClass:[XScreenSaverGLView class]],
              @"wrong view class: %@", view);
   NSOpenGLContext *ctx = [view oglContext];
@@ -397,10 +388,8 @@ init_GL (ModeInfo *mi)
     CAEAGLLayer *eagl_layer = (CAEAGLLayer *) view.layer;
     eagl_layer.opaque = TRUE;
     eagl_layer.drawableProperties = 
-      [NSDictionary dictionaryWithObjectsAndKeys:
-       kEAGLColorFormatRGBA8,             kEAGLDrawablePropertyColorFormat,
-       [NSNumber numberWithBool:!dbuf_p], kEAGLDrawablePropertyRetainedBacking,
-       nil];
+      @{kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8,
+       kEAGLDrawablePropertyRetainedBacking: @((BOOL)!dbuf_p)};
 
     // Without this, the GL frame buffer is half the screen resolution!
     eagl_layer.contentsScale = [UIScreen mainScreen].scale;
@@ -429,7 +418,7 @@ init_GL (ModeInfo *mi)
 void
 glXSwapBuffers (Display *dpy, Window window)
 {
-  XScreenSaverGLView *view = (XScreenSaverGLView *) jwxyz_window_view (window);
+  XScreenSaverGLView *view = (__bridge XScreenSaverGLView *) jwxyz_window_view (window);
   NSAssert1 ([view isKindOfClass:[XScreenSaverGLView class]],
              @"wrong view class: %@", view);
 #ifndef USE_IPHONE

@@ -71,7 +71,7 @@
 -(float)floatValue       { return (float) [self doubleValue]; }
 -(int)intValue           { return (int) [self doubleValue]; }
 -(NSInteger)integerValue { return (NSInteger) [self doubleValue]; }
--(id)objectValue { return [NSNumber numberWithDouble:[self doubleValue]]; }
+-(id)objectValue { return @([self doubleValue]); }
 
 -(NSString *)stringValue
 {

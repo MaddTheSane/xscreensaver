@@ -38,13 +38,12 @@
   // Here's an area where I kind of wish I had "Two Problems".
   // I guess I could add custom key to the Info.plist for this.
 
-  NSArray *a = [[NSString stringWithCString: screensaver_id
-                          encoding:NSASCIIStringEncoding]
+  NSArray *a = [@(screensaver_id)
                  componentsSeparatedByCharactersInSet:
                    [NSCharacterSet
                      characterSetWithCharactersInString:@" ()-"]];
-  NSString *vers = [a objectAtIndex: 3];
-  NSString *year = [a objectAtIndex: 7];
+  NSString *vers = a[3];
+  NSString *year = a[7];
 
   NSString *line1 = [@"XScreenSaver " stringByAppendingString: vers];
   NSString *line2 = [@"\u00A9 " stringByAppendingString:
@@ -59,12 +58,11 @@
                             [[[NSBundle mainBundle] bundlePath]
                               stringByAppendingPathComponent:
                                 @"iSaverRunner29t.png"]];
-  UIBarButtonItem *button = [[[UIBarButtonItem alloc]
+  UIBarButtonItem *button = [[UIBarButtonItem alloc]
                                initWithImage: img
                                style: UIBarButtonItemStylePlain
                                target: self
-                               action: @selector(titleTapped:)]
-                              autorelease];
+                               action: @selector(titleTapped:)];
   button.width = img.size.width;
   self.navigationItem.rightBarButtonItem = button;
 
@@ -135,8 +133,7 @@
     char s[2];
     s[0] = (i == 'Z'-'A'+1 ? '#' : i+'A');
     s[1] = 0;
-    [a addObject: [NSString stringWithCString:s
-                            encoding:NSASCIIStringEncoding]];
+    [a addObject: @(s)];
   }
   return a;
 }
@@ -144,9 +141,7 @@
 
 - (void) reload:(NSArray *)names descriptions:(NSDictionary *)descs
 {
-  if (descriptions)
-    [descriptions release];
-  descriptions = [descs retain];
+  descriptions = descs;
 
   int n = countof(list_by_letter);
   for (int i = 0; i < n; i++) {
@@ -165,8 +160,8 @@
   }
 
   active_section_count = 0;
-  letter_sections = [[[NSMutableArray alloc] init] retain];
-  section_titles = [[[NSMutableArray alloc] init] retain];
+  letter_sections = [[NSMutableArray alloc] init];
+  section_titles = [[NSMutableArray alloc] init];
   for (int i = 0; i < n; i++) {
     if ([list_by_letter[i] count] > 0) {
       active_section_count++;
@@ -184,7 +179,7 @@
 - (NSString *)tableView:(UITableView *)tv
               titleForHeaderInSection:(NSInteger)section
 {
-  return [section_titles objectAtIndex: section];
+  return section_titles[section];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tv
@@ -196,7 +191,7 @@
 - (NSInteger)tableView:(UITableView *)tv
                        numberOfRowsInSection:(NSInteger)section
 {
-  return [[letter_sections objectAtIndex: section] count];
+  return [letter_sections[section] count];
 }
 
 - (NSInteger)tableView:(UITableView *)tv
@@ -217,18 +212,16 @@
                      cellForRowAtIndexPath:(NSIndexPath *)ip
 {
   NSString *id =
-    [[letter_sections objectAtIndex: [ip indexAtPosition: 0]]
-      objectAtIndex: [ip indexAtPosition: 1]];
-  NSString *desc = [descriptions objectForKey:id];
+    letter_sections[[ip indexAtPosition: 0]][[ip indexAtPosition: 1]];
+  NSString *desc = descriptions[id];
 
   UITableViewCell *cell = [tv dequeueReusableCellWithIdentifier: id];
   if (!cell) {
-    cell = [[[UITableViewCell alloc]
+    cell = [[UITableViewCell alloc]
               initWithStyle: (desc
                               ? UITableViewCellStyleSubtitle
                               : UITableViewCellStyleDefault)
-              reuseIdentifier: id]
-             autorelease];
+              reuseIdentifier: id];
     cell.textLabel.text = id;
 
     cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
@@ -324,7 +317,7 @@
       [a addObject: s];
   NSUInteger n = [a count];
   if (! n) return;
-  NSString *which = [a objectAtIndex: (random() % n)];
+  NSString *which = a[(random() % n)];
 
   SaverRunner *s = 
     (SaverRunner *) [[UIApplication sharedApplication] delegate];
@@ -332,17 +325,6 @@
   NSAssert ([s isKindOfClass:[SaverRunner class]], @"not a SaverRunner");
   [self scrollTo: which];
   [s loadSaver: which];
-}
-
-
-- (void)dealloc
-{
-  for (int i = 0; i < countof(list_by_letter); i++)
-    [list_by_letter[i] release];
-  [letter_sections release];
-  [section_titles release];
-  [descriptions release];
-  [super dealloc];
 }
 
 @end
