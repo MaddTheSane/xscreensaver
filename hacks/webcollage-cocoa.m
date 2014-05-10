@@ -96,7 +96,6 @@ display_image (state *st, const char *file)
             fromRect: NSMakeRect (0, 0, [image size].width, [image size].height)
            operation: NSCompositeCopy
             fraction: 1.0];
-  [image release];
 }
 
 
@@ -275,7 +274,7 @@ webcollage_draw (Display *dpy, Window window, void *closure)
     return st->delay;
 
   char buf[10240];
-  int n = read (fileno (st->pipe_fd),
+  ssize_t n = read (fileno (st->pipe_fd),
                 (void *) buf,
                 sizeof(buf) - 1);
   if (n <= 0)

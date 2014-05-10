@@ -20,34 +20,26 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4
- typedef int          NSInteger;
- typedef unsigned int NSUInteger;
-#endif
-
-
 char *progname;
 static int verbose_p = 0;
 
 static void write_image (NSImage *img, const char *file);
-
 
 /* NSImage can't load PPMs by default...
  */
 static NSImage *
 load_ppm_image (const char *file)
 {
-  FILE *in = fopen (file, "r");
-  if (! in) return 0;
+  FILE *fin = fopen (file, "r");
+  if (! fin) return 0;
 
   char buf[255];
 
-  char *s = fgets (buf, sizeof(buf)-1, in);		/* P6 */
+  char *s = fgets (buf, sizeof(buf)-1, fin);		/* P6 */
   if (!s || !!strcmp (s, "P6\n")) 
     return 0;
 
-  s = fgets (buf, sizeof(buf)-1, in);			/* W H */
+  s = fgets (buf, sizeof(buf)-1, fin);			/* W H */
   if (!s)
     return 0;
 
@@ -57,7 +49,7 @@ load_ppm_image (const char *file)
   if (w <= 0 || h <= 0)
     return 0;
 
-  s = fgets (buf, sizeof(buf)-1, in);			/* 255 */
+  s = fgets (buf, sizeof(buf)-1, fin);			/* 255 */
   if (!s)
     return 0;
 
@@ -70,30 +62,20 @@ load_ppm_image (const char *file)
   unsigned char *bits = malloc (size);
   if (!bits) return 0;
 
-  int n = read (fileno (in), (void *) bits, size);	/* body */
+  ssize_t n = read (fileno (fin), (void *) bits, size);	/* body */
   if (n < 20) return 0;
 
-  fclose (in);
+  fclose (fin);
   
-  NSBitmapImageRep *rep =
-    [[NSBitmapImageRep alloc]
-      initWithBitmapDataPlanes: &bits
-                    pixelsWide: w
-                    pixelsHigh: h
-                 bitsPerSample: 8
-               samplesPerPixel: 3
-                      hasAlpha: NO
-                      isPlanar: NO
-                colorSpaceName: NSDeviceRGBColorSpace
-                  bitmapFormat: NSAlphaFirstBitmapFormat
-                   bytesPerRow: w * 3
-                  bitsPerPixel: 8 * 3];
+  NSData *imageData = [[NSData alloc] initWithBytesNoCopy:bits length:size];
+  CGDataProviderRef nsDatProvider = CGDataProviderCreateWithCFData((CFDataRef)imageData);
+  CGColorSpaceRef cgColorRef = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+  CGImageRef imRef = CGImageCreate(w, h, 8, 8 * 3, w * 3, cgColorRef, (CGBitmapInfo)kCGImageAlphaFirst, nsDatProvider, NULL, true, kCGRenderingIntentDefault);
+  CGColorSpaceRelease(cgColorRef);
+  CGDataProviderRelease(nsDatProvider);
 
-  NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize (w, h)];
-  [image addRepresentation: rep];
-  [rep release];
-
-  // #### 'bits' is leaked... the NSImageRep doesn't free it when freed.
+  NSImage *image = [[NSImage alloc] initWithCGImage:imRef size: NSMakeSize (w, h)];
+  CGImageRelease(imRef);
 
   return image;
 }
@@ -104,8 +86,8 @@ load_image (const char *file)
 {
   NSImage *image = [[NSImage alloc] 
                      initWithContentsOfFile:
-                       [NSString stringWithCString: file
-                                          encoding: kCFStringEncodingUTF8]];
+                       [[NSFileManager defaultManager]
+                        stringWithFileSystemRepresentation:file length:strlen(file)]];
   if (! image)
     image = load_ppm_image (file);
 
@@ -214,9 +196,6 @@ bevel_image (NSImage *img, int bevel_pct,
                 fraction: 1.0];
   [img unlockFocus];
 
-  [rep release];
-  [bevel_img release];
-
   if (verbose_p)
     fprintf (stderr, "%s: added %d%% bevel (%d px)\n", progname,
              bevel_pct, bevel_size);
@@ -270,9 +249,7 @@ paste (const char *paste_file,
     fprintf (stderr, "%s: pasted %dx%d (%dx%d) from %d,%d to %d,%d\n",
              progname, w, h, scaled_w, scaled_h, from_x, from_y, to_x, to_y);
 
-  [paste_img release];
   write_image (base_img, base_file);
-  [base_img release];
 }
 
 
@@ -304,8 +281,8 @@ write_image (NSImage *img, const char *file)
                                properties:props];
 
   [jpeg_data writeToFile:
-               [NSString stringWithCString:file
-                                  encoding:NSISOLatin1StringEncoding]
+   [[NSFileManager defaultManager]
+    stringWithFileSystemRepresentation:file length:strlen(file)]
              atomically:YES];
 
   if (verbose_p)
@@ -390,18 +367,17 @@ main (int argc, char **argv)
 
 
   // Much of Cocoa needs one of these to be available.
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  @autoreleasepool {
 
   //Need an NSApp instance to make [NSImage TIFFRepresentation] work
-  NSApp = [NSApplication sharedApplication];
-  [NSApp autorelease];
+    [NSApplication sharedApplication];
 
-  paste (paste_file, base_file,
-         from_scale, opacity, bevel_pct,
-         from_x, from_y, to_x, to_y,
-         w, h);
+    paste (paste_file, base_file,
+           from_scale, opacity, bevel_pct,
+           from_x, from_y, to_x, to_y,
+           w, h);
 
-  [pool release];
+  }
 
   exit (0);
 }

@@ -1920,9 +1920,8 @@ do_file_selector (NSTextField *txt, BOOL dirs_p)
 
 //  NSString *dir = [file stringByDeletingLastPathComponent];
 
-  NSInteger result = [panel runModalForDirectory:file //dir
-                                      file:nil //[file lastPathComponent]
-                                     types:nil];
+  [panel setDirectoryURL:[NSURL fileURLWithPath:file]];
+  NSInteger result = [panel runModal];
   if (result == NSOKButton) {
     NSArray *files = [panel URLs];
     file = ([files count] > 0 ? [files[0] path] : @"");
