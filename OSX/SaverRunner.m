@@ -153,11 +153,7 @@
 static ScreenSaverView *
 find_saverView_child (NSView *v)
 {
-  NSArray *kids = [v subviews];
-  NSUInteger nkids = [kids count];
-  NSUInteger i;
-  for (i = 0; i < nkids; i++) {
-    NSObject *kid = kids[i];
+  for (NSObject *kid in [v subviews]) {
     if ([kid isKindOfClass:[ScreenSaverView class]]) {
       return (ScreenSaverView *) kid;
     } else {
@@ -191,11 +187,8 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     NSMenu *m = (NSMenu *)v;
     [m setTitle: [[m title] stringByReplacingOccurrencesOfString:old_str
                             withString:new_str]];
-    NSArray *kids = [m itemArray];
-    NSUInteger nkids = [kids count];
-    NSUInteger i;
-    for (i = 0; i < nkids; i++) {
-      relabel_menus (kids[i], old_str, new_str);
+    for (id kid in [m itemArray]) {
+      relabel_menus (kid, old_str, new_str);
     }
   } else if ([v isKindOfClass:[NSMenuItem class]]) {
     NSMenuItem *mi = (NSMenuItem *)v;
@@ -771,9 +764,8 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
 
 # endif // USE_IPHONE
 
-  int i;
-  for (i = 0; i < [dirs count]; i++) {
-    NSString *dir = dirs[i];
+  NSInteger i;
+  for (NSString *dir in dirs) {
     NSArray *names = [self listSaverBundleNamesInDir:dir];
     if (! names) continue;
     saverDir   = dir;
@@ -805,10 +797,8 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
   rect.size.height = 10;
   NSPopUpButton *popup = [[NSPopUpButton alloc] initWithFrame:rect
                                                     pullsDown:NO];
-  int i;
   float max_width = 0;
-  for (i = 0; i < [saverNames count]; i++) {
-    NSString *name = saverNames[i];
+  for (NSString *name in saverNames) {
     [popup addItemWithTitle:name];
     [[popup itemWithTitle:name] setRepresentedObject:name];
     [popup sizeToFit];
@@ -1094,18 +1084,18 @@ FAIL:
   [self listSaverBundleNames];
 
 # ifndef USE_IPHONE
-  int window_count = ([saverNames count] <= 1 ? 1 : 2);
+  NSUInteger window_count = ([saverNames count] <= 1 ? 1 : 2);
   NSMutableArray *a = [NSMutableArray arrayWithCapacity: window_count+1];
   windows = a;
 
-  int i;
+  NSInteger i;
   // Create either one window (for standalone, e.g. Phosphor.app)
   // or two windows for SaverTester.app.
   for (i = 0; i < window_count; i++) {
     NSWindow *win = [self makeWindow];
     // Get the last-saved window position out of preferences.
     [win setFrameAutosaveName:
-              [NSString stringWithFormat:@"XScreenSaverWindow%d", i]];
+              [NSString stringWithFormat:@"XScreenSaverWindow%ld", (long)i]];
     [win setFrameUsingName:[win frameAutosaveName]];
     [a addObject: win];
     // This prevents clicks from being seen by savers.

@@ -262,7 +262,7 @@ char **test_patterns[] = {
 #endif
 
 
-static int
+static long
 getticks(struct state *st)
 {
   struct timeval tv;
@@ -528,7 +528,7 @@ xanalogtv_draw (Display *dpy, Window window, void *closure)
   struct state *st = (struct state *) closure;
   int i;
 
-  int curticks=getticks(st);
+  long curticks=getticks(st);
   double curtime=curticks*0.001;
 
   if (st->change_now || 
@@ -540,7 +540,7 @@ xanalogtv_draw (Display *dpy, Window window, void *closure)
     fprintf (stderr, "%s: channel %d, %s\n", progname, st->curinputi,
              st->cs->filename);
 #endif
-    st->change_ticks = curticks + st->cs->dur;
+    st->change_ticks = (int)(curticks + st->cs->dur);
     /* Set channel change noise flag */
     st->tv->channel_change_cycles=200000;
   }

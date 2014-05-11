@@ -851,8 +851,8 @@ place_back_pipe (m_state *state, char textc){
     state->back_pos++;
   }
   if(new_line){
-    int startx = (state->grid_width >> 1) - 
-      (strlen(state->back_line) >> 1);
+    int startx = (int)((state->grid_width >> 1) -
+      (strlen(state->back_line) >> 1));
     place_back_text(state, state->back_line, 
                     startx, state->back_y);
     state->back_pos = 0;
@@ -874,7 +874,7 @@ feed_matrix (m_state *state)
     {
     case TRACE_A:
         {
-          int L = strlen((char *) state->tracing);
+          int L = (int)strlen((char *) state->tracing);
           int count = 0;
           int i;
 
@@ -1162,7 +1162,7 @@ hack_text (m_state *state)
             XFillRectangle (state->dpy, state->window, state->erase_gc,
                             cx * state->char_width,
                             cy * state->char_height,
-                            strlen(s) * state->char_width,
+                            (int)strlen(s) * state->char_width,
                             state->char_height * 1.6);
 
             for (i = -2; i < 3; i++)
@@ -1173,7 +1173,7 @@ hack_text (m_state *state)
                 XDrawRectangle (state->dpy, state->window, state->scratch_gc,
                                 cx * state->char_width - i,
                                 cy * state->char_height - i,
-                                strlen(s) * state->char_width + (2 * i),
+                                (int)strlen(s) * state->char_width + (2 * i),
                                 (state->char_height * 1.6) + (2 * i));
               }
 
@@ -1184,7 +1184,7 @@ hack_text (m_state *state)
                 cell->changed = 0;
               }
 
-            state->cursor_x = (state->grid_width - strlen(s) - 1) / 2;
+            state->cursor_x = (state->grid_width - (int)strlen(s) - 1) / 2;
             state->cursor_y = (state->grid_height / 2) - 1;
             if (state->cursor_x < 0) state->cursor_x = 0;
             if (state->cursor_y < 0) state->cursor_y = 0;

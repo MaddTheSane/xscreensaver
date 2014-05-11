@@ -370,7 +370,7 @@ talk (struct state *st, int force_erase)
 
     if (!(p2 = strchr(p, '\n')) || !p2[1])
       {
-	total = strlen (st->words);
+	total = (int)strlen (st->words);
 	strcpy (args[0], st->words);
 	width = XTextWidth(st->font, st->words, total);
 	height = 0;
@@ -381,7 +381,7 @@ talk (struct state *st, int force_erase)
 	{
 	  int             w;
 	  *p2 = 0;
-	  if ((w = XTextWidth(st->font, p, p2 - p)) > width)
+	  if ((w = XTextWidth(st->font, p, (int)(p2 - p))) > width)
 	    width = w;
 	  total += p2 - p;	/* total chars; count to determine reading
 				 * time */
@@ -430,7 +430,7 @@ talk (struct state *st, int force_erase)
     /* now print each string in reverse order (start at bottom of box) */
     for (Z = 0; Z < height; Z++)
     {
-        int L = strlen(args[Z]);
+        int L = (int)strlen(args[Z]);
         if (args[Z][L-1] == '\r' || args[Z][L-1] == '\n')
           args[Z][--L] = 0;
 	XDrawString(st->dpy, st->window, st->text_fg_gc, st->s_rect.x + st->X, st->s_rect.y + st->Y,

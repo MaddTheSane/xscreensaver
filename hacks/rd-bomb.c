@@ -275,7 +275,7 @@ pixack_frame(struct state *st, char *pix_buf)
 #endif
       else if (st->pdepth == 32)
 #if dither_when_mapped
-	qqq[j] = st->colors[st->mc[r1] % st->ncolors].pixel;
+	qqq[j] = (int)st->colors[st->mc[r1] % st->ncolors].pixel;
 #else
 	qqq[j] = st->colors[(r1>>8) % st->ncolors].pixel;
 #endif

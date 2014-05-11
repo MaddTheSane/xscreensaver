@@ -1014,15 +1014,12 @@ hreffify (NSText *nstext)
 - (void) parseAttrs:(NSMutableDictionary *)dict node:(NSXMLNode *)node
 {
   NSArray *attrs = [(NSXMLElement *) node attributes];
-  NSInteger n = [attrs count];
-  NSInteger i;
   
   // For each key in the dictionary, fill in the dict with the corresponding
   // value.  The value @"" is assumed to mean "un-set".  Issue a warning if
   // an attribute is specified twice.
   //
-  for (i = 0; i < n; i++) {
-    NSXMLNode *attr = attrs[i];
+  for (NSXMLNode *attr in attrs) {
     NSString *key = [attr name];
     NSString *val = [attr objectValue];
     NSString *old = dict[key];
@@ -1039,10 +1036,7 @@ hreffify (NSText *nstext)
   // Remove from the dictionary any keys whose value is still @"", 
   // meaning there was no such attribute specified.
   //
-  NSArray *keys = [dict allKeys];
-  n = [keys count];
-  for (i = 0; i < n; i++) {
-    NSString *key = keys[i];
+  for (NSString *key in dict) {
     NSString *val = dict[key];
     if ([val length] == 0)
       [dict removeObjectForKey:key];
@@ -1465,7 +1459,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 - (void) makeOptionMenu:(NSXMLNode *)node on:(NSView *)parent
 {
   NSArray *children = [node children];
-  NSInteger i, count = [children count];
+  NSInteger count = [children count];
 
   if (count <= 0) {
     NSAssert1 (0, @"no menu items in \"%@\"", [node name]);
@@ -1509,8 +1503,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 
 # endif // USE_IPHONE
   
-  for (i = 0; i < count; i++) {
-    NSXMLNode *child = children[i];
+  for (NSXMLNode *child in children) {
 
     if ([child kind] == NSXMLCommentKind)
       continue;
@@ -1659,7 +1652,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 
   [self placeSeparator];
 
-  i = 0;
+  NSInteger i = 0;
   for (NSArray *item in items) {
     RadioButton *b = [[RadioButton alloc] initWithIndex:i 
                                           items:items];
@@ -1683,11 +1676,8 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 - (void) makeDescLabel:(NSXMLNode *)node on:(NSView *)parent
 {
   NSString *text = nil;
-  NSArray *children = [node children];
-  NSInteger i, count = [children count];
 
-  for (i = 0; i < count; i++) {
-    NSXMLNode *child = children[i];
+  for (NSXMLNode *child in [node children]) {
     NSString *s = [child objectValue];
     if (text)
       text = [text stringByAppendingString:s];
@@ -1964,11 +1954,8 @@ find_text_field_of_button (NSButton *button)
 {
   NSView *parent = [button superview];
   NSArray *kids = [parent subviews];
-  NSInteger nkids = [kids count];
-  int i;
   NSTextField *f = 0;
-  for (i = 0; i < nkids; i++) {
-    NSObject *kid = kids[i];
+  for (NSObject *kid in kids) {
     if ([kid isKindOfClass:[NSTextField class]]) {
       f = (NSTextField *) kid;
     } else if (kid == button) {
@@ -2534,11 +2521,8 @@ static void
 layout_group (NSView *group, BOOL horiz_p)
 {
   NSArray *kids = [group subviews];
-  NSInteger nkids = [kids count];
-  int i;
   double maxx = 0, miny = 0;
-  for (i = 0; i < nkids; i++) {
-    NSView *kid = kids[i];
+  for (NSView *kid in kids) {
     NSRect r = [kid frame];
     
     if (horiz_p) {
@@ -2558,8 +2542,7 @@ layout_group (NSView *group, BOOL horiz_p)
   [group setFrame:rect];
 
   double x = 0;
-  for (i = 0; i < nkids; i++) {
-    NSView *kid = kids[i];
+  for (NSView *kid in kids) {
     NSRect r = [kid frame];
     if (horiz_p) {
       r.origin.y = rect.size.height - r.size.height;
@@ -2645,10 +2628,7 @@ layout_group (NSView *group, BOOL horiz_p)
  */
 - (void)traverseChildren:(NSXMLNode *)node on:(NSView *)parent
 {
-  NSArray *children = [node children];
-  NSInteger i, count = [children count];
-  for (i = 0; i < count; i++) {
-    NSXMLNode *child = children[i];
+  for (NSXMLNode *child in [node children]) {
     [self makeControl:child on:parent];
   }
 }
@@ -2663,16 +2643,13 @@ fix_contentview_size (NSView *parent)
 {
   NSRect f;
   NSArray *kids = [parent subviews];
-  NSInteger nkids = [kids count];
   NSView *text = 0;  // the NSText at the bottom of the window
   double maxx = 0, miny = 0;
-  int i;
 
   /* Find the size of the rectangle taken up by each of the children
      except the final "NSText" child.
   */
-  for (i = 0; i < nkids; i++) {
-    NSView *kid = kids[i];
+  for (NSView *kid in kids) {
     if ([kid isKindOfClass:[NSText class]]) {
       text = kid;
       continue;
@@ -2755,8 +2732,7 @@ fix_contentview_size (NSView *parent)
   f = [parent frame];
   float shift = f.size.height;
 //  NSLog(@"shift: %3.0f", shift);
-  for (i = 0; i < nkids; i++) {
-    NSView *kid = kids[i];
+  for (NSView *kid in kids) {
     f = [kid frame];
     f.origin.y += shift;
     [kid setFrame:f];
@@ -2787,9 +2763,8 @@ fix_contentview_size (NSView *parent)
   /* Set the kids to track the top left corner of the window when resized.
      Set the NSText to track the bottom right corner as well.
    */
-  for (i = 0; i < nkids; i++) {
-    NSView *kid = kids[i];
-    unsigned long mask = NSViewMaxXMargin | NSViewMinYMargin;
+  for (NSView *kid in kids) {
+    NSUInteger mask = NSViewMaxXMargin | NSViewMinYMargin;
     if ([kid isKindOfClass:[NSText class]])
       mask |= NSViewWidthSizable|NSViewHeightSizable;
     [kid setAutoresizingMask:mask];

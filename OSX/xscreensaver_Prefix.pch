@@ -1,6 +1,7 @@
 /* Prefix header for all source files of the 'xscreensaver' project.
  */
 
+#include <tgmath.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

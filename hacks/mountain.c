@@ -203,7 +203,7 @@ init_mountain (ModeInfo * mi)
 		for (x = 0; x < (int) WORLDWIDTH; x++)
 			mp->h[x][y] = 0;
 
-	j = MI_COUNT(mi);
+	j = (int)(MI_COUNT(mi));
 	if (j < 0)
 		j = NRAND(-j) + 1;
 	for (i = 0; i < j; i++)

@@ -234,7 +234,7 @@ draw_slip (ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 	GC          gc = MI_GC(mi);
-	int         timer;
+	long        timer;
 	slipstruct *sp;
 
 	if (slips == NULL)
@@ -254,7 +254,7 @@ draw_slip (ModeInfo * mi)
 			static const int lut[] = {0, 0, 0, 1, 1, 1, 2};
 
 			prepare_screen(mi, sp);
-			sp->nblits_remaining = MI_COUNT(mi) *
+			sp->nblits_remaining = (int)MI_COUNT(mi) *
 				(2000 + halfrandom(sp, 1000) + halfrandom(sp, 1000));
 			if (sp->mode == 2)
 				sp->mode = halfrandom(sp, 2);

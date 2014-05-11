@@ -649,7 +649,7 @@ parseargs(struct state *st)
 
   s = get_string_resource(st->dpy, "forcingFunction", "String");
   if (s && *s) {
-    st->maxindex = strlen(s);
+    st->maxindex = (int)strlen(s);
     if (st->maxindex > MAXINDEX)
       usage(st);
     ch = s;
@@ -1756,7 +1756,7 @@ do_preset (struct state *st, int builtin)
   if (ff) {
     char *ch;
     int bindex = 0;
-    st->maxindex = strlen(ff);
+    st->maxindex = (int)strlen(ff);
     if (st->maxindex > MAXINDEX)
       usage(st);
     ch = ff;
