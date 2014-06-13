@@ -332,6 +332,9 @@ static void
 init_objects (GLOBAL *g)
 {
   int i;
+  if (!g) {
+    return;
+  }
   for (i=0; i<g->nobjects; i++) {
     (g->objects[i].init)(g, g->objects + i);
   }
