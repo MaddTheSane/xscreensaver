@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2012-2013 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2012-2014 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -58,13 +58,14 @@
                             [[[NSBundle mainBundle] bundlePath]
                               stringByAppendingPathComponent:
                                 @"iSaverRunner29t.png"]];
-  UIBarButtonItem *button = [[UIBarButtonItem alloc]
-                               initWithImage: img
-                               style: UIBarButtonItemStylePlain
-                               target: self
-                               action: @selector(titleTapped:)];
-  button.width = img.size.width;
-  self.navigationItem.rightBarButtonItem = button;
+  UIButton *button = [[UIButton alloc] init];
+  [button setFrame: CGRectMake(0, 0, img.size.width, img.size.height)];
+  [button setBackgroundImage:img forState:UIControlStateNormal];
+  [button addTarget:self
+          action:@selector(titleTapped:)
+          forControlEvents:UIControlEventTouchUpInside];
+  self.navigationItem.rightBarButtonItem = 
+    [[UIBarButtonItem alloc] initWithCustomView: button];
 
   // The title bar
 

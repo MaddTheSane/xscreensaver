@@ -329,6 +329,7 @@ think (struct state *st)
 }
 
 #define MAXLINES 10
+#define LINELEN 256
 
 static void
 talk (struct state *st, int force_erase)
@@ -339,7 +340,7 @@ talk (struct state *st, int force_erase)
                     total = 0;
     register char  *p,
                    *p2;
-    char            args[MAXLINES][256];
+    char            args[MAXLINES][LINELEN];
 
     /* clear what we've written */
     if (st->talking || force_erase)
@@ -361,17 +362,24 @@ talk (struct state *st, int force_erase)
 	}
 	return;
     }
+    p = st->words;
+    /* If there is actually no words, just return */
+    if (!*p)
+    {
+      st->talking = 0;
+      return;
+    }
     st->talking = 1;
     walk(st, FRONT);
-    p = st->words;
 
     for (p2 = p; *p2; p2++)
       if (*p2 == '\t') *p2 = ' ';
 
     if (!(p2 = strchr(p, '\n')) || !p2[1])
       {
-	total = (int)strlen (st->words);
-	strcpy (args[0], st->words);
+	total = strlen (st->words);
+	strncpy (args[0], st->words, LINELEN);
+	args[0][LINELEN - 1] = 0;
 	width = XTextWidth(st->font, st->words, total);
 	height = 0;
       }
@@ -385,7 +393,8 @@ talk (struct state *st, int force_erase)
 	    width = w;
 	  total += p2 - p;	/* total chars; count to determine reading
 				 * time */
-	  (void) strcpy(args[height], p);
+	  (void) strncpy(args[height], p, LINELEN);
+	  args[height][LINELEN - 1] = 0;
 	  if (height == MAXLINES - 1)
 	    {
 	      /* puts("Message too long!"); */
@@ -430,8 +439,9 @@ talk (struct state *st, int force_erase)
     /* now print each string in reverse order (start at bottom of box) */
     for (Z = 0; Z < height; Z++)
     {
-        int L = (int)strlen(args[Z]);
-        if (args[Z][L-1] == '\r' || args[Z][L-1] == '\n')
+        int L = strlen(args[Z]);
+        /* If there are continuous new lines, L can be 0 */
+        if (L && (args[Z][L-1] == '\r' || args[Z][L-1] == '\n'))
           args[Z][--L] = 0;
 	XDrawString(st->dpy, st->window, st->text_fg_gc, st->s_rect.x + st->X, st->s_rect.y + st->Y,
 		    args[Z], L);

@@ -242,7 +242,7 @@ fps_draw (fps_state *st)
       s = strchr (string, '\n');
       if (! s) s = string + strlen(string);
       XDrawString (st->dpy, st->window, st->draw_gc,
-                   x, y, string, (int)(s - string));
+                   x, y, string, (int) (s - string));
       string = s;
       string++;
       lines--;

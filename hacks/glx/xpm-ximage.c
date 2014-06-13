@@ -78,7 +78,9 @@ xpm_to_ximage_1 (Display *dpy, Visual *visual, Colormap cmap,
   if (!initted)
     {
 #ifdef HAVE_GTK2
+#if !GLIB_CHECK_VERSION(2, 36 ,0)
       g_type_init ();
+#endif
 #endif
       gdk_pixbuf_xlib_init (dpy, DefaultScreen (dpy));
       xlib_rgb_init (dpy, DefaultScreenOfDisplay (dpy));
@@ -334,7 +336,8 @@ xpm_to_ximage_1 (Display *dpy, Visual *visual, Colormap cmap,
 /* Given a bitmask, returns the position and width of the field.
  */
 static void
-decode_mask (unsigned int mask, unsigned int *pos_ret, unsigned int *size_ret)
+decode_mask (unsigned long mask, unsigned long *pos_ret,
+             unsigned long *size_ret)
 {
   int i;
   for (i = 0; i < 32; i++)
@@ -368,9 +371,9 @@ xpm_to_ximage_1 (Display *dpy, Visual *visual, Colormap cmap,
   int npixels = 0;
   int bpl;
 
-  unsigned int rpos=0, gpos=0, bpos=0, apos=0;
-  unsigned int rmsk=0, gmsk=0, bmsk=0, amsk=0;
-  unsigned int rsiz=0, gsiz=0, bsiz=0, asiz=0;
+  unsigned long rpos=0, gpos=0, bpos=0, apos=0;
+  unsigned long rmsk=0, gmsk=0, bmsk=0, amsk=0;
+  unsigned long rsiz=0, gsiz=0, bsiz=0, asiz=0;
 
   if (filename)
     {

@@ -123,11 +123,6 @@
 #include "logo-50.xpm"
 #include "logo-180.xpm"
 
-#undef dgettext  /* else these are defined twice... */
-#undef dcgettext
-
-#include "demo-Gtk-widgets.h"
-#include "demo-Gtk-support.h"
 #include "demo-Gtk-conf.h"
 
 #include <stdio.h>
@@ -555,6 +550,7 @@ warning_dialog (GtkWidget *parent, const char *message,
       !GET_WINDOW (parent)) /* too early to pop up transient dialogs */
     {
       fprintf (stderr, "%s: too early for dialog?\n", progname);
+      free(msg);
       return False;
     }
 
@@ -1722,7 +1718,7 @@ flush_dialog_changes_and_save (state *s)
     {
       Display *dpy = GDK_DISPLAY();
       Bool enabled_p = (p->dpms_enabled_p && p->mode != DONT_BLANK);
-      sync_server_dpms_settings (dpy, enabled_p,
+      sync_server_dpms_settings (dpy, enabled_p, p->dpms_quickoff_p,
                                  p->dpms_standby / 1000,
                                  p->dpms_suspend / 1000,
                                  p->dpms_off / 1000,
@@ -4336,9 +4332,8 @@ static void
 init_icon (GdkWindow *window)
 {
   GdkBitmap *mask = 0;
-  GdkColor transp;
   GdkPixmap *pixmap =
-    gdk_pixmap_create_from_xpm_d (window, &mask, &transp,
+    gdk_pixmap_create_from_xpm_d (window, &mask, 0,
                                   (gchar **) logo_50_xpm);
   if (pixmap)
     gdk_window_set_icon (window, 0, pixmap, mask);
@@ -4721,7 +4716,7 @@ delayed_scroll_kludge (gpointer data)
 
 #ifdef HAVE_GTK2
 
-GtkWidget *
+static GtkWidget *
 create_xscreensaver_demo (void)
 {
   GtkWidget *nb;
@@ -4732,7 +4727,7 @@ create_xscreensaver_demo (void)
   return name_to_widget (global_state_kludge, "xscreensaver_demo");
 }
 
-GtkWidget *
+static GtkWidget *
 create_xscreensaver_settings_dialog (void)
 {
   GtkWidget *w, *box;

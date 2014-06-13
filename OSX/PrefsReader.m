@@ -26,6 +26,7 @@
 
 #ifndef USE_IPHONE
 
+#include <objc/runtime.h>
 
 /* GlobalDefaults is an NSUserDefaults implementation that writes into
    the preferences key we provide, instead of whatever the default would
@@ -49,14 +50,39 @@
 @end
 
 @implementation GlobalDefaults
-- (id) initWithDomain:(NSString *)_domain
+- (id) initWithDomain:(NSString *)_domain module:(NSString *)_module
 {
-  if (self = [super init]) {
-    domain = _domain;
-  }
+  // Key-Value Observing tries to create an Objective-C class named
+  // NSKVONotifying_GlobalDefaults when the configuration page is shown. But if
+  // this is the second XScreenSaver .saver running in the same process, class
+  // creation fails because that class name was already used by the first
+  // .saver, and it refers to the GlobalDefaults from the other .saver.
+
+  // This gives the class a unique name, sidestepping the above issue.
+
+  // It really just needs to be unique for this .saver and this instance.
+  // Using the pointer to the .saver's mach_header and the full path to the
+  // .saver would be preferable, but this should be good enough.
+  char class_name[128];
+  sprintf(class_name, "GlobalDefaults_%s_%p_%u",
+          strrchr(_module.UTF8String, '.') + 1, self, random());
+  Class c = objc_allocateClassPair([GlobalDefaults class], class_name, 0);
+  if (!c)
+    return nil;
+  objc_registerClassPair(c);
+
+  self = [super init];
+  object_setClass(self, c);
+  domain = _domain;
   return self;
 }
 
+- (void) dealloc
+{
+  Class c = object_getClass(self);
+
+  objc_disposeClassPair(c);
+}
 
 - (void)registerDefaults:(NSDictionary *)dict
 {
@@ -533,7 +559,8 @@
 
 # ifndef USE_IPHONE
   userDefaults = [ScreenSaverDefaults defaultsForModuleWithName:name];
-  globalDefaults = [[GlobalDefaults alloc] initWithDomain:@UPDATER_DOMAIN];
+  globalDefaults = [[GlobalDefaults alloc] initWithDomain:@UPDATER_DOMAIN
+                                                   module:name];
 # else  // USE_IPHONE
   userDefaults = [NSUserDefaults standardUserDefaults];
   globalDefaults = userDefaults;

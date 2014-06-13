@@ -128,7 +128,7 @@ text_to_ximage (Screen *screen, Visual *visual,
         XCharStruct o2;
         int ascent, descent, direction;
         token = 0;
-        XTextExtents (f, line, (int)strlen(line),
+        XTextExtents (f, line, (int) strlen(line),
                       &direction, &ascent, &descent, &o2);
         overall.lbearing = MAX(overall.lbearing, o2.lbearing);
         overall.rbearing = MAX(overall.rbearing, o2.rbearing);
@@ -174,7 +174,7 @@ text_to_ximage (Screen *screen, Visual *visual,
                      (f->descent * lines) +
                      margin +
                      yoff),
-                    line, (int)strlen(line));
+                    line, (int) strlen(line));
         lines++;
       }
     free(text2);

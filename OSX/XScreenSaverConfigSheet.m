@@ -776,9 +776,8 @@ unwrap (NSString *text)
   // Unwrap lines: delete \n but do not delete \n\n.
   //
   NSArray *lines = [text componentsSeparatedByString:@"\n"];
-  NSInteger nlines = [lines count];
+  NSUInteger i, nlines = [lines count];
   BOOL eolp = YES;
-  NSInteger i;
 
   text = @"\n";      // start with one blank line
 
@@ -1276,7 +1275,7 @@ hreffify (NSText *nstext)
     //      to be an integer, even though it should be...
     //      Maybe we need to use a value converter or something?
 
-    LABEL *lab = nil;
+    LABEL *lab;
     if (label) {
       lab = [self makeLabel:label];
       [self placeChild:lab on:parent];
@@ -1459,7 +1458,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 - (void) makeOptionMenu:(NSXMLNode *)node on:(NSView *)parent
 {
   NSArray *children = [node children];
-  NSInteger count = [children count];
+  NSUInteger count = [children count];
 
   if (count <= 0) {
     NSAssert1 (0, @"no menu items in \"%@\"", [node name]);
@@ -1652,9 +1651,9 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 
   [self placeSeparator];
 
-  NSInteger i = 0;
-  for (NSArray *item in items) {
-    RadioButton *b = [[RadioButton alloc] initWithIndex:i 
+  NSInteger  i = 0;
+  for (__attribute__((unused)) NSArray *item in items) {
+    RadioButton *b = [[RadioButton alloc] initWithIndex:i
                                           items:items];
     [b setLineBreakMode:NSLineBreakByTruncatingHead];
     [b setFont:[NSFont boldSystemFontOfSize: FONT_SIZE]];
@@ -2927,7 +2926,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   [parent setMinSize:rect.size];
   
   [parent setContentView:root];
-
+	
 # else  // USE_IPHONE
 
   CGRect r = [parent frame];

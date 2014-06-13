@@ -1,4 +1,4 @@
-/* starwars, Copyright (c) 1998-2012 Jamie Zawinski <jwz@jwz.org> and
+/* starwars, Copyright (c) 1998-2014 Jamie Zawinski <jwz@jwz.org> and
  * Claudio Matsuoka <claudio@helllabs.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -35,7 +35,6 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-
 
 #include "starwars.h"
 #define DEFAULTS "*delay:    40000     \n" \
@@ -319,10 +318,10 @@ get_more_lines (sws_configuration *sc)
    */
   while (target > 0)
     {
-      char c = textclient_getc (sc->tc);
+      int c = textclient_getc (sc->tc);
       if (c <= 0)
         break;
-      sc->buf[sc->buf_tail++] = c;
+      sc->buf[sc->buf_tail++] = (char) c;
       sc->buf[sc->buf_tail] = 0;
       target--;
     }
@@ -1045,6 +1044,12 @@ release_sws (ModeInfo *mi)
   FreeAllGL(mi);
 }
 
+
+#ifdef __GNUC__
+ __extension__ /* don't warn about "string length is greater than the length
+                  ISO C89 compilers are required to support" when including
+                  "starwars.txt" in the defaults... */
+#endif
 
 XSCREENSAVER_MODULE_2 ("StarWars", starwars, sws)
 
