@@ -85,6 +85,9 @@
 #       version of) this rule out.
 #
 
+# config.status complains if "po/Makefile.in.in was not created by intltoolize".
+# INTLTOOL_MAKEFILE
+
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -148,6 +151,7 @@ DISTFILES = $(DISTFILES_1) $(GETTEXT_PACKAGE).pot \
 TARFILES = $(DISTFILES_1) $(POFILES) $(SOURCES)
 
 POTFILES = \
+# This comment gets stripped out
 
 CATALOGS = @CATALOGS@
 CATOBJEXT = @CATOBJEXT@

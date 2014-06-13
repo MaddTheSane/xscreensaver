@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1991-2013 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1991-2014 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -77,6 +77,7 @@ struct jwxyz_Drawable {
 struct jwxyz_Display {
   Window main_window;
   Screen *screen;
+  int screen_count;
   struct jwxyz_sources_data *timers_data;
 
 # ifndef USE_IPHONE
@@ -93,6 +94,7 @@ struct jwxyz_Display {
 struct jwxyz_Screen {
   Display *dpy;
   Visual *visual;
+  int screen_number;
 };
 
 struct jwxyz_GC {
@@ -137,6 +139,26 @@ jwxyz_abort (const char *fmt, ...)
 }
 
 
+/* We keep a list of all of the Displays that have been created and not
+   yet freed so that they can have sensible display numbers.  If three
+   displays are created (0, 1, 2) and then #1 is closed, then the fourth
+   display will be given the now-unused display number 1. (Everything in
+   here assumes a 1:1 Display/Screen mapping.)
+
+   The size of this array is the most number of live displays at one time.
+   So if it's 20, then we'll blow up if the system has 19 monitors and also
+   has System Preferences open (the small preview window).
+
+   Note that xlockmore-style savers tend to allocate big structures, so
+   setting this to 1000 will waste a few megabytes.  Also some of them assume
+   that the number of screens never changes, so dynamically expanding this
+   array won't work.
+ */
+# ifndef USE_IPHONE
+static Display *jwxyz_live_displays[20] = { 0, };
+# endif
+
+
 Display *
 jwxyz_make_display (void *nsview_arg, void *cgc_arg)
 {
@@ -149,6 +171,24 @@ jwxyz_make_display (void *nsview_arg, void *cgc_arg)
   d->screen = (Screen *) calloc (1, sizeof(Screen));
   d->screen->dpy = d;
   
+  d->screen_count = 1;
+  d->screen->screen_number = 0;
+# ifndef USE_IPHONE
+  {
+    // Find the first empty slot in live_displays and plug us in.
+    int size = sizeof(jwxyz_live_displays) / sizeof(*jwxyz_live_displays);
+    int i;
+    for (i = 0; i < size; i++) {
+      if (! jwxyz_live_displays[i])
+        break;
+    }
+    if (i >= size) abort();
+    jwxyz_live_displays[i] = d;
+    d->screen_count = size;
+    d->screen->screen_number = i;
+  }
+# endif // !USE_IPHONE
+
   Visual *v = (Visual *) calloc (1, sizeof(Visual));
   v->class      = TrueColor;
   v->red_mask   = 0x00FF0000;
@@ -187,8 +227,24 @@ jwxyz_free_display (Display *dpy)
   jwxyz_XtRemoveInput_all (dpy);
   // #### jwxyz_XtRemoveTimeOut_all ();
   
+# ifndef USE_IPHONE
+  {
+    // Find us in live_displays and clear that slot.
+    int size = ScreenCount(dpy);
+    int i;
+    for (i = 0; i < size; i++) {
+      if (dpy == jwxyz_live_displays[i]) {
+        jwxyz_live_displays[i] = 0;
+        break;
+      }
+    }
+    if (i >= size) abort();
+  }
+# endif // !USE_IPHONE
+
   free (dpy->screen->visual);
   free (dpy->screen);
+  CFRelease (dpy->main_window->window.view);
   free (dpy->main_window);
   free (dpy);
 }
@@ -335,7 +391,13 @@ XDisplayNumberOfScreen (Screen *s)
 int
 XScreenNumberOfScreen (Screen *s)
 {
-  return 0;
+  return s->screen_number;
+}
+
+int
+jwxyz_ScreenCount (Display *dpy)
+{
+  return dpy->screen_count;
 }
 
 int
@@ -523,7 +585,7 @@ XDrawPoints (Display *dpy, Drawable d, GC gc,
 
     Assert (data, "no bitmap data in Drawable");
 
-    unsigned int argb = gc->gcv.foreground;
+    unsigned long argb = gc->gcv.foreground;
     validate_pixel (argb, gc->depth, gc->gcv.alpha_allowed_p);
     if (gc->depth == 1)
       argb = (gc->gcv.foreground ? WhitePixel(0,0) : BlackPixel(0,0));
@@ -541,7 +603,7 @@ XDrawPoints (Display *dpy, Drawable d, GC gc,
         if (x >= 0 && x < w && y >= 0 && y < h) {
           unsigned int *p = (unsigned int *)
             ((char *) data + (size_t) y * bpr + (size_t) x * 4);
-          *p = argb;
+          *p = (unsigned int) argb;
         }
       }
     } else {
@@ -552,7 +614,7 @@ XDrawPoints (Display *dpy, Drawable d, GC gc,
         if (x >= 0 && x < w && y >= 0 && y < h) {
           unsigned int *p = (unsigned int *)
             ((char *) data + (size_t) y * bpr + (size_t) x * 4);
-          *p = argb;
+          *p = (unsigned int) argb;
         }
       }
     }
@@ -876,7 +938,7 @@ XCopyArea (Display *dpy, Drawable src, Drawable dst, GC gc,
         if (orig_dst_y < dst_y0) {
           fill_rect_memset (seek_xy (dst_data, dst_pitch,
                                      orig_dst_x, orig_dst_y), dst_pitch,
-                            gc->gcv.background, orig_width,
+                            (uint32_t) gc->gcv.background, orig_width,
                             dst_y0 - orig_dst_y);
         }
 
@@ -884,20 +946,20 @@ XCopyArea (Display *dpy, Drawable src, Drawable dst, GC gc,
           fill_rect_memset (seek_xy (dst_data, dst_pitch, orig_dst_x,
                                      dst_y0 + height0),
                             dst_pitch,
-                            gc->gcv.background, orig_width,
+                            (uint32_t) gc->gcv.background, orig_width,
                             orig_dst_y + orig_height - dst_y0 - height0);
         }
 
         if (orig_dst_x < dst_x0) {
           fill_rect_memset (seek_xy (dst_data, dst_pitch, orig_dst_x, dst_y0),
-                            dst_pitch, gc->gcv.background,
+                            dst_pitch, (uint32_t) gc->gcv.background,
                             dst_x0 - orig_dst_x, height0);
         }
 
         if (dst_x0 + width0 < orig_dst_x + orig_width) {
           fill_rect_memset (seek_xy (dst_data, dst_pitch, dst_x0 + width0,
                                      dst_y0),
-                            dst_pitch, gc->gcv.background,
+                            dst_pitch, (uint32_t) gc->gcv.background,
                             orig_dst_x + orig_width - dst_x0 - width0,
                             height0);
         }
@@ -1738,7 +1800,7 @@ XCreateImage (Display *dpy, Visual *visual, unsigned int depth,
   ximage->format = format;
   ximage->data = data;
   ximage->bitmap_unit = 8;
-  ximage->byte_order = MSBFirst;
+  ximage->byte_order = LSBFirst;
   ximage->bitmap_bit_order = ximage->byte_order;
   ximage->bitmap_pad = bitmap_pad;
   ximage->depth = depth;
@@ -2001,7 +2063,7 @@ XGetImage (Display *dpy, Drawable d, int x, int y,
            unsigned long plane_mask, int format)
 {
   const unsigned char *data = 0;
-  int depth, ibpp, ibpl;
+  size_t depth, ibpp, ibpl;
   enum { RGBA, ARGB, BGRA } src_format; // As bytes.
 # ifndef USE_BACKBUFFER
   NSBitmapImageRep *bm = 0;
@@ -2053,8 +2115,8 @@ XGetImage (Display *dpy, Drawable d, int x, int y,
   data += (y * ibpl) + (x * (ibpp/8));
   
   format = (depth == 1 ? XYPixmap : ZPixmap);
-  XImage *image = XCreateImage (dpy, 0, depth, format, 0, 0, width, height,
-                                0, 0);
+  XImage *image = XCreateImage (dpy, 0, (unsigned int) depth,
+                                format, 0, 0, width, height, 0, 0);
   image->data = (char *) malloc (height * image->bytes_per_line);
   
   int obpl = image->bytes_per_line;
@@ -2876,7 +2938,7 @@ try_xlfd_font (const char *name, float scale,
     while (*s2 && (*s2 != '*' && *s2 != '-'))
       s2++;
     
-    int L = s2-s;
+    unsigned long L = s2-s;
     if (s == s2)
       ;
 # define CMP(STR) (L == strlen(STR) && !strncasecmp (s, (STR), L))
@@ -3496,6 +3558,13 @@ int
 visual_class (Screen *s, Visual *v)
 {
   return TrueColor;
+}
+
+int
+get_bits_per_pixel (Display *dpy, int depth)
+{
+  Assert (depth == 32 || depth == 1, "unexpected depth");
+  return depth;
 }
 
 // declared in utils/grabclient.h

@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1991-2012 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1991-2014 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -269,6 +269,9 @@ typedef unsigned long			XtInputMask;
 #define DisplayHeight XDisplayHeight
 #define XMaxRequestSize(dpy) (65535)
 
+#define ScreenCount(dpy) jwxyz_ScreenCount(dpy)
+extern int jwxyz_ScreenCount(Display *);
+
 extern Display *jwxyz_make_display (void *nsview, void *cgc);
 extern void jwxyz_free_display (Display *);
 extern void *jwxyz_window_view (Window);
@@ -449,6 +452,7 @@ extern int has_writable_cells (Screen *, Visual *);
 extern int visual_depth (Screen *, Visual *);
 extern int visual_cells (Screen *, Visual *);
 extern int visual_class (Screen *, Visual *);
+extern int get_bits_per_pixel (Display *, int);
 
 // also declared in utils/grabclient.h
 extern Bool use_subwindow_mode_p (Screen *, Window);
