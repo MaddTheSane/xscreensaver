@@ -418,6 +418,12 @@
 		5572933E194B62FC0008051C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF480DF1098F528500FB32B8 /* OpenGL.framework */; };
 		55729343194B65960008051C /* aligned_malloc.c in Sources */ = {isa = PBXBuildFile; fileRef = AFDA11211934424D003D397F /* aligned_malloc.c */; };
 		55729344194B65D90008051C /* thread_util.c in Sources */ = {isa = PBXBuildFile; fileRef = AFDA11231934424D003D397F /* thread_util.c */; };
+		55729345194B6C760008051C /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55729349194B6C760008051C /* iSaverRunner.xib */; };
+		55729346194B6C760008051C /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55729349194B6C760008051C /* iSaverRunner.xib */; };
+		55729347194B6C760008051C /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55729349194B6C760008051C /* iSaverRunner.xib */; };
+		5572934A194B6C840008051C /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5572934E194B6C840008051C /* SaverRunner.xib */; };
+		5572934B194B6C840008051C /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5572934E194B6C840008051C /* SaverRunner.xib */; };
+		5572934C194B6C840008051C /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5572934E194B6C840008051C /* SaverRunner.xib */; };
 		558A98BB19057D2D00AFA53C /* InvertedSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD410981E32E00F7970E /* InvertedSlider.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		558A98BC19057D2D00AFA53C /* jwxyz.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD430981E32E00F7970E /* jwxyz.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		558A98BD19057D2D00AFA53C /* PrefsReader.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD470981E32E00F7970E /* PrefsReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -653,9 +659,6 @@
 		55EFF8141904F15000BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
 		55EFF8151904F17400BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
 		55EFF8161904F17900BB1BA5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */; };
-		55EFF8181904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
-		55EFF8191904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
-		55EFF81A1904F33E00BB1BA5 /* SaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */; };
 		55EFF81B190564CC00BB1BA5 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */; };
 		AF012918157C1E4C00C396E1 /* chessmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55E2309935F2B00F3E977 /* chessmodels.c */; };
 		AF0839A609930BAC00277BE9 /* atlantis.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258700988A468000655EE /* atlantis.xml */; };
@@ -1174,8 +1177,6 @@
 		AF4FF4D40D52CCAA00666F98 /* cubicgrid.xml in Resources */ = {isa = PBXBuildFile; fileRef = AF4FF4D30D52CCAA00666F98 /* cubicgrid.xml */; };
 		AF51FD3415845CD500E5741F /* phosphor.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258F30988A469000655EE /* phosphor.xml */; };
 		AF51FD3515845D1400E5741F /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
-		AF51FD3615845F9900E5741F /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */; };
-		AF51FD3715845F9F00E5741F /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */; };
 		AF561DF615969BC3007CA5ED /* iosgrabimage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF561DF515969BC3007CA5ED /* iosgrabimage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		AF561DF815969C5B007CA5ED /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF561DF715969C5B007CA5ED /* AssetsLibrary.framework */; };
 		AF6048FB157C07C600CA21E4 /* jwzgles.c in Sources */ = {isa = PBXBuildFile; fileRef = AF6048F8157C07C600CA21E4 /* jwzgles.c */; };
@@ -1306,7 +1307,6 @@
 		AF84AF1F15829AF000607E4C /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
 		AF84AF2015829AF000607E4C /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
 		AF84FD4209B1209E00F3AB06 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF84FD4109B1209E00F3AB06 /* GLUT.framework */; };
-		AF918983158FC00A002B5D1E /* iSaverRunner.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */; };
 		AF918986158FC00A002B5D1E /* SaverRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD400981E32E00F7970E /* SaverRunner.m */; };
 		AF918987158FC00A002B5D1E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		AF918988158FC00A002B5D1E /* SaverListController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF84AF1E15829AF000607E4C /* SaverListController.m */; };
@@ -5683,6 +5683,8 @@
 		550C4D1C1905BDF00032DB87 /* update-info-plist.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = "update-info-plist.pl"; sourceTree = "<group>"; };
 		550C4D1D1905BDF00032DB87 /* update-thumbnail.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = "update-thumbnail.pl"; sourceTree = "<group>"; };
 		550C4D1E1905BDF00032DB87 /* updates.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = updates.pl; sourceTree = "<group>"; };
+		55729348194B6C760008051C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/iSaverRunner.xib; sourceTree = "<group>"; };
+		5572934D194B6C840008051C /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SaverRunner.xib; sourceTree = "<group>"; };
 		55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		55EFF6BE1904D67700BB1BA5 /* jwxyz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = jwxyz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		55EFF6C11904D67800BB1BA5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -5692,7 +5694,6 @@
 		55EFF6C81904D67800BB1BA5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55EFF6CA1904D67800BB1BA5 /* jwxyz-FW-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "jwxyz-FW-Prefix.pch"; sourceTree = "<group>"; };
 		55EFF7FB1904ED1000BB1BA5 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
-		55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SaverRunner.xib; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = XScreenSaver.plist; sourceTree = "<group>"; };
 		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = iSaverRunner.plist; sourceTree = "<group>"; };
 		AF0839A209930B6B00277BE9 /* Atlantis.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Atlantis.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5909,7 +5910,6 @@
 		AF4FF4CE0D52CBDE00666F98 /* CubicGrid.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CubicGrid.saver; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF4FF4D00D52CC8400666F98 /* cubicgrid.c */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.c; name = cubicgrid.c; path = hacks/glx/cubicgrid.c; sourceTree = "<group>"; };
 		AF4FF4D30D52CCAA00666F98 /* cubicgrid.xml */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.xml; path = cubicgrid.xml; sourceTree = "<group>"; };
-		AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = iSaverRunner.xib; sourceTree = "<group>"; };
 		AF561DF3159651A7007CA5ED /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		AF561DF515969BC3007CA5ED /* iosgrabimage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = iosgrabimage.m; path = OSX/iosgrabimage.m; sourceTree = "<group>"; };
 		AF561DF715969C5B007CA5ED /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk/System/Library/Frameworks/AssetsLibrary.framework; sourceTree = DEVELOPER_DIR; };
@@ -9142,8 +9142,8 @@
 				55EFF6B71904D5BD00BB1BA5 /* Images.xcassets */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				AF14EE300E3CEF1A004CBBD2 /* XScreenSaver.icns */,
-				55EFF8171904F33E00BB1BA5 /* SaverRunner.xib */,
-				AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */,
+				5572934E194B6C840008051C /* SaverRunner.xib */,
+				55729349194B6C760008051C /* iSaverRunner.xib */,
 				AF2D522513E954A0002AA818 /* SaverRunner.icns */,
 				AF9771D90989DC4A001F8B92 /* SaverRunner.plist */,
 				AF01294C157D31DD00C396E1 /* iSaverRunner.plist */,
@@ -14839,7 +14839,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF51FD3715845F9F00E5741F /* iSaverRunner.xib in Resources */,
+				55729346194B6C760008051C /* iSaverRunner.xib in Resources */,
 				55EFF8161904F17900BB1BA5 /* Images.xcassets in Resources */,
 				AF51FD3415845CD500E5741F /* phosphor.xml in Resources */,
 			);
@@ -14849,7 +14849,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF51FD3615845F9900E5741F /* iSaverRunner.xib in Resources */,
+				55729345194B6C760008051C /* iSaverRunner.xib in Resources */,
 				55EFF8151904F17400BB1BA5 /* Images.xcassets in Resources */,
 				AFBFE78B17895CD000432B21 /* apple2.xml in Resources */,
 			);
@@ -15597,7 +15597,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF918983158FC00A002B5D1E /* iSaverRunner.xib in Resources */,
+				55729347194B6C760008051C /* iSaverRunner.xib in Resources */,
 				AF918AB4158FC53D002B5D1E /* abstractile.xml in Resources */,
 				AF918AB5158FC53D002B5D1E /* anemone.xml in Resources */,
 				AF918AB6158FC53D002B5D1E /* anemotaxis.xml in Resources */,
@@ -15945,7 +15945,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				55EFF6E91904DE2E00BB1BA5 /* Images.xcassets in Resources */,
-				55EFF81A1904F33E00BB1BA5 /* SaverRunner.xib in Resources */,
+				5572934C194B6C840008051C /* SaverRunner.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16533,7 +16533,7 @@
 			files = (
 				AFBFE765178643B200432B21 /* Apple2.saver in Resources */,
 				55EFF6E61904DDFF00BB1BA5 /* Images.xcassets in Resources */,
-				55EFF8181904F33E00BB1BA5 /* SaverRunner.xib in Resources */,
+				5572934A194B6C840008051C /* SaverRunner.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16543,7 +16543,7 @@
 			files = (
 				AFBFE7831786483B00432B21 /* Phosphor.saver in Resources */,
 				55EFF6E71904DE0300BB1BA5 /* Images.xcassets in Resources */,
-				55EFF8191904F33E00BB1BA5 /* SaverRunner.xib in Resources */,
+				5572934B194B6C840008051C /* SaverRunner.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -25417,6 +25417,22 @@
 			);
 			name = InfoPlist.strings;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		55729349194B6C760008051C /* iSaverRunner.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				55729348194B6C760008051C /* en */,
+			);
+			name = iSaverRunner.xib;
+			sourceTree = "<group>";
+		};
+		5572934E194B6C840008051C /* SaverRunner.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5572934D194B6C840008051C /* en */,
+			);
+			name = SaverRunner.xib;
 			sourceTree = "<group>";
 		};
 		55EFF6C71904D67800BB1BA5 /* InfoPlist.strings */ = {
