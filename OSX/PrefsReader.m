@@ -77,13 +77,6 @@
   return self;
 }
 
-- (void) dealloc
-{
-  Class c = object_getClass(self);
-
-  objc_disposeClassPair(c);
-}
-
 - (void)registerDefaults:(NSDictionary *)dict
 {
   defaults = dict;
