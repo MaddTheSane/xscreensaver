@@ -67,7 +67,7 @@ struct jwxyz_Drawable {
   CGRect frame;
   union {
     struct {
-      NSView *view;
+      __unsafe_unretained NSView *view;
       unsigned long background;
       int last_mouse_x, last_mouse_y;
     } window;
@@ -109,7 +109,7 @@ struct jwxyz_GC {
 
 struct jwxyz_Font {
   char *ps_name;
-  NSFont *nsfont;
+  __unsafe_unretained NSFont *nsfont;
   float size;   // points
 
   // In X11, "Font" is just an ID, and "XFontStruct" contains the metrics.
@@ -171,7 +171,7 @@ Display *
 jwxyz_make_display (void *nsview_arg, void *cgc_arg)
 {
   CGContextRef cgc = (CGContextRef) cgc_arg;
-  NSView *view = (NSView *) nsview_arg;
+  NSView *view = (__bridge NSView *) nsview_arg;
   Assert (view, "no view");
   if (!view) return 0;
 
@@ -211,7 +211,7 @@ jwxyz_make_display (void *nsview_arg, void *cgc_arg)
   Window w = (Window) calloc (1, sizeof(*w));
   w->type = WINDOW;
   w->window.view = view;
-  CFRetain (w->window.view);   // needed for garbage collection?
+  CFRetain ((__bridge CFTypeRef)(w->window.view));   // needed for garbage collection?
   w->window.background = BlackPixel(0,0);
 
   d->main_window = w;
@@ -251,7 +251,7 @@ jwxyz_free_display (Display *dpy)
 
   free (dpy->screen->visual);
   free (dpy->screen);
-  CFRelease (dpy->main_window->window.view);
+  CFRelease ((__bridge CFTypeRef)(dpy->main_window->window.view));
   free (dpy->main_window);
   free (dpy);
 }
@@ -261,7 +261,7 @@ void *
 jwxyz_window_view (Window w)
 {
   Assert (w && w->type == WINDOW, "not a window");
-  return w->window.view;
+  return (__bridge void *)(w->window.view);
 }
 
 
@@ -1136,7 +1136,6 @@ XCopyArea (Display *dpy, Drawable src, Drawable dst, GC gc,
 
   if (free_cgi_p) CGImageRelease (cgi);
 
-  if (releaseme) [releaseme release];
   invalidate_drawable_cache (dst);
   return 0;
 }
@@ -2291,7 +2290,7 @@ jwxyz_draw_NSImage_or_CGImage (Display *dpy, Drawable d,
 
   if (nsimg_p) {
 
-    NSImage *nsimg = (NSImage *) img_arg;
+    NSImage *nsimg = (__bridge NSImage *) img_arg;
     imgr = [nsimg size];
 
 # ifndef USE_IPHONE
@@ -2301,7 +2300,7 @@ jwxyz_draw_NSImage_or_CGImage (Display *dpy, Drawable d,
     NSData *nsdata = [NSBitmapImageRep
                        TIFFRepresentationOfImageRepsInArray:
                          [nsimg representations]];
-    CFDataRef cfdata = (CFDataRef) nsdata;
+    CFDataRef cfdata = (__bridge CFDataRef) nsdata;
     cgsrc = CGImageSourceCreateWithData (cfdata, NULL);
     cgi = CGImageSourceCreateImageAtIndex (cgsrc, 0, NULL);
 # else  // USE_IPHONE
@@ -2998,7 +2997,7 @@ XLoadFont (Display *dpy, const char *name)
     Assert (0, "no font");
     return 0;
   }
-  CFRetain (fid->nsfont);   // needed for garbage collection?
+  CFRetain ((__bridge CFTypeRef)(fid->nsfont));   // needed for garbage collection?
 
   //NSLog(@"parsed \"%s\" to %s %.1f", name, fid->ps_name, fid->size);
 
@@ -3070,8 +3069,7 @@ XSetFont (Display *dpy, GC gc, Font fid)
   if (gc->gcv.font)
     XUnloadFont (dpy, gc->gcv.font);
   gc->gcv.font = copy_font (fid);
-  [gc->gcv.font->nsfont retain];
-  CFRetain (gc->gcv.font->nsfont);   // needed for garbage collection?
+  CFRetain ((__bridge CFTypeRef)(gc->gcv.font->nsfont));   // needed for garbage collection?
   return 0;
 }
 

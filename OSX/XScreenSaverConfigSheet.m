@@ -174,16 +174,17 @@ typedef enum { SimpleXMLCommentKind,
 @synthesize index;
 @synthesize items;
 
-- (id) initWithIndex:(int)_index items:_items
+- (id) initWithIndex:(int)_index items:(NSArray*)_items
 {
-  self = [super initWithFrame:CGRectZero];
+  if (self = [super initWithFrame:CGRectZero]) {
   index = _index;
-  items = [_items retain];
+  items = _items;
 
   [self setText: [[items objectAtIndex:index] objectAtIndex:0]];
   [self setBackgroundColor:[UIColor clearColor]];
   [self sizeToFit];
 
+  }
   return self;
 }
 
@@ -223,8 +224,8 @@ typedef enum { SimpleXMLCommentKind,
 - (id) initWithHTML:(NSString *)h font:(UIFont *)f
 {
   self = [super init];
-  if (! self) return 0;
-  font = [f retain];
+  if (! self) return nil;
+  font = f;
   webView = [[UIWebView alloc] init];
   webView.delegate = self;
   webView.dataDetectorTypes = UIDataDetectorTypeNone;
@@ -252,8 +253,6 @@ typedef enum { SimpleXMLCommentKind,
 - (void) setHTML: (NSString *)h
 {
   if (! h) return;
-  [h retain];
-  if (html) [html release];
   html = h;
   NSString *h2 =
     [NSString stringWithFormat:
@@ -307,7 +306,7 @@ static char *anchorize (const char *url);
          withString:@"<BR> &nbsp; &nbsp; &nbsp; &nbsp; "];
 
   NSString *h = @"";
-  for (NSString *s in
+  for (__strong NSString *s in
          [t componentsSeparatedByCharactersInSet:
               [NSCharacterSet whitespaceAndNewlineCharacterSet]]) {
     if ([s hasPrefix:@"http://"] ||
@@ -367,7 +366,7 @@ static char *anchorize (const char *url);
              range:NSMakeRange(0, [str length])];
 
   // Remove HREFs.
-  for (NSString *s in [str componentsSeparatedByString: @"<"]) {
+  for (__strong NSString *s in [str componentsSeparatedByString: @"<"]) {
     NSRange r = [s rangeOfString:@">"];
     if (r.length > 0)
       s = [s substringFromIndex: r.location + r.length];
@@ -423,14 +422,6 @@ static char *anchorize (const char *url);
   [self setFrame: r];
 }
 
-
-- (void) dealloc
-{
-  [html release];
-  [font release];
-  [webView release];
-  [super dealloc];
-}
 
 @end
 
@@ -557,7 +548,6 @@ static void layout_group (NSView *group, BOOL horiz_p);
   static NSDictionary *a = 0;
   if (! a) {
     a = UPDATER_DEFAULTS;
-    [a retain];
   }
   if ([a objectForKey:key])
     // These preferences are global to all xscreensavers.
@@ -772,8 +762,8 @@ static void layout_group (NSView *group, BOOL horiz_p);
 
   if (!reload_p) {
     if (! pref_keys) {
-      pref_keys = [[NSMutableArray arrayWithCapacity:10] retain];
-      pref_ctls = [[NSMutableArray arrayWithCapacity:10] retain];
+      pref_keys = [[NSMutableArray alloc] initWithCapacity:10];
+      pref_ctls = [[NSMutableArray alloc] initWithCapacity:10];
     }
 
     [pref_keys addObject: [self makeKey:pref_key]];
@@ -1220,12 +1210,10 @@ hreffify (NSText *nstext)
   [self placeChild:lab on:parent];
   UISwitch *button = [[UISwitch alloc] initWithFrame:rect];
   [self placeChild:button on:parent right:YES];
-  [lab release];
 
 # endif // USE_IPHONE
   
   [self bindSwitch:button cmdline:(arg_set ? arg_set : arg_unset)];
-  [button release];
 }
 
 
@@ -1340,7 +1328,6 @@ hreffify (NSText *nstext)
         [lab setFont:[NSFont boldSystemFontOfSize:s]];
       }
 # endif
-      [lab release];
     }
     
     if (low_label) {
@@ -1360,8 +1347,6 @@ hreffify (NSText *nstext)
       [lab setLineBreakMode:NSLineBreakByClipping];
       [self placeChild:lab on:parent right:(label ? YES : NO)];
 # endif // USE_IPHONE
-
-      [lab release];
      }
     
 # ifndef USE_IPHONE
@@ -1397,12 +1382,10 @@ hreffify (NSText *nstext)
       [lab setLineBreakMode:NSLineBreakByClipping];
 # endif
       [self placeChild:lab on:parent right:YES];
-      [lab release];
      }
 
     [self bindSwitch:slider cmdline:arg];
-    [slider release];
-    
+	  
 #ifndef USE_IPHONE  // On iPhone, we use sliders for all numeric values.
 
   } else if ([type isEqualToString:@"spinbutton"]) {
@@ -1437,7 +1420,6 @@ hreffify (NSText *nstext)
       rect.size.height = [txt frame].size.height;
       [lab setFrame:rect];
       [self placeChild:lab on:parent];
-      [lab release];
      }
     
     [self placeChild:txt on:parent right:(label ? YES : NO)];
@@ -1471,7 +1453,7 @@ hreffify (NSText *nstext)
     else
       [step setIncrement:1.0];
 
-    NSNumberFormatter *fmt = [[[NSNumberFormatter alloc] init] autorelease];
+    NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
     [fmt setFormatterBehavior:NSNumberFormatterBehavior10_4];
     [fmt setNumberStyle:NSNumberFormatterDecimalStyle];
     [fmt setMinimum:[NSNumber numberWithDouble:[low  doubleValue]]];
@@ -1485,9 +1467,6 @@ hreffify (NSText *nstext)
     [self bindSwitch:step cmdline:arg];
     [self bindSwitch:txt  cmdline:arg];
     
-    [step release];
-    [txt release];
-
 # endif // USE_IPHONE
 
   } else {
@@ -1702,7 +1681,6 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 # if !defined(USE_IPHONE) || defined(USE_PICKER_VIEW)
   [self placeChild:popup on:parent];
   [self bindResource:popup key:menu_key];
-  [popup release];
 # endif
 
 # ifdef USE_IPHONE
@@ -1796,7 +1774,6 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 # endif // USE_IPHONE
 
   [self placeChild:lab on:parent];
-  [lab release];
 }
 
 
@@ -1864,13 +1841,11 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   if (label) {
     LABEL *lab = [self makeLabel:label];
     [self placeChild:lab on:parent];
-    [lab release];
   }
 
   [self placeChild:txt on:parent right:(label ? YES : NO)];
 
   [self bindSwitch:txt cmdline:arg];
-  [txt release];
 }
 
 
@@ -1922,13 +1897,11 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   if (label) {
     lab = [self makeLabel:label];
     [self placeChild:lab on:parent];
-    [lab release];
   }
 
   [self placeChild:txt on:parent right:(label ? YES : NO)];
 
   [self bindSwitch:txt cmdline:arg];
-  [txt release];
 
   // Make the text field and label be the same height, whichever is taller.
   if (lab) {
@@ -1961,8 +1934,6 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
     [choose setAction:@selector(fileSelectorChooseDirsAction:)];
   else
     [choose setAction:@selector(fileSelectorChooseAction:)];
-
-  [choose release];
 # endif // !USE_IPHONE
 }
 
@@ -2120,7 +2091,6 @@ find_text_field_of_button (NSButton *button)
           toObject:cnames
           withKeyPath:@"arrangedObjects"
           options:nil];
-  [cnames release];
 
   [self bindSwitch:matrix cmdline:@"-text-mode %"];
 
@@ -2363,7 +2333,6 @@ find_text_field_of_button (NSButton *button)
   r2.origin.x += 20;
   r2.origin.y += 14;
   [lab2 setFrameOrigin:r2.origin];
-  [lab2 release];
 # endif // USE_IPHONE
 }
 
@@ -2464,9 +2433,6 @@ find_text_field_of_button (NSButton *button)
 
   [self placeChild:box on:parent];
 
-  [group release];
-  [box release];
-
 # endif // !USE_IPHONE
 }
 
@@ -2541,7 +2507,7 @@ last_child (NSView *parent)
      by making each of those a new section in the TableView.
    */
   if (! controls)
-    controls = [[NSMutableArray arrayWithCapacity:10] retain];
+    controls = [[NSMutableArray alloc] initWithCapacity:10];
   if ([controls count] == 0)
     [controls addObject: [NSMutableArray arrayWithCapacity:10]];
   NSMutableArray *current = [controls objectAtIndex:[controls count]-1];
@@ -3003,8 +2969,6 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   [cancel setAction:@selector(cancelAction:)];
   [reset  setAction:@selector(resetAction:)];
   
-  [bbox release];
-
   return pbox;
 }
 #endif // !USE_IPHONE
@@ -3028,7 +2992,6 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   saver_name = [self parseXScreenSaverTag: node];
   saver_name = [saver_name stringByReplacingOccurrencesOfString:@" "
                            withString:@""];
-  [saver_name retain];
   
 # ifndef USE_IPHONE
 
@@ -3052,9 +3015,6 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   
   [parent setContentView:root];
 	
-  [panel release];
-  [root release];
-
 # else  // USE_IPHONE
 
   CGRect r = [parent frame];
@@ -3522,9 +3482,8 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   NSString *id = @"Cell";
   UITableViewCell *cell = [tv dequeueReusableCellWithIdentifier:id];
   if (!cell)
-    cell = [[[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault
-                                     reuseIdentifier: id]
-             autorelease];
+    cell = [[UITableViewCell alloc] initWithStyle: UITableViewCellStyleDefault
+                                     reuseIdentifier: id];
 
   for (UIView *subview in [cell.contentView subviews])
     [subview removeFromSuperview];
@@ -3567,8 +3526,8 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   // instance variables
   opts = _opts;
   defaultOptions = _defs;
-  userDefaultsController   = [_prefs retain];
-  globalDefaultsController = [_globalPrefs retain];
+  userDefaultsController   = _prefs;
+  globalDefaultsController = _globalPrefs;
 
   NSXMLParser *xmlDoc = [[NSXMLParser alloc] initWithData:xml_data];
 
@@ -3598,21 +3557,5 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   return self;
 }
 
-
-- (void) dealloc
-{
-  [saver_name release];
-  [userDefaultsController release];
-  [globalDefaultsController release];
-# ifdef USE_IPHONE
-  [controls release];
-  [pref_keys release];
-  [pref_ctls release];
-#  ifdef USE_PICKER_VIEW
-  [picker_values release];
-#  endif
-# endif
-  [super dealloc];
-}
 
 @end

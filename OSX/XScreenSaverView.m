@@ -143,7 +143,7 @@ extern NSDictionary *make_function_table_dict(void);  // ios-function-table.m
 # else  // USE_IPHONE
   // Depends on the auto-generated "ios-function-table.m" being up to date.
   if (! function_tables)
-    function_tables = [make_function_table_dict() retain];
+    function_tables = make_function_table_dict();
   NSValue *v = [function_tables objectForKey: name];
   void *addr = v ? [v pointerValue] : 0;
 # endif // USE_IPHONE
@@ -379,12 +379,11 @@ orientname(unsigned long o)
            isPreview:(BOOL)isPreview
 {
   if (! (self = [super initWithFrame:frame isPreview:isPreview]))
-    return 0;
+    return nil;
   
   xsft = [self findFunctionTable: saverName];
   if (! xsft) {
-    [self release];
-    return 0;
+    return nil;
   }
 
   [self setShellPath];
@@ -483,12 +482,8 @@ orientname(unsigned long o)
 
 # endif // USE_BACKBUFFER
 
-  [prefsReader release];
-
   // xsft
   // fpst
-
-  [super dealloc];
 }
 
 - (PrefsReader *) prefsReader
@@ -947,9 +942,9 @@ double current_device_rotation (void)
     if (! xdpy) {
 # ifdef USE_BACKBUFFER
       NSAssert (backbuffer, @"no back buffer");
-      xdpy = jwxyz_make_display (self, backbuffer);
+      xdpy = jwxyz_make_display ((__bridge void *)(self), backbuffer);
 # else
-      xdpy = jwxyz_make_display (self, 0);
+      xdpy = jwxyz_make_display ((__bridge void *)(self), 0);
 # endif
       xwindow = XRootWindow (xdpy, 0);
 
@@ -1931,12 +1926,6 @@ double current_device_rotation (void)
   [self addGestureRecognizer: pan];
   [self addGestureRecognizer: pan2];
   [self addGestureRecognizer: hold];
-
-  [dtap release];
-  [stap release];
-  [pan  release];
-  [pan2 release];
-  [hold release];
 }
 
 
@@ -2188,7 +2177,7 @@ double current_device_rotation (void)
                    options:(NSWorkspaceLaunchWithoutAddingToRecents |
                             NSWorkspaceLaunchWithoutActivation |
                             NSWorkspaceLaunchAndHide)
-                   configuration:nil
+                            configuration:@{}
                    error:&err]) {
     NSLog(@"Unable to launch %@: %@", app_path, err);
   }
@@ -2205,7 +2194,7 @@ double current_device_rotation (void)
 static PrefsReader *
 get_prefsReader (Display *dpy)
 {
-  XScreenSaverView *view = jwxyz_window_view (XRootWindow (dpy, 0));
+  XScreenSaverView *view = (__bridge XScreenSaverView *)(jwxyz_window_view (XRootWindow (dpy, 0)));
   if (!view) return 0;
   return [view prefsReader];
 }

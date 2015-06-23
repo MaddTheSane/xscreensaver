@@ -10959,8 +10959,10 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
+			indentWidth = 2;
 			name = xscreensaver;
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
@@ -30461,6 +30463,7 @@
 		AF4808C3098C3B8B00FB32B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				INSTALL_PATH = /usr/local/lib;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
@@ -30471,6 +30474,7 @@
 		AF4808C4098C3B8B00FB32B8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				INSTALL_PATH = /usr/local/lib;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
@@ -35682,11 +35686,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AF94E7411A16E93600289B93 /* xscreensaver.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OSX/xscreensaver_Prefix.pch;
@@ -35737,7 +35743,8 @@
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				LIBRARY_SEARCH_PATHS = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OBJC_GC_CFLAGS = "";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				"OTHER_CFLAGS[sdk=macosx*]" = "$(OBJC_GC_CFLAGS)";
@@ -35758,11 +35765,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AF94E7411A16E93600289B93 /* xscreensaver.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				BUNDLE_IDENTIFIER = "org.jwz.${PROJECT_NAME:rfc1034identifier}.${PRODUCT_NAME:rfc1034identifier}";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Jamie Zawinski (4627ATJELP)";
 				"CODE_SIGN_IDENTITY[sdk=iphonesimulator*]" = "iPhone Distribution: Jamie Zawinski (4627ATJELP)";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OSX/xscreensaver_Prefix.pch;
@@ -35814,7 +35823,8 @@
 				LIBRARY_SEARCH_PATHS = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				LLVM_LTO = NO;
 				"LLVM_LTO[sdk=macosx*]" = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OBJC_GC_CFLAGS = "";
 				OTHER_CFLAGS = "";
 				"OTHER_CFLAGS[sdk=macosx*]" = "$(OBJC_GC_CFLAGS)";
 				"OTHER_LDFLAGS[sdk=macosx*]" = "-headerpad_max_install_names";

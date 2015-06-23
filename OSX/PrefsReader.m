@@ -73,7 +73,7 @@
 
   self = [super init];
   object_setClass(self, c);
-  domain = [_domain retain];
+  domain = _domain;
   return self;
 }
 
@@ -81,22 +81,18 @@
 {
   Class c = object_getClass(self);
 
-  [domain release];
-  [defaults release];
-  [super dealloc];
-
   objc_disposeClassPair(c);
 }
 
 - (void)registerDefaults:(NSDictionary *)dict
 {
-  defaults = [dict retain];
+  defaults = dict;
 }
 
 - (id)objectForKey:(NSString *)key
 {
   NSObject *obj = (NSObject *)
-    CFPreferencesCopyAppValue ((CFStringRef) key, (CFStringRef) domain);
+    CFBridgingRelease(CFPreferencesCopyAppValue ((CFStringRef) key, (CFStringRef) domain));
   if (!obj && defaults)
     obj = [defaults objectForKey:key];
   return obj;
@@ -298,10 +294,7 @@
   // Save a copy of the default options, since iOS doesn't have
   // [userDefaultsController initialValues].
   //
-  if (defaultOptions) 
-    [defaultOptions release];
-  defaultOptions = [[NSMutableDictionary dictionaryWithCapacity:20]
-                     retain];
+  defaultOptions = [[NSMutableDictionary alloc] initWithCapacity:20];
   for (NSString *key in defsdict) {
     [defaultOptions setValue:[defsdict objectForKey:key] forKey:key];
   }
@@ -314,8 +307,8 @@
     [[NSUserDefaultsController alloc] initWithDefaults:globalDefaults
                                       initialValues:UPDATER_DEFAULTS];
 # else  // USE_IPHONE
-  userDefaultsController   = [userDefaults retain];
-  globalDefaultsController = [userDefaults retain];
+  userDefaultsController   = userDefaults;
+  globalDefaultsController = userDefaults;
 # endif // USE_IPHONE
 
   NSDictionary *optsdict = [NSMutableDictionary dictionaryWithCapacity:20];
@@ -416,7 +409,6 @@
   static NSDictionary *updaterDefaults;
   if (!updaterDefaults) {
     updaterDefaults = UPDATER_DEFAULTS;
-    [updaterDefaults retain];
   }
   
   NSUserDefaults *defaults =
@@ -580,7 +572,7 @@
                                                    module:name];
 # else  // USE_IPHONE
   userDefaults = [NSUserDefaults standardUserDefaults];
-  globalDefaults = [userDefaults retain];
+  globalDefaults = userDefaults;
 # endif // USE_IPHONE
 
   // Convert "org.jwz.xscreensaver.NAME" to just "NAME".
@@ -588,19 +580,10 @@
   if (r.length)
     name = [name substringFromIndex:r.location+1];
   name = [name stringByReplacingOccurrencesOfString:@" " withString:@""];
-  saver_name = [name retain];
+  saver_name = name;
 
   [self registerXrmKeys:opts defaults:defs];
   return self;
-}
-
-- (void) dealloc
-{
-  [saver_name release];
-  [userDefaultsController release];
-  [globalDefaultsController release];
-  [globalDefaults release];
-  [super dealloc];
 }
 
 @end

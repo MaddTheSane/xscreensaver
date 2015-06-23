@@ -41,16 +41,23 @@
    so it works out nicely.
  */
 
-typedef struct {
+@interface ios_loader_data : NSObject {
+  @package
   void (*callback) (void *uiimage, const char *fn, int width, int height,
                     void *closure);
   void *closure;
-
+  
   ALAssetsLibrary *library;
   NSMutableArray *assets;
+}
+@property (strong) ALAssetsLibrary *library;
+@property (strong) NSMutableArray *assets;
+@end
 
-} ios_loader_data;
-
+@implementation ios_loader_data
+@synthesize library;
+@synthesize assets;
+@end
 
 static void
 ios_random_image_done (ios_loader_data *d, BOOL ok)
@@ -77,11 +84,10 @@ ios_random_image_done (ios_loader_data *d, BOOL ok)
     }
   }
 
-  [d->assets release];
-  [d->library release];
+  CFRelease((__bridge CFTypeRef)(d->assets));
+  CFRelease((__bridge CFTypeRef)(d->library));
 
-  d->callback (img, fn, [img size].width, [img size].height, d->closure);
-  free (d);
+  d->callback ((__bridge void *)(img), fn, [img size].width, [img size].height, d->closure);
 }
 
 
@@ -91,12 +97,12 @@ ios_load_random_image (void (*callback) (void *uiimage, const char *fn,
                                          void *closure),
                        void *closure)
 {
-  ios_loader_data *d = (ios_loader_data *) calloc (1, sizeof(*d));
+  ios_loader_data *d = [ios_loader_data new];
   d->callback = callback;
   d->closure = closure;
 
-  d->library = [[[ALAssetsLibrary alloc] init] retain];
-  d->assets = [[NSMutableArray array] retain];
+  d.library = [[ALAssetsLibrary alloc] init];
+  d.assets = [NSMutableArray array];
 
   // The closures passed in here are called later, after we have returned.
   //

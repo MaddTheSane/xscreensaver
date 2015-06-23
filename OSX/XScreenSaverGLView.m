@@ -261,7 +261,7 @@ extern void check_gl_error (const char *type);
   // gl_framebuffer
   // gl_renderbuffer
   // gl_depthbuffer
-  [super dealloc];
+  //[super dealloc];
 }
 
 @end
@@ -292,7 +292,7 @@ GLXContext *
 init_GL (ModeInfo *mi)
 {
   Window win = mi->window;
-  XScreenSaverGLView *view = (XScreenSaverGLView *) jwxyz_window_view (win);
+  XScreenSaverGLView *view = (__bridge XScreenSaverGLView *) jwxyz_window_view (win);
   NSAssert1 ([view isKindOfClass:[XScreenSaverGLView class]],
              @"wrong view class: %@", view);
   NSOpenGLContext *ctx = [view oglContext];
@@ -447,7 +447,7 @@ init_GL (ModeInfo *mi)
 void
 glXSwapBuffers (Display *dpy, Window window)
 {
-  XScreenSaverGLView *view = (XScreenSaverGLView *) jwxyz_window_view (window);
+  XScreenSaverGLView *view = (__bridge XScreenSaverGLView *) jwxyz_window_view (window);
   NSAssert1 ([view isKindOfClass:[XScreenSaverGLView class]],
              @"wrong view class: %@", view);
 #ifndef USE_IPHONE
