@@ -311,6 +311,14 @@
 /* Begin PBXBuildFile section */
 		5598B7B11B393C0F00D7F8AF /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5598B7B01B393C0F00D7F8AF /* CoreGraphics.framework */; };
 		5598B7B21B393C1700D7F8AF /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF1AD9E718500FA000932759 /* Foundation.framework */; };
+		5598B7B71B39B8EF00D7F8AF /* jwxyz.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD430981E32E00F7970E /* jwxyz.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5598B7BB1B39BB8E00D7F8AF /* XScreenSaverSubclass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5598B7BA1B39BB8E00D7F8AF /* XScreenSaverSubclass.swift */; };
+		5598B7BC1B39BC3100D7F8AF /* XScreenSaverGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = AF4812F70990D9AE00FB32B8 /* XScreenSaverGLView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5598B7BD1B39BC3100D7F8AF /* XScreenSaverView.h in Headers */ = {isa = PBXBuildFile; fileRef = AFC254C409882C97000655EE /* XScreenSaverView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5598B7BE1B39BC3D00D7F8AF /* InvertedSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD410981E32E00F7970E /* InvertedSlider.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5598B7BF1B39BC6800D7F8AF /* screenhackI.h in Headers */ = {isa = PBXBuildFile; fileRef = AFC254B909873AF9000655EE /* screenhackI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5598B7C01B39BC7700D7F8AF /* PrefsReader.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD470981E32E00F7970E /* PrefsReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5598B7C11B39BCA600D7F8AF /* yarandom.h in Headers */ = {isa = PBXBuildFile; fileRef = AFE1FD5C0981E3CB00F7970E /* yarandom.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AF012918157C1E4C00C396E1 /* chessmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55E2309935F2B00F3E977 /* chessmodels.c */; };
 		AF0839A609930BAC00277BE9 /* atlantis.xml in Resources */ = {isa = PBXBuildFile; fileRef = AFC258700988A468000655EE /* atlantis.xml */; };
 		AF0839B009930C4900277BE9 /* atlantis.c in Sources */ = {isa = PBXBuildFile; fileRef = AF0839A909930C4900277BE9 /* atlantis.c */; };
@@ -6602,6 +6610,9 @@
 		32CA4F630368D1EE00C91783 /* xscreensaver_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xscreensaver_Prefix.pch; path = OSX/xscreensaver_Prefix.pch; sourceTree = "<group>"; };
 		5598B7B01B393C0F00D7F8AF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		5598B7B31B393C6200D7F8AF /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = text; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		5598B7B81B39B94A00D7F8AF /* jwxyz.modulemap */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = "sourcecode.module-map"; name = jwxyz.modulemap; path = OSX/jwxyz.modulemap; sourceTree = "<group>"; usesTabs = 0; };
+		5598B7B91B39BB8B00D7F8AF /* Abstractile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Abstractile-Bridging-Header.h"; sourceTree = "<group>"; };
+		5598B7BA1B39BB8E00D7F8AF /* XScreenSaverSubclass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XScreenSaverSubclass.swift; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = XScreenSaver.plist; path = OSX/XScreenSaver.plist; sourceTree = "<group>"; };
 		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = iSaverRunner.plist; path = OSX/iSaverRunner.plist; sourceTree = SOURCE_ROOT; };
 		AF01295A157D5C2C00C396E1 /* iSaverRunner29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iSaverRunner29.png; path = OSX/iSaverRunner29.png; sourceTree = "<group>"; };
@@ -10679,6 +10690,7 @@
 		080E96DDFE201D6D7F000001 /* libjwxyz */ = {
 			isa = PBXGroup;
 			children = (
+				5598B7B81B39B94A00D7F8AF /* jwxyz.modulemap */,
 				AF561DF515969BC3007CA5ED /* iosgrabimage.m */,
 				AFC7592F158D9A7A00C5458E /* iostextclient.m */,
 				AFE1FD410981E32E00F7970E /* InvertedSlider.h */,
@@ -10698,9 +10710,11 @@
 				AF4812F70990D9AE00FB32B8 /* XScreenSaverGLView.h */,
 				AF4812F80990D9AE00FB32B8 /* XScreenSaverGLView.m */,
 				AF9CC7A0099580E70075E99B /* XScreenSaverSubclass.m */,
+				5598B7BA1B39BB8E00D7F8AF /* XScreenSaverSubclass.swift */,
 				AFC254C409882C97000655EE /* XScreenSaverView.h */,
 				AFC254C509882C97000655EE /* XScreenSaverView.m */,
 				AF9E7EC8190F4C4000A8B01F /* enable_gc.c */,
+				5598B7B91B39BB8B00D7F8AF /* Abstractile-Bridging-Header.h */,
 			);
 			name = libjwxyz;
 			sourceTree = "<group>";
@@ -11747,21 +11761,28 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5598B7C01B39BC7700D7F8AF /* PrefsReader.h in Headers */,
 				AFA55867099324D800F3E977 /* minixpm.h in Headers */,
+				5598B7C11B39BCA600D7F8AF /* yarandom.h in Headers */,
 				AFA55A540993353500F3E977 /* gllist.h in Headers */,
+				5598B7BF1B39BC6800D7F8AF /* screenhackI.h in Headers */,
 				AFA55A96099336D800F3E977 /* normals.h in Headers */,
+				5598B7BC1B39BC3100D7F8AF /* XScreenSaverGLView.h in Headers */,
 				AFE943B219DD54C1000A5E6D /* xft.h in Headers */,
 				AF975C94099C929800B05160 /* xpm-pixmap.h in Headers */,
 				AF4775C1099D9E79001F091E /* resources.h in Headers */,
 				AF9D473909B52EE0006E59CF /* colorbars.h in Headers */,
 				AFDA11261934424D003D397F /* aligned_malloc.h in Headers */,
 				AFDA11281934424D003D397F /* thread_util.h in Headers */,
+				5598B7BE1B39BC3D00D7F8AF /* InvertedSlider.h in Headers */,
+				5598B7BD1B39BC3100D7F8AF /* XScreenSaverView.h in Headers */,
 				AFBF893F0E41D930006A2D66 /* fps.h in Headers */,
 				AFBF89B20E424036006A2D66 /* fpsI.h in Headers */,
 				AF6048FC157C07C600CA21E4 /* jwzgles.h in Headers */,
 				AF6048FD157C07C600CA21E4 /* jwzglesI.h in Headers */,
 				AFC7592E158D8E8B00C5458E /* textclient.h in Headers */,
 				CE9289D419BD00E300961F22 /* async_netdb.h in Headers */,
+				5598B7B71B39B8EF00D7F8AF /* jwxyz.h in Headers */,
 				AFE943B619DDF97F000A5E6D /* utf8wc.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -16604,6 +16625,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0700;
 				TargetAttributes = {
 					AF918977158FC00A002B5D1E = {
@@ -26826,6 +26848,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5598B7BB1B39BB8E00D7F8AF /* XScreenSaverSubclass.swift in Sources */,
 				AFE6A4220CDD7FAA002805BF /* XScreenSaverSubclass.m in Sources */,
 				AFE6A4350CDD800F002805BF /* abstractile.c in Sources */,
 			);
@@ -30583,6 +30606,8 @@
 				DEFINES_MODULE = YES;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INSTALL_PATH = "$(SYSTEM_DIR)/Library/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = OSX/jwxyz.modulemap;
 				OTHER_LDFLAGS = "-lz ";
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lz",
@@ -30591,6 +30616,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_IDENTIFIER}";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VALID_ARCHS = "i386 x86_64 armv6 armv7 armv7s arm64";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -30603,6 +30629,8 @@
 				DEFINES_MODULE = YES;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INSTALL_PATH = "$(SYSTEM_DIR)/Library/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = OSX/jwxyz.modulemap;
 				OTHER_LDFLAGS = "-lz ";
 				"OTHER_LDFLAGS[sdk=macosx*]" = (
 					"-lz",
@@ -35959,14 +35987,21 @@
 		AFE6A42B0CDD7FAA002805BF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_IDENTIFIER}";
+				SWIFT_OBJC_BRIDGING_HEADER = "Abstractile-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		AFE6A42C0CDD7FAA002805BF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_IDENTIFIER}";
+				SWIFT_OBJC_BRIDGING_HEADER = "Abstractile-Bridging-Header.h";
 			};
 			name = Release;
 		};

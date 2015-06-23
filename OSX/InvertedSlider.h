@@ -31,8 +31,7 @@
 - (id) initWithFrame:(NSRect)r inverted:(BOOL)_inv integers:(BOOL)_int;
 
 # ifdef USE_IPHONE
-- (double) transformedValue;
-- (void) setTransformedValue:(double)v;
+@property double transformedValue;
 # endif
 
 @end

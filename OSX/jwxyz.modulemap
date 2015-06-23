@@ -1,0 +1,21 @@
+framework module jwxyz {
+  umbrella header "jwxyz.h"
+
+  export *
+  module * { export * }
+  
+  module XScreenSaverView {
+    header "XScreenSaverView.h"
+    export *
+  }
+  
+  module XScreenSaverGLView {
+    header "XScreenSaverGLView.h"
+    export *
+  }
+  
+  module InvertedSlider {
+    header "InvertedSlider.h"
+    export *
+  }
+}
