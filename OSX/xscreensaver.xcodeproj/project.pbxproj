@@ -30116,7 +30116,6 @@
 					"$(SRCROOT)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Updater.plist";
-				"OTHER_CFLAGS[sdk=macosx*]" = "-fno-objc-gc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -30131,7 +30130,6 @@
 					"$(SRCROOT)",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Updater.plist";
-				"OTHER_CFLAGS[sdk=macosx*]" = "-fno-objc-gc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

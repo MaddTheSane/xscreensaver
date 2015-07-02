@@ -2788,7 +2788,7 @@ utf8_metrics (Font fid, NSString *nsstr, XCharStruct *cs)
   //
   int count = 0;
   for (id runid in (NSArray *)CTLineGetGlyphRuns(ctline)) {
-    CTRunRef run = (CTRunRef) runid;
+    CTRunRef run = (__bridge CTRunRef) runid;
     CFRange r = { 0, };
     CGRect bbox = CTRunGetImageBounds (run, cgc, r);
     CGFloat ascent, descent, leading;
@@ -3144,9 +3144,7 @@ random_font (NSFontTraitMask traits, NSFontTraitMask mask,
 
     NSFont *result = try_font (traits, mask, family_name, size, name_ret);
     if (result) {
-      [*family_ret release];
       *family_ret = family_name;
-      [*family_ret retain];
       return result;
     }
   }
@@ -3228,10 +3226,9 @@ try_xlfd_font (const char *name, float scale,
       require |= NSFixedPitchFontMask;
       family_name = @"Courier";
     } else if (!UNSPEC) {
-      family_name = [[[NSString alloc] initWithBytes:s
-                                              length:L
-                                            encoding:NSUTF8StringEncoding]
-                     autorelease];
+      family_name = [[NSString alloc] initWithBytes:s
+                                             length:L
+                                           encoding:NSUTF8StringEncoding];
     }
 
     L = xlfd_next (&s, &s2); // Weight name
@@ -3283,7 +3280,6 @@ try_xlfd_font (const char *name, float scale,
 
   if (rand) {
     nsfont   = random_font (require, mask, size, &family_name, &ps_name);
-    [family_name autorelease];
   }
 
   if (!nsfont)
@@ -3514,8 +3510,8 @@ jwxyz_unicode_character_name (Font fid, unsigned long uc)
   CGGlyph cgglyph;
   if (CTFontGetGlyphsForCharacters (ctfont, (UniChar *) &uc, &cgglyph, 1)) {
     NSString *name = (NSString *)
-      CGFontCopyGlyphNameForGlyph (CTFontCopyGraphicsFont (ctfont, 0),
-                                   cgglyph);
+      CFBridgingRelease(CGFontCopyGlyphNameForGlyph (CTFontCopyGraphicsFont (ctfont, 0),
+                                   cgglyph));
     ret = (name ? strdup ([name UTF8String]) : 0);
   }
 
@@ -3567,10 +3563,9 @@ XTextExtents (XFontStruct *f, const char *s, int length,
   // kerning pairs, alternate glyphs, and fun stuff like the word "Zapfino" in
   // Zapfino.
 
-  NSString *nsstr = [[[NSString alloc] initWithBytes:s
+  NSString *nsstr = [[NSString alloc] initWithBytes:s
                                               length:length
-                                            encoding:NSISOLatin1StringEncoding]
-                     autorelease];
+                                           encoding:NSISOLatin1StringEncoding];
   utf8_metrics (f->fid, nsstr, cs);
   *dir_ret = 0;
   *ascent_ret  = f->ascent;

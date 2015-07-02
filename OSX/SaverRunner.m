@@ -574,7 +574,6 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     [sup addSubview: new_view];
     [win makeFirstResponder:new_view];
     [new_view setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
-    [new_view retain];
     [new_view startAnimation];
   }
 
@@ -1003,8 +1002,8 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     NSString *dir = [dirs objectAtIndex:i];
     NSArray *names = [self listSaverBundleNamesInDir:dir];
     if (! names) continue;
-    saverDir   = [dir retain];
-    saverNames = [names retain];
+    saverDir   = dir;
+    saverNames = names;
     return names;
   }
 
@@ -1364,8 +1363,7 @@ FAIL:
 
 # ifndef USE_IPHONE
   int window_count = ([saverNames count] <= 1 ? 1 : 2);
-  NSMutableArray *a = [[NSMutableArray arrayWithCapacity: window_count+1]
-                        retain];
+  NSMutableArray *a = [[NSMutableArray alloc] initWithCapacity: window_count+1];
   windows = a;
 
   int i;

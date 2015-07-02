@@ -82,15 +82,13 @@
   NSString *target = @"/ScreenSaverEngine.app";
   ProcessSerialNumber psn = { kNoProcess, kNoProcess };
   while (GetNextProcess(&psn) == noErr) {
-    CFDictionaryRef cfdict =
-      ProcessInformationCopyDictionary (&psn,
-        kProcessDictionaryIncludeAllInformationMask);
-    if (cfdict) {
-      NSDictionary *dict = (NSDictionary *) cfdict;
+    NSDictionary *dict =
+      CFBridgingRelease(ProcessInformationCopyDictionary (&psn,
+        kProcessDictionaryIncludeAllInformationMask));
+    if (dict) {
       NSString *path = [dict objectForKey:@"BundlePath"];
       if (path && [path hasSuffix:target])
         found = YES;
-      CFRelease (cfdict);
     }
     if (found)
       break;

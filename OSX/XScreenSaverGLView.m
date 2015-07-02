@@ -188,7 +188,7 @@ extern void check_gl_error (const char *type);
     pixfmt = [[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
   }
 
-  return [pixfmt autorelease];
+  return pixfmt;
 }
 
 #else // !USE_IPHONE

@@ -2,3 +2,5 @@
 Build/
 project.xcworkspace/
 xcuserdata/
+hacks/glx/molecules.h
+hacks/m6502.h

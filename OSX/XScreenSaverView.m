@@ -491,7 +491,7 @@ orientname(unsigned long o)
 # ifdef USE_BACKBUFFER
 
 #  ifdef BACKBUFFER_OPENGL
-  [ogl_ctx release];
+  ogl_ctx = nil;
   // Releasing the OpenGL context should also free any OpenGL objects,
   // including the backbuffer texture and frame/render/depthbuffers.
 #  endif // BACKBUFFER_OPENGL
@@ -596,7 +596,7 @@ orientname(unsigned long o)
 
       NSAssert (pixfmt, @"unable to create NSOpenGLPixelFormat");
 
-      [pixfmt retain]; // #### ???
+      //[pixfmt retain]; // #### ???
 
       // Fun: On OS X 10.7, the second time an OpenGL context is created, after
       // the preferences dialog is launched in SaverTester, the context only
