@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2006-2015 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2006-2017 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -29,6 +29,7 @@
 #else
 # import <Cocoa/Cocoa.h>
 # import <ScreenSaver/ScreenSaver.h>
+//# define USE_TOUCHBAR
 #endif
 
 
@@ -42,6 +43,7 @@
 @protocol XScreenSaverViewDelegate
 - (void) wantsFadeOut:(XScreenSaverView *)saverView;
 - (void) didShake:(XScreenSaverView *)saverView;
+- (void) openPreferences: (NSString *)which;
 @end
 
 @interface ScreenSaverView : NSView
@@ -61,13 +63,14 @@
 #endif // USE_IPHONE
 
 
-#define USE_BACKBUFFER  // must be in sync with jwxyz.m
 // Currently only OpenGL backbuffers are supported (OSX and iOS).
 # define BACKBUFFER_OPENGL
 
 @interface XScreenSaverView : ScreenSaverView
 # ifdef USE_IPHONE
 			      <UIAlertViewDelegate>
+# elif defined(USE_TOUCHBAR)
+			      <NSTouchBarDelegate>
 # endif
 {
   struct xscreensaver_function_table *xsft;
@@ -83,43 +86,48 @@
   Window xwindow;
   void *xdata;
   fps_state *fpst;
+  void (*fps_cb) (Display *, Window, fps_state *, void *);
+
+  BOOL _lowrez_p;		// Whether the saver prefers 1990s pixels.
 
 # ifdef USE_IPHONE
-  UIDeviceOrientation orientation, new_orientation;
   BOOL screenLocked;
-
-  CGSize initial_bounds;	// portrait-mode size (pixels, not points).
-	
-  GLfloat rotation_ratio;	// ratio [0-1] thru rotation anim, or -1
-  NSSize rot_current_size;	// intermediate or at-rest orientation.
-  NSSize rot_from, rot_to;	// start/end size rect (pixels, not points)
-  GLfloat rot_current_angle;	// only right angles when rotation complete.
-  GLfloat angle_from, angle_to;	// start angle, end angle (degrees)
-  double rot_start_time;
-
-  BOOL ignore_rotation_p;	// whether hack requested "always portrait".
+  BOOL _ignoreRotation;		// whether hack requested "always portrait".
 				// some want this, some do not.
-
   NSTimer *crash_timer;
 
   NSDictionary *function_tables;
 
   id<XScreenSaverViewDelegate> _delegate;
 
-# endif // USE_IPHONE
+  UIView *closeBox;
+  NSTimer *closeBoxTimer;
 
-# ifdef USE_BACKBUFFER
+  CGAffineTransform pinch_transform;
+
+# else // !USE_PHONE
+
+  NSOpenGLPixelFormat *pixfmt;
+
+# endif // !USE_IPHONE
+
+# ifdef USE_TOUCHBAR
+  XScreenSaverView *touchbar_view;
+  BOOL touchbar_p;
+# endif
+
+  NSOpenGLContext *ogl_ctx;      // OpenGL rendering context
+
+# ifdef JWXYZ_QUARTZ
   CGContextRef backbuffer;
-  CGSize backbuffer_size;	// pixels, not points.
   CGColorSpaceRef colorspace;
 
 #  ifdef BACKBUFFER_OPENGL
   void *backbuffer_data;
-  size_t backbuffer_len;
+  GLsizei backbuffer_len;
 
   GLsizei gl_texture_w, gl_texture_h;
 
-  NSOpenGLContext *ogl_ctx;      // OpenGL rendering context
   GLuint backbuffer_texture;
   GLenum gl_texture_target;
   GLenum gl_pixel_format, gl_pixel_type;
@@ -131,31 +139,44 @@
 #   endif // USE_IPHONE
 #  endif
 
-# endif // USE_BACKBUFFER
+# endif // JWXYZ_QUARTZ
+
+# if defined JWXYZ_GL && defined USE_IPHONE
+  NSOpenGLContext *ogl_ctx_pixmap;
+# endif // JWXYZ_GL && USE_IPHONE
 }
 
 - (id)initWithFrame:(NSRect)frame saverName:(NSString*)n isPreview:(BOOL)p;
 
 - (void) render_x11;
+- (NSOpenGLContext *) oglContext;
 - (void) prepareContext;
 - (NSUserDefaultsController *) userDefaultsController;
 + (NSString *) decompressXML:(NSData *)xml;
 
+- (CGFloat) hackedContentScaleFactor;
+
 #ifdef USE_IPHONE
-- (BOOL)reshapeRotatedWindow;
 - (void)setScreenLocked:(BOOL)locked;
 - (NSDictionary *)getGLProperties;
 - (void)addExtraRenderbuffers:(CGSize)size;
+- (NSString *)getCAGravity;
+- (void)orientationChanged;
 @property (nonatomic, assign) id<XScreenSaverViewDelegate> delegate;
+@property (nonatomic) BOOL ignoreRotation;
+- (BOOL)suppressRotationAnimation;
+- (BOOL)rotateTouches;
 #else // !USE_IPHONE
 - (NSOpenGLPixelFormat *)getGLPixelFormat;
 #endif // !USE_IPHONE
 
-#ifdef USE_BACKBUFFER
 - (void)enableBackbuffer:(CGSize)new_backbuffer_size;
+- (void)setViewport;
 - (void)createBackbuffer:(CGSize)s;
+- (void)reshape_x11;
+#ifdef JWXYZ_QUARTZ
 - (void)drawBackbuffer;
+#endif // JWXYZ_QUARTZ
 - (void)flushBackbuffer;
-#endif // USE_BACKBUFFER
 
 @end

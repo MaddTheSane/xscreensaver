@@ -43,9 +43,11 @@
 
 #ifdef STANDALONE
 # define DEFAULTS                   "*delay:        20000   \n" \
-                                    "*showFPS:      False   \n"
+                                    "*showFPS:      False   \n" \
+				   "*suppressRotationAnimation: True\n" \
 
-# define refresh_surface 0
+# define free_surface 0
+# define release_surface 0
 # include "xlockmore.h"     /* from the xscreensaver distribution */
 #else  /* !STANDALONE */
 # include "xlock.h"         /* from the xlockmore distribution */
@@ -417,9 +419,19 @@ static void draw(ModeInfo *mi)
 /* new window size or exposure */
 ENTRYPOINT void reshape_surface(ModeInfo *mi, int width, int height)
 {
+  surfacestruct *sp = &surface[MI_SCREEN(mi)];
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport(0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(sp->glx_context));
+
+  glViewport(0, y, (GLint) width, (GLint) height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective (30.0, 1/h, 1.0, 100.0);
@@ -428,6 +440,14 @@ ENTRYPOINT void reshape_surface(ModeInfo *mi, int width, int height)
   glLoadIdentity();
   gluLookAt(0.0, 0.0, 30.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
+
   glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -450,12 +470,7 @@ ENTRYPOINT void init_surface(ModeInfo *mi)
   int    screen = MI_SCREEN(mi);
   surfacestruct *sp;
 
-  if (surface == NULL)
-  {
-    if ((surface = (surfacestruct *) calloc(MI_NUM_SCREENS(mi),
-                                            sizeof(surfacestruct))) == NULL)
-      return;
-  }
+  MI_INIT (mi, surface);
   sp = &surface[screen];
 
   sp->window = MI_WINDOW(mi);
@@ -625,29 +640,6 @@ ENTRYPOINT void draw_surface(ModeInfo * mi)
     do_fps(mi);
   glFinish();
   glXSwapBuffers(display, window);
-}
-
-
-ENTRYPOINT void release_surface(ModeInfo * mi)
-{
-  if (surface != NULL)
-  {
-    int  screen;
-
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-    {
-      surfacestruct *sp = &surface[screen];
-
-      if (sp->glx_context)
-      {
-        /* Display lists MUST be freed while their glXContext is current. */
-        glXMakeCurrent(MI_DISPLAY(mi), sp->window, *(sp->glx_context));
-      }
-    }
-    (void) free((void *)surface);
-    surface = NULL;
-  }
-  FreeAllGL(mi);
 }
 
 

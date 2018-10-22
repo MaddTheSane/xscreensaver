@@ -44,8 +44,8 @@
 #define	DEFAULTS                       	"*delay:			10000   \n" \
 										"*showFPS:          False   \n" \
 
-# define refresh_pulsar 0
-# define pulsar_handle_event 0
+# define release_pulsar 0
+# define pulsar_handle_event xlockmore_no_events
 # include "xlockmore.h"				/* from the xpulsar distribution */
 #else /* !STANDALONE */
 # include "xlock.h"					/* from the xlockmore distribution */
@@ -61,7 +61,7 @@
 # endif /* VMS */
 #endif
 
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 
 /* Functions for loading and storing textures */
 
@@ -160,8 +160,8 @@ ENTRYPOINT ModeSpecOpt pulsar_opts = {countof(opts), opts, countof(vars), vars, 
 
 #ifdef USE_MODULES
 ModStruct   pulsar_description =
-{"pulsar", "init_pulsar", "draw_pulsar", "release_pulsar",
- "draw_pulsar", "init_pulsar", NULL, &pulsar_opts,
+{"pulsar", "init_pulsar", "draw_pulsar", NULL,
+ "draw_pulsar", "init_pulsar", "free_pulsar", &pulsar_opts,
  1000, 1, 2, 1, 4, 1.0, "",
  "OpenGL pulsar", 0, NULL};
 #endif
@@ -230,11 +230,16 @@ static void Create_Texture(ModeInfo *mi, const char *filename)
   int format;
 
   if ( !strncmp(filename, "BUILTIN", 7))
-    image = Generate_Image(&width, &height, &format);
+    {
+    BUILTIN:
+      image = Generate_Image(&width, &height, &format);
+    }
   else
     {
-      XImage *ximage = xpm_file_to_ximage (MI_DISPLAY (mi), MI_VISUAL (mi),
-                                           MI_COLORMAP (mi), filename);
+      XImage *ximage = file_to_ximage (MI_DISPLAY (mi), MI_VISUAL (mi),
+                                       filename);
+      if (! ximage)
+        goto BUILTIN;
       image  = (GLubyte *) ximage->data;
       width  = ximage->width;
       height = ximage->height;
@@ -483,10 +488,7 @@ init_pulsar(ModeInfo * mi)
 
   pulsarstruct *gp;
 
-  if (Pulsar == NULL) {
-	if ((Pulsar = (pulsarstruct *) calloc(MI_NUM_SCREENS(mi), sizeof (pulsarstruct))) == NULL)
-	  return;
-  }
+  MI_INIT (mi, Pulsar);
   gp = &Pulsar[screen];
 
   gp->window = MI_WINDOW(mi);
@@ -503,18 +505,10 @@ init_pulsar(ModeInfo * mi)
 
 
 /* all sorts of nice cleanup code should go here! */
-ENTRYPOINT void release_pulsar(ModeInfo * mi)
+ENTRYPOINT void free_pulsar(ModeInfo * mi)
 {
-  int screen;
-  if (Pulsar != NULL) {
-	for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-	  pulsarstruct *gp = &Pulsar[screen];
-      free(gp->quads);
-	}
-	(void) free((void *) Pulsar);
-	Pulsar = NULL;
-  }
-  FreeAllGL(mi);
+  pulsarstruct *gp = &Pulsar[MI_SCREEN(mi)];
+  free(gp->quads);
 }
 #endif
 

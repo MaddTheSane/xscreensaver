@@ -22,14 +22,15 @@
                        "*showFPS:     False \n" \
 		       "*wireframe:   False \n"	\
 
-# define refresh_queens 0
+# define free_queens 0
+# define release_queens 0
 # include "xlockmore.h"
 
 #else
 # include "xlock.h"
 #endif
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
 #else
 # include <X11/Xlib.h>
@@ -67,7 +68,7 @@ ENTRYPOINT ModeSpecOpt queens_opts = {countof(opts), opts, countof(vars), vars, 
 
 #ifdef USE_MODULES
 ModStruct   queens_description =
-{"queens", "init_queens", "draw_queens", "release_queens",
+{"queens", "init_queens", "draw_queens", NULL,
  "draw_queens", "init_queens", NULL, &queens_opts,
  1000, 1, 2, 1, 4, 1.0, "",
  "Queens", 0, NULL};
@@ -412,7 +413,7 @@ static int drawBoard(Queenscreen *qs)
   return polys;
 }
 
-static int display(Queenscreen *qs) 
+static int display(ModeInfo *mi, Queenscreen *qs) 
 {
   int max = 1024;
   int polys = 0;
@@ -519,7 +520,14 @@ static int draw_model(int chunks, const GLfloat model[][3], int r)
 ENTRYPOINT void reshape_queens(ModeInfo *mi, int width, int height) 
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
-  glViewport(0,0, width, height);
+  int y = 0;
+
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+  glViewport(0,y, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(45, 1/h, 2.0, 30.0);
@@ -537,9 +545,7 @@ ENTRYPOINT void init_queens(ModeInfo *mi)
   wire = 0;
 # endif
 
-  if(!qss && 
-     !(qss = (Queenscreen *) calloc(MI_NUM_SCREENS(mi), sizeof(Queenscreen))))
-    return;
+  MI_INIT (mi, qss);
   
   qs = &qss[screen];
   qs->window = MI_WINDOW(mi);
@@ -591,21 +597,12 @@ ENTRYPOINT void draw_queens(ModeInfo *mi)
   else
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  mi->polygon_count = display(qs);
+  mi->polygon_count = display(mi, qs);
   mi->recursion_depth = qs->BOARDSIZE;
 
   if(mi->fps_p) do_fps(mi);
   glFinish(); 
   glXSwapBuffers(disp, w);
-}
-
-ENTRYPOINT void release_queens(ModeInfo *mi) 
-{
-  if(qss)
-    free((void *) qss);
-  qss = 0;
-
-  FreeAllGL(mi);
 }
 
 XSCREENSAVER_MODULE ("Queens", queens)

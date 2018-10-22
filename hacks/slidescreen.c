@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1992-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1992-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -66,6 +66,9 @@ slidescreen_init (Display *dpy, Window window)
   st->grid_size = get_integer_resource (st->dpy, "gridSize", "Integer");
   st->pix_inc = get_integer_resource (st->dpy, "pixelIncrement", "Integer");
 
+  if (xgwa.width > 2560) st->grid_size *= 2;  /* Retina displays */
+
+
   /* Don't let the grid be smaller than 5x5 */
   while (st->grid_size > xgwa.width / 5)
     st->grid_size /= 2;
@@ -108,7 +111,7 @@ slidescreen_init (Display *dpy, Window window)
     else
       st->bg = 1;
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
     if (!fg_ok || bg_ok)
       {
         int i;
@@ -167,7 +170,7 @@ slidescreen_init (Display *dpy, Window window)
 	  }
 	XFree(all);
       }
-#endif /* !HAVE_COCOA */
+#endif /* !HAVE_JWXYZ */
   }
 
   gcv.foreground = st->fg;
@@ -197,6 +200,18 @@ draw_grid (struct state *st)
   XGetWindowAttributes (st->dpy, st->window, &xgwa);
   st->bitmap_w = xgwa.width;
   st->bitmap_h = xgwa.height;
+
+  if (xgwa.width < 50 || xgwa.height < 50) /* tiny window */
+    {
+      int s = (xgwa.width < xgwa.height ? xgwa.width : xgwa.height);
+      border = 1;
+      st->grid_size = s / 2;
+      if (st->grid_size < 16) st->grid_size = 16;
+      if (st->bitmap_w < st->grid_size*2) st->bitmap_w = st->grid_size*2;
+      if (st->bitmap_h < st->grid_size*2) st->bitmap_h = st->grid_size*2;
+    }
+
+  if (xgwa.width > 2560) border *= 2;  /* Retina displays */
 
   st->grid_w = st->bitmap_w / st->grid_size;
   st->grid_h = st->bitmap_h / st->grid_size;
@@ -475,7 +490,7 @@ static const char *slidescreen_defaults [] = {
   "*delay:			50000",
   "*delay2:			1000000",
   "*duration:			120",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation:             True",
   "*rotateImages:               True",
 #endif

@@ -21,16 +21,17 @@
 	"*titleFont:  -*-helvetica-medium-r-normal-*-*-140-*-*-*-*-*-*\n" \
 	"*titleFont2: -*-helvetica-medium-r-normal-*-*-100-*-*-*-*-*-*\n" \
 	"*titleFont3: -*-helvetica-medium-r-normal-*-*-80-*-*-*-*-*-*\n"  \
+	"*suppressRotationAnimation: True\n" \
 
 
-# define refresh_polyhedra 0
+# define free_polyhedra 0
 # define release_polyhedra 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
 #include "xlockmore.h"
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
 #else
 # include <X11/Xlib.h>
@@ -57,7 +58,7 @@
 #include "gltrackball.h"
 #include "teapot.h"
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # define XK_MISCELLANY
 # include <X11/keysymdef.h>
 #endif
@@ -200,8 +201,15 @@ ENTRYPOINT void
 reshape_polyhedra (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -461,14 +469,7 @@ init_polyhedra (ModeInfo *mi)
   wire = 0;
 # endif
 
-  if (!bps) {
-    bps = (polyhedra_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (polyhedra_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -624,6 +625,15 @@ draw_polyhedra (ModeInfo *mi)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPushMatrix ();
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glScalef(1.1, 1.1, 1.1);
 

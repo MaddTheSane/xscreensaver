@@ -4,11 +4,11 @@
 !            a screen saver and locker for the X window system
 !                            by Jamie Zawinski
 !
-!                              version 5.33
-!                              25-Jun-2015
+!                              version 5.40
+!                              12-Aug-2018
 !
 ! See "man xscreensaver" for more info.  The latest version is always
-! available at http://www.jwz.org/xscreensaver/
+! available at https://www.jwz.org/xscreensaver/
 
 
 ! These resources, when placed in the system-wide app-defaults directory
@@ -90,7 +90,7 @@ GetViewPortIsFullOfLies: False
 
 ! This is the URL loaded by the "Help" button on the splash screen,
 ! and by the "Documentation" menu item in xscreensaver-demo.
-*helpURL: http://www.jwz.org/xscreensaver/man.html
+*helpURL: https://www.jwz.org/xscreensaver/man.html
 
 ! loadURL       -- how the "Help" buttons load the helpURL (/bin/sh syntax.)
 ! manualCommand -- how the "Documentation" buttons display man pages.
@@ -370,7 +370,26 @@ GetViewPortIsFullOfLies: False
 @GL_KLUDGE@ GL: 				romanboy -root				    \n\
 				tessellimage -root			    \n\
 @GL_KLUDGE@ GL: 				winduprobot -root			    \n\
-@GL_KLUDGE@ GL: 				splitflap -root				    \n
+@GL_KLUDGE@ GL: 				splitflap -root				    \n\
+@GL_KLUDGE@ GL: 				cubestack -root				    \n\
+@GL_KLUDGE@ GL: 				cubetwist -root				    \n\
+@GL_KLUDGE@ GL: 				discoball -root				    \n\
+@GL_KLUDGE@ GL: 				dymaxionmap -root			    \n\
+@GL_KLUDGE@ GL: 				energystream -root			    \n\
+@GL_KLUDGE@ GL: 				hexstrut -root				    \n\
+@GL_KLUDGE@ GL: 				hydrostat -root				    \n\
+@GL_KLUDGE@ GL: 				raverhoop -root				    \n\
+@GL_KLUDGE@ GL: 				splodesic -root				    \n\
+@GL_KLUDGE@ GL: 				unicrud -root				    \n\
+@GL_KLUDGE@ GL: 				esper -root				    \n\
+@GL_KLUDGE@ GL: 				vigilance -root				    \n\
+@GL_KLUDGE@ GL: 				crumbler -root				    \n\
+				filmleader -root			    \n\
+				glitchpeg -root				    \n\
+@GL_KLUDGE@ GL: 				maze3d -root				    \n\
+@GL_KLUDGE@ GL: 				peepers -root				    \n\
+@GL_KLUDGE@ GL: 				razzledazzle -root			    \n\
+				vfeedback -root				    \n
 
 
 
@@ -391,15 +410,16 @@ XScreenSaver.bourneShell:		/bin/sh
 ! Resources for the password and splash-screen dialog boxes of
 ! the "xscreensaver" daemon.
 !
-*Dialog.headingFont:		*-helvetica-bold-r-*-*-*-180-*-*-*-iso8859-1
-*Dialog.bodyFont:		*-helvetica-bold-r-*-*-*-140-*-*-*-iso8859-1
-*Dialog.labelFont:		*-helvetica-bold-r-*-*-*-140-*-*-*-iso8859-1
-*Dialog.unameFont:		*-helvetica-bold-r-*-*-*-120-*-*-*-iso8859-1
-*Dialog.buttonFont:		*-helvetica-bold-r-*-*-*-140-*-*-*-iso8859-1
-*Dialog.dateFont:		*-helvetica-medium-r-*-*-*-80-*-*-*-iso8859-1
+*Dialog.headingFont:	-*-helvetica-bold-r-*-*-*-180-*-*-*-*-iso8859-1
+*Dialog.bodyFont:	-*-helvetica-bold-r-*-*-*-140-*-*-*-*-iso8859-1
+*Dialog.labelFont:	-*-helvetica-bold-r-*-*-*-140-*-*-*-*-iso8859-1
+*Dialog.unameFont:	-*-helvetica-bold-r-*-*-*-120-*-*-*-*-iso8859-1
+*Dialog.buttonFont:	-*-helvetica-bold-r-*-*-*-140-*-*-*-*-iso8859-1
+*Dialog.dateFont:	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-iso8859-1
+
 ! Helvetica asterisks look terrible.
-!*passwd.passwdFont:		*-helvetica-medium-r-*-*-*-140-*-*-*-iso8859-1
-*passwd.passwdFont:		*-courier-medium-r-*-*-*-140-*-*-*-iso8859-1
+*passwd.passwdFont:	-*-courier-medium-r-*-*-*-140-*-*-*-iso8859-1
+
 
 *Dialog.foreground:		#000000
 *Dialog.background:		#E6E6E6
@@ -429,7 +449,7 @@ XScreenSaver.bourneShell:		/bin/sh
 *passwd.uname:                  True
 
 *splash.heading.label:		XScreenSaver %s
-*splash.body.label:		Copyright \251 1991-2015 by
+*splash.body.label:		Copyright \251 1991-2018 by
 *splash.body2.label:		Jamie Zawinski <jwz@jwz.org>
 *splash.demo.label:		Settings
 *splash.help.label:		Help
@@ -455,14 +475,19 @@ XScreenSaver.bourneShell:		/bin/sh
 *hacks.ccurve.name:         CCurve
 *hacks.cloudlife.name:      CloudLife
 *hacks.companioncube.name:  CompanionCube
+*hacks.cubestack.name:      CubeStack
 *hacks.cubestorm.name:      CubeStorm
+*hacks.cubetwist.name:      CubeTwist
 *hacks.cubicgrid.name:      CubicGrid
 *hacks.cwaves.name:         CWaves
 *hacks.dangerball.name:     DangerBall
 *hacks.decayscreen.name:    DecayScreen
 *hacks.dnalogo.name:        DNA Logo
+*hacks.dymaxionmap.name:    DymaxionMap
+*hacks.energystream.name:   EnergyStream
 *hacks.euler2d.name:        Euler2D
 *hacks.fadeplot.name:       FadePlot
+*hacks.filmleader.name:     FilmLeader
 *hacks.flipflop.name:       FlipFlop
 *hacks.flipscreen3d.name:   FlipScreen3D
 *hacks.fliptext.name:       FlipText
@@ -474,6 +499,7 @@ XScreenSaver.bourneShell:		/bin/sh
 *hacks.gflux.name:          GFlux
 *hacks.gleidescope.name:    Gleidescope
 *hacks.glforestfire.name:   GLForestFire
+*hacks.glitchpeg.name:      GlitchPEG
 *hacks.hyperball.name:      HyperBall
 *hacks.hypercube.name:      HyperCube
 *hacks.ifs.name:            IFS
@@ -483,6 +509,7 @@ XScreenSaver.bourneShell:		/bin/sh
 *hacks.lcdscrub.name:       LCDscrub
 *hacks.lmorph.name:         LMorph
 *hacks.m6502.name:          m6502
+*hacks.maze3d.name:         Maze3D
 *hacks.memscroller.name:    MemScroller
 *hacks.metaballs.name:      MetaBalls
 *hacks.mirrorblob.name:     MirrorBlob
@@ -493,6 +520,8 @@ XScreenSaver.bourneShell:		/bin/sh
 *hacks.popsquares.name:     PopSquares
 *hacks.projectiveplane.name:ProjectivePlane
 *hacks.quasicrystal.name:   QuasiCrystal
+*hacks.raverhoop.name:      RaverHoop
+*hacks.razzledazzle.name:   RazzleDazzle
 *hacks.rd-bomb.name:        RDbomb
 *hacks.rdbomb.name:         RDbomb
 *hacks.romanboy.name:       RomanBoy
@@ -508,10 +537,12 @@ XScreenSaver.bourneShell:		/bin/sh
 *hacks.starwars.name:       StarWars
 *hacks.stonerview.name:     StonerView
 *hacks.t3d.name:            T3D
+*hacks.testx11.name:        TestX11
 *hacks.timetunnel.name:     TimeTunnel
 *hacks.topblock.name:       TopBlock
 *hacks.tronbit.name:        TronBit
 *hacks.unknownpleasures.name:UnknownPleasures
+*hacks.vfeedback.name:      VFeedback
 *hacks.vidwhacker.name:     VidWhacker
 *hacks.webcollage.name:     WebCollage
 *hacks.whirlwindwarp.name:  WhirlWindWarp

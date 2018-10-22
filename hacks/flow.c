@@ -102,6 +102,9 @@ static const char sccsid[] = "@(#)flow.c	5.00 2000/11/01 xlockmore";
 					"*cycles:      10000 \n" \
 					"*ncolors:     200   \n"
 
+# define release_flow 0
+# define reshape_flow 0
+# define flow_handle_event 0
 # include "xlockmore.h"		/* in xscreensaver distribution */
 #else /* STANDALONE */
 # include "xlock.h"		/* in xlockmore distribution */
@@ -162,8 +165,8 @@ ENTRYPOINT ModeSpecOpt flow_opts =
 
 #ifdef USE_MODULES
 ModStruct   flow_description = {
-	"flow", "init_flow", "draw_flow", "release_flow",
-	"refresh_flow", "init_flow", NULL, &flow_opts,
+	"flow", "init_flow", "draw_flow", NULL,
+	"refresh_flow", "init_flow", "free_flow", &flow_opts,
 	1000, 1024, 10000, -10, 200, 1.0, "",
 	"Shows dynamic strange attractors", 0, NULL
 };
@@ -385,11 +388,12 @@ Iterate(dvector *p, dvector(*ODE)(Par par, double x, double y, double z),
 
 #define deallocate(p,t) if (p!=NULL) {free(p); p=(t*)NULL; }
 #define allocate(p,t,s) if ((p=(t*)malloc(sizeof(t)*s))==NULL)\
-{free_flow(sp);return;}
+{free_flow(mi);return;}
 
-static void
-free_flow(flowstruct *sp)
+ENTRYPOINT void
+free_flow(ModeInfo * mi)
 {
+	flowstruct *sp = &flows[MI_SCREEN(mi)];
 	deallocate(sp->csegs, XSegment);
 	deallocate(sp->cnsegs, int);
 	deallocate(sp->old_segs, XSegment);
@@ -624,11 +628,7 @@ init_flow (ModeInfo * mi)
 	flowstruct *sp;
 	char       *name;
 	
-	if (flows == NULL) {
-		if ((flows = (flowstruct *) calloc(MI_NUM_SCREENS(mi),
-										   sizeof (flowstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, flows);
 	sp = &flows[MI_SCREEN(mi)];
 
 	sp->count2 = 0;
@@ -770,7 +770,6 @@ init_flow (ModeInfo * mi)
 
 	sp->count2 = 0; /* Reset search */
 
-	free_flow(sp);
 	sp->beecount = MI_COUNT(mi);
 	if (!sp->beecount) {
 		sp->beecount = 1; /* The camera requires 1 or more */
@@ -778,7 +777,7 @@ init_flow (ModeInfo * mi)
 		sp->beecount = NRAND(-sp->beecount) + 1; /* Minimum 1 */
 	}
 
-# ifdef HAVE_COCOA	/* Don't second-guess Quartz's double-buffering */
+# ifdef HAVE_JWXYZ	/* Don't second-guess Quartz's double-buffering */
   dbufp = False;
 # endif
 
@@ -834,7 +833,7 @@ draw_flow (ModeInfo * mi)
 	if (sp->csegs == NULL)
 		return;
 
-#ifdef HAVE_COCOA	/* Don't second-guess Quartz's double-buffering */
+#ifdef HAVE_JWXYZ	/* Don't second-guess Quartz's double-buffering */
     XClearWindow (MI_DISPLAY(mi), MI_WINDOW(mi));
 #endif
 
@@ -1199,43 +1198,13 @@ draw_flow (ModeInfo * mi)
 	}
 }
 
-ENTRYPOINT void
-reshape_flow(ModeInfo * mi, int width, int height)
-{
-  init_flow (mi);
-}
-
-
-ENTRYPOINT void
-release_flow (ModeInfo * mi)
-{
-	if (flows != NULL) {
-		int         screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-			free_flow(&flows[screen]);
-		free(flows);
-		flows = (flowstruct *) NULL;
-	}
-}
-
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_flow (ModeInfo * mi)
 {
 	if(!dbufp) MI_CLEARWINDOW(mi);
 }
-
-ENTRYPOINT Bool
-flow_handle_event (ModeInfo *mi, XEvent *event)
-{
-  if (screenhack_event_helper (MI_DISPLAY(mi), MI_WINDOW(mi), event))
-    {
-      init_flow (mi);
-      return True;
-    }
-  return False;
-}
-
+#endif
 
 XSCREENSAVER_MODULE ("Flow", flow)
 

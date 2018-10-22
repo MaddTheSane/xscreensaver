@@ -14,6 +14,7 @@
  */
 
 #include <math.h>
+#include <time.h>
 #include "screenhack.h"
 
 /* non-user-modifiable immutable definitions */
@@ -824,7 +825,7 @@ static void drawDigitChar (struct state *st, Bitmap *b, int x, int y, char c)
     if ((c < '0') || (c > '9'))
       c = '0';
 
-    bitmapDrawChar5x8 (b, x, y, c);
+  bitmapDrawChar5x8 (b, x, y, c);
 }
 
 /* draw a upc/ean digit at the given coordinates */
@@ -1634,6 +1635,12 @@ static void scrollModel (struct state *st)
 	     st->barcodes[st->barcode_count - 1].mag * BARCODE_WIDTH);
 	barcode->x += RAND_FLOAT_01 * 100;
 	barcode->mag = RAND_FLOAT_01 * MAX_MAG;
+
+        if (st->windowWidth < 100 || st->windowHeight < 100) {
+          barcode->mag *= 0.5;
+          if (barcode->mag <= 0) barcode->mag = 1;
+        }
+
 	barcode->y =
 	    RAND_FLOAT_01 * (st->windowHeight - BARCODE_HEIGHT * barcode->mag);
 	if (barcode->y < 0) 
@@ -1914,6 +1921,7 @@ barcode_free (Display *dpy, Window window, void *closure)
 static const char *barcode_defaults [] = {
     ".background:	black",
     ".foreground:	green",
+    ".lowrez:           true",
     "*fpsSolid: 	true",
     "*delay:		10000",
     "*mode:		scroll",

@@ -49,13 +49,14 @@ from the X Consortium.
 
 static const char *kumppa_defaults [] ={
   ".background:		black",
+  ".lowrez:		true",
   "*fpsSolid:		true",
   "*speed:		0.1",
   "*delay:		10000",
   "*random:		True",
   /* leave this off by default, since it slows things down.  -- jwz. */
   "*useDBE:		False",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation:     True",
 #endif
   0
@@ -505,7 +506,7 @@ kumppa_reshape (Display *dpy, Window window, void *closure,
 {
   struct state *st = (struct state *) closure;
   st->sizx=w;
-  st->sizy=w;
+  st->sizy=h;
   st->midx=st->sizx>>1;
   st->midy=st->sizy>>1;
   st->stateX=0;

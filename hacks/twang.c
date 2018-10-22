@@ -15,10 +15,7 @@
 
 #include <math.h>
 #include "screenhack.h"
-
-#ifdef HAVE_XSHM_EXTENSION
 #include "xshm.h"
-#endif
 
 #define FLOAT double
 
@@ -62,7 +59,6 @@ struct state {
   Screen *screen;       	   /* the screen to draw on */
   XImage *sourceImage;  	   /* image source of stuff to draw */
   XImage *workImage;    	   /* work area image, used when rendering */
-  XImage *backgroundImage;	 /* image filled with background pixels */
 
   GC backgroundGC;        	 /* GC for the background color */
   GC foregroundGC;        	 /* GC for the foreground color */
@@ -79,11 +75,9 @@ struct state {
 
   time_t start_time;
   async_load_state *img_loader;
+  Pixmap pm;
 
-  Bool useShm;		/* whether or not to use xshm */
-#ifdef HAVE_XSHM_EXTENSION
   XShmSegmentInfo shmInfo;
-#endif
 };
 
 
@@ -107,26 +101,16 @@ struct state {
 static void
 grabImage_start (struct state *st, XWindowAttributes *xwa)
 {
-    Pixmap p;
-    GC gc;
-    XGCValues gcv;
-    XFillRectangle (st->dpy, st->window, st->backgroundGC, 0, 0, 
-		    st->windowWidth, st->windowHeight);
-
-    p = XCreatePixmap (st->dpy, st->window,
-                       xwa->width, xwa->height, xwa->depth);
-    gc = XCreateGC (st->dpy, st->window, 0, &gcv);
-    XCopyArea (st->dpy, st->window, p, gc, 0, 0,
-               xwa->width, xwa->height, 0, 0);
-    st->backgroundImage = 
-	XGetImage (st->dpy, p, 0, 0, st->windowWidth, st->windowHeight,
-		   ~0L, ZPixmap);
-    XFreeGC (st->dpy, gc);
-    XFreePixmap (st->dpy, p);
+    /* On MacOS X11, XGetImage on a Window often gets an inexplicable BadMatch,
+       possibly due to the window manager having occluded something?  It seems
+       nondeterministic. Loading the image into a pixmap instead fixes it. */
+    if (st->pm) XFreePixmap (st->dpy, st->pm);
+    st->pm = XCreatePixmap (st->dpy, st->window,
+                            xwa->width, xwa->height, xwa->depth);
 
     st->start_time = time ((time_t *) 0);
     st->img_loader = load_image_async_simple (0, xwa->screen, st->window,
-                                              st->window, 0, 0);
+                                              st->pm, 0, 0);
 }
 
 static void
@@ -137,31 +121,16 @@ grabImage_done (struct state *st)
 
     st->start_time = time ((time_t *) 0);
     if (st->sourceImage) XDestroyImage (st->sourceImage);
-    st->sourceImage = XGetImage (st->dpy, st->window, 0, 0, st->windowWidth, st->windowHeight,
+    st->sourceImage = XGetImage (st->dpy, st->pm, 0, 0,
+                                 st->windowWidth, st->windowHeight,
 			     ~0L, ZPixmap);
 
-    if (st->workImage) XDestroyImage (st->workImage);
-    st->workImage = NULL;
+    if (st->workImage) destroy_xshm_image (st->dpy, st->workImage,
+                                           &st->shmInfo);
 
-#ifdef HAVE_XSHM_EXTENSION
-    if (st->useShm) 
-    {
-	st->workImage = create_xshm_image (st->dpy, xwa.visual, xwa.depth,
-				       ZPixmap, 0, &st->shmInfo, 
-				       st->windowWidth, st->windowHeight);
-	if (!st->workImage) 
-	{
-	    st->useShm = False;
-	    fprintf (stderr, "create_xshm_image failed\n");
-	}
-    }
-
-    if (st->workImage == NULL)
-#endif /* HAVE_XSHM_EXTENSION */
-
-	/* just use XSubImage to acquire the right visual, depth, etc;
-	 * easier than the other alternatives */
-	st->workImage = XSubImage (st->sourceImage, 0, 0, st->windowWidth, st->windowHeight);
+    st->workImage = create_xshm_image (st->dpy, xwa.visual, xwa.depth,
+                                       ZPixmap, &st->shmInfo,
+                                       st->windowWidth, st->windowHeight);
 }
 
 /* set up the system */
@@ -535,7 +504,8 @@ static void renderFrame (struct state *st)
 {
     int n;
 
-    memcpy (st->workImage->data, st->backgroundImage->data, 
+    /* This assumes black is zero. */
+    memset (st->workImage->data, 0, 
 	    st->workImage->bytes_per_line * st->workImage->height);
 
     sortTiles (st);
@@ -545,14 +515,8 @@ static void renderFrame (struct state *st)
 	renderTile (st, st->sortedTiles[n]);
     }
 
-#ifdef HAVE_XSHM_EXTENSION
-    if (st->useShm)
-	XShmPutImage (st->dpy, st->window, st->backgroundGC, st->workImage, 0, 0, 0, 0,
-		      st->windowWidth, st->windowHeight, False);
-    else
-#endif /* HAVE_XSHM_EXTENSION */
-	XPutImage (st->dpy, st->window, st->backgroundGC, st->workImage, 
-		   0, 0, 0, 0, st->windowWidth, st->windowHeight);
+    put_xshm_image (st->dpy, st->window, st->backgroundGC, st->workImage, 0, 0, 0, 0,
+                    st->windowWidth, st->windowHeight, &st->shmInfo);
 }
 
 /* set up the model */
@@ -592,6 +556,7 @@ static void setupModel (struct state *st)
     leftX = (st->windowWidth - (st->columns * st->tileSize) + st->tileSize) / 2;
     topY = (st->windowHeight - (st->rows * st->tileSize) + st->tileSize) / 2;
 
+    if (st->tileCount < 1) st->tileCount = 1;
     st->tiles = calloc (st->tileCount, sizeof (Tile));
     st->sortedTiles = calloc (st->tileCount, sizeof (Tile *));
 
@@ -662,6 +627,7 @@ static void
 twang_free (Display *dpy, Window window, void *closure)
 {
   struct state *st = (struct state *) closure;
+  if (st->pm) XFreePixmap (dpy, st->pm);
   free (st);
 }
 
@@ -740,10 +706,6 @@ static void initParams (struct state *st)
 	problems = 1;
     }
 
-#ifdef HAVE_XSHM_EXTENSION
-    st->useShm = get_boolean_resource (st->dpy, "useSHM", "Boolean");
-#endif
-
     if (problems)
     {
 	exit (1);
@@ -768,6 +730,7 @@ twang_init (Display *dpy, Window win)
 static const char *twang_defaults [] = {
     ".background:	black",
     ".foreground:	white",
+    ".lowrez:		true",
     "*borderColor:      blue",
     "*borderWidth:	3",
     "*delay:		10000",
@@ -784,7 +747,7 @@ static const char *twang_defaults [] = {
 #else
     "*useSHM: False",
 #endif
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation: True",
   "*rotateImages:   True",
 #endif

@@ -28,12 +28,15 @@
 #ifdef HAVE_GLUT
 # include <GL/glut.h>
 #else
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
 #  define HAVE_GETTIMEOFDAY
 # else
 #  include <GL/gl.h>
 #  include <GL/glu.h>
 # endif
+#endif
+# ifdef HAVE_ANDROID
+# include <GLES/gl.h>
 #endif
 
 #ifdef HAVE_JWZGLES
@@ -141,14 +144,15 @@ static GLfloat angvel;
 #define glsnake_init    init_glsnake
 #define glsnake_display draw_glsnake
 #define glsnake_reshape reshape_glsnake
-#define refresh_glsnake 0
+#define free_glsnake 0
 #define release_glsnake 0
-#define glsnake_handle_event 0
+#define glsnake_handle_event xlockmore_no_events
 
 /* xscreensaver defaults */
 #define DEFAULTS "*delay:          30000                      \n" \
                  "*count:          30                         \n" \
                  "*showFPS:        False                      \n" \
+		"*suppressRotationAnimation: True\n" \
          "*labelfont:   -*-helvetica-medium-r-normal-*-*-180-*-*-*-*-*-*\n" \
 
 
@@ -1457,13 +1461,7 @@ ModeInfo * mi
     struct glsnake_cfg * bp;
 
     /* set up the conf struct and glx contexts */
-    if (!glc) {
-	glc = (struct glsnake_cfg *) calloc(MI_NUM_SCREENS(mi), sizeof(struct glsnake_cfg));
-	if (!glc) {
-	    fprintf(stderr, "%s: out of memory\n", progname);
-	    exit(1);
-	}
-    }
+    MI_INIT(mi, glc);
     bp = &glc[MI_SCREEN(mi)];
 
     if ((bp->glx_context = init_GL(mi)) != NULL) {
@@ -1770,20 +1768,29 @@ ENTRYPOINT void glsnake_reshape(
 #ifndef HAVE_GLUT
 		     ModeInfo * mi,
 #endif
-		     int w, int h) 
+		     int width, int height) 
 {
-    glViewport(0, 0, (GLint) w, (GLint) h);
+    double h = (GLfloat) height / (GLfloat) width;  
+    int y = 0;
+
+    if (width > height * 5) {   /* tiny window: show middle */
+      height = width;
+      y = -height/2;
+      h = height / (GLfloat) width;
+    }
+
+    glViewport(0, y, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     /* jwz: 0.05 was too close (left black rectangles) */
-    gluPerspective(zoom, (GLdouble) w / (GLdouble) h, 1.0, 100.0);
+    gluPerspective(zoom, 1/h, 1.0, 100.0);
     gluLookAt(0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     glMatrixMode(GL_MODELVIEW);
     /*gluLookAt(0.0, 0.0, 20.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);*/
     glLoadIdentity();
 #ifdef HAVE_GLUT
-    bp->width = w;
-    bp->height = h;
+    bp->width = width;
+    bp->height = height;
 #endif
 }
 
@@ -2262,6 +2269,15 @@ ENTRYPOINT void glsnake_display(
     /* apply the continuous rotation */
     glRotatef(yspin, 0.0, 1.0, 0.0); 
     glRotatef(zspin, 0.0, 0.0, 1.0); 
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180)
+        glScalef (1/h, 1/h, 1/h);
+    }
+# endif
 
     /* now draw each node along the snake -- this is quite ugly :p */
     mi->polygon_count = 0;

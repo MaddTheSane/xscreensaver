@@ -22,8 +22,9 @@
 			"*contrast:     30          \n" \
 			"*showFPS:      False       \n" \
 			"*wireframe:    False       \n" \
+			"*suppressRotationAnimation: True\n" \
 
-# define refresh_quasicrystal 0
+# define free_quasicrystal 0
 # define release_quasicrystal 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -65,7 +66,9 @@ static XrmOptionDescRec opts[] = {
   { "-wander",       ".wander",    XrmoptionNoArg, "True"  },
   { "+wander",       ".wander",    XrmoptionNoArg, "False" },
   { "-symmetry",     ".symmetric", XrmoptionNoArg, "True"   },
+  { "-symmetric",    ".symmetric", XrmoptionNoArg, "True"   },
   { "-no-symmetry",  ".symmetric", XrmoptionNoArg, "False"  },
+  { "-nonsymmetric", ".symmetric", XrmoptionNoArg, "False"  },
   { "-speed",        ".speed",     XrmoptionSepArg, 0 },
   { "-contrast",     ".contrast",  XrmoptionSepArg, 0 },
 };
@@ -191,14 +194,7 @@ init_quasicrystal (ModeInfo *mi)
   int tex_width;
   int i;
 
-  if (!bps) {
-    bps = (quasicrystal_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (quasicrystal_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -233,7 +229,7 @@ init_quasicrystal (ModeInfo *mi)
     }
 
   bp->symmetric_p =
-    get_boolean_resource (MI_DISPLAY (mi), "symmetry", "Symmetry");
+    get_boolean_resource (MI_DISPLAY (mi), "symmetric", "Symmetric");
 
   bp->contrast = get_float_resource (MI_DISPLAY (mi), "contrast", "Contrast");
   if (bp->contrast < 0 || bp->contrast > 100) 
@@ -279,10 +275,7 @@ init_quasicrystal (ModeInfo *mi)
             glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
             glTexImage1D (GL_TEXTURE_1D, 0, GL_RGBA,
                           tex_width, 0,
-                          GL_RGBA,
-                          /* GL_UNSIGNED_BYTE, */
-                          GL_UNSIGNED_INT_8_8_8_8_REV,
-                          tex_data);
+                          GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
             check_gl_error("texture");
 
             glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);

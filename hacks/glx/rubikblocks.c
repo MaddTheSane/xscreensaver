@@ -19,9 +19,11 @@
 
 #define DEFAULTS   "*delay:         20000         \n" \
                    "*showFPS:       False         \n" \
-                   "*wireframe:     False         \n"
+                   "*wireframe:     False         \n" \
+		   "*suppressRotationAnimation: True\n" \
 
-# define refresh_rubikblocks 0
+# define free_rubikblocks 0
+# define release_rubikblocks 0
 #include "xlockmore.h"
 #include "rotator.h"
 #include "gltrackball.h"
@@ -87,7 +89,7 @@ ENTRYPOINT ModeSpecOpt rubikblocks_opts = {countof(opts), opts, countof(vars), v
 
 #ifdef USE_MODULES
 ModStruct   rubikblocks_description =
-{ "rubikblocks", "init_rubikblocks", "draw_rubikblocks", "release_rubikblocks",
+{ "rubikblocks", "init_rubikblocks", "draw_rubikblocks", NULL,
   "draw_rubikblocks", "change_rubikblocks", NULL, &rubikblocks_opts,
   25000, 1, 1, 1, 1.0, 4, "",
   "Shows randomly shuffling Rubik's Mirror Blocks puzzle", 0, NULL
@@ -259,6 +261,7 @@ draw_main(ModeInfo *mi, rubikblocks_conf *cp)
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
+
   get_position(cp->rot, &x, &y, &z, !cp->button_down);
   glTranslatef((x-0.5)*6, (y-0.5)*6, -20);
 
@@ -269,6 +272,15 @@ draw_main(ModeInfo *mi, rubikblocks_conf *cp)
   glRotatef(y*360, 0, 1, 0);
   glRotatef(z*360, 0, 0, 1);
   glScalef(size, size, size);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   if(cp->wire) glColor3f(0.7, 0.7, 0.7);
   if(!cp->pause)
@@ -484,8 +496,8 @@ init_gl(ModeInfo *mi)
       0, GL_LUMINANCE, GL_UNSIGNED_BYTE, cp->texture);
 #endif  
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 #ifdef MIPMAP
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -530,9 +542,15 @@ ENTRYPOINT void
 reshape_rubikblocks(ModeInfo *mi, int width, int height) 
 {
   rubikblocks_conf *cp = &rubikblocks[MI_SCREEN(mi)];
+  int y = 0;
+
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width;
+    y = -height/2;
+  }
   if(!height) height = 1;
   cp->ratio = (GLfloat)width/(GLfloat)height;
-  glViewport(0, 0, (GLint) width, (GLint) height);
+  glViewport(0, y, (GLint) width, (GLint) height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(30.0, cp->ratio, 1.0, 100.0);
@@ -541,33 +559,10 @@ reshape_rubikblocks(ModeInfo *mi, int width, int height)
 }
 
 ENTRYPOINT void 
-release_rubikblocks(ModeInfo *mi) 
-{
-  if (rubikblocks != NULL) 
-  {
-    int screen;
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) 
-    {
-      rubikblocks_conf *cp = &rubikblocks[screen];
-      if (cp->glx_context) {
-        cp->glx_context = NULL;
-      }
-    }
-    free((void *)rubikblocks);
-    rubikblocks = NULL;
-  }
-  FreeAllGL(mi);
-}
-
-ENTRYPOINT void 
 init_rubikblocks(ModeInfo *mi) 
 {
   rubikblocks_conf *cp;
-  if(!rubikblocks) 
-  {
-    rubikblocks = (rubikblocks_conf *)calloc(MI_NUM_SCREENS(mi), sizeof(rubikblocks_conf));
-    if(!rubikblocks) return;
-  }
+  MI_INIT(mi, rubikblocks);
   cp = &rubikblocks[MI_SCREEN(mi)];
 
   if(tex)
@@ -600,7 +595,7 @@ draw_rubikblocks(ModeInfo * mi)
   glXMakeCurrent(display, window, *(cp->glx_context));
   if (!draw_main(mi, cp)) 
   {
-    release_rubikblocks(mi);
+    MI_ABORT(mi);
     return;
   }
   if (MI_IS_FPS(mi)) do_fps (mi);

@@ -1,4 +1,4 @@
-/* analogtv, Copyright (c) 2003, 2004 Trevor Blackwell <tlb@tlb.org>
+/* analogtv, Copyright (c) 2003-2018 Trevor Blackwell <tlb@tlb.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -64,9 +64,14 @@
    - removed unusable hashnoise code
  */
 
-#ifdef HAVE_COCOA
+/*
+  2016-10-09, Dave Odell <dmo2118@gmail.com>:
+  Updated for new xshm.c.
+*/
+
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
-#else /* !HAVE_COCOA */
+#else /* !HAVE_JWXYZ */
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 #endif
@@ -80,6 +85,8 @@
 #include "yarandom.h"
 #include "grabscreen.h"
 #include "visual.h"
+#include "font-retry.h"
+#include "ximage-loader.h"
 
 /* #define DEBUG 1 */
 
@@ -217,8 +224,8 @@ analogtv_set_defaults(analogtv *it, char *prefix)
 
 #ifdef DEBUG
   printf("analogtv: prefix=%s\n",prefix);
-  printf("  use: shm=%d cmap=%d color=%d\n",
-         it->use_shm,it->use_cmap,it->use_color);
+  printf("  use: cmap=%d color=%d\n",
+         it->use_cmap,it->use_color);
   printf("  controls: tint=%g color=%g brightness=%g contrast=%g\n",
          it->tint_control, it->color_control, it->brightness_control,
          it->contrast_control);
@@ -228,8 +235,8 @@ analogtv_set_defaults(analogtv *it, char *prefix)
          it->horiz_desync, it->flutter_horiz_desync);
   printf("  hashnoise rpm: %g\n",
          it->hashnoise_rpm);
-  printf("  vis: %d %d %d\n",
-         it->visclass, it->visbits, it->visdepth);
+  printf("  vis: %d %d\n",
+         it->visclass, it->visdepth);
   printf("  shift: %d-%d %d-%d %d-%d\n",
          it->red_invprec,it->red_shift,
          it->green_invprec,it->green_shift,
@@ -262,15 +269,7 @@ static void
 analogtv_free_image(analogtv *it)
 {
   if (it->image) {
-    if (it->use_shm) {
-#ifdef HAVE_XSHM_EXTENSION
-      destroy_xshm_image(it->dpy, it->image, &it->shm_info);
-#endif
-    } else {
-      thread_free(it->image->data);
-      it->image->data = NULL;
-      XDestroyImage(it->image);
-    }
+    destroy_xshm_image(it->dpy, it->image, &it->shm_info);
     it->image=NULL;
   }
 }
@@ -280,31 +279,14 @@ analogtv_alloc_image(analogtv *it)
 {
   /* On failure, it->image is NULL. */
 
-  unsigned bits_per_pixel = get_bits_per_pixel(it->dpy, it->xgwa.depth);
+  unsigned bits_per_pixel = visual_pixmap_depth(it->screen, it->xgwa.visual);
   unsigned align = thread_memory_alignment(it->dpy) * 8 - 1;
   /* Width is in bits. */
   unsigned width = (it->usewidth * bits_per_pixel + align) & ~align;
 
-  if (it->use_shm) {
-#ifdef HAVE_XSHM_EXTENSION
-    it->image=create_xshm_image(it->dpy, it->xgwa.visual, it->xgwa.depth, ZPixmap, 0,
-                                &it->shm_info,
-                                width / bits_per_pixel, it->useheight);
-#endif
-    if (!it->image) it->use_shm=0;
-  }
-  if (!it->image) {
-    it->image = XCreateImage(it->dpy, it->xgwa.visual, it->xgwa.depth, ZPixmap, 0, 0,
-                             it->usewidth, it->useheight, 8, width / 8);
-    if (it->image) {
-      if(thread_malloc((void **)&it->image->data, it->dpy,
-                       it->image->height * it->image->bytes_per_line)) {
-        it->image->data = NULL;
-        XDestroyImage(it->image);
-        it->image = NULL;
-      }
-    }
-  }
+  it->image=create_xshm_image(it->dpy, it->xgwa.visual, it->xgwa.depth,
+                              ZPixmap, &it->shm_info,
+                              width / bits_per_pixel, it->useheight);
 
   if (it->image) {
     memset (it->image->data, 0, it->image->height * it->image->bytes_per_line);
@@ -325,7 +307,8 @@ analogtv_configure(analogtv *it)
   /* If the window is very small, don't let the image we draw get lower
      than the actual TV resolution (266x200.)
 
-     If the aspect ratio of the window is close to a 4:3 or 16:9 ratio,
+     If the aspect ratio of the window is close to a 4:3 or 16:9 ratio --
+     or if it is a completely weird aspect ratio --
      then scale the image to exactly fill the window.
 
      Otherwise, center the image either horizontally or vertically,
@@ -337,6 +320,8 @@ analogtv_configure(analogtv *it)
   float percent = 0.15;
   float min_ratio =  4.0 / 3.0 * (1 - percent);
   float max_ratio = 16.0 / 9.0 * (1 + percent);
+  float crazy_min_ratio = 10;
+  float crazy_max_ratio = 1/crazy_min_ratio;
   float ratio;
   float height_snap=0.025;
 
@@ -344,7 +329,7 @@ analogtv_configure(analogtv *it)
   wlim = it->xgwa.width;
   ratio = wlim / (float) hlim;
 
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   /* Fill the whole iPhone screen, even though that distorts the image. */
   min_ratio = 0;
   max_ratio = 10;
@@ -390,9 +375,23 @@ analogtv_configure(analogtv *it)
 # endif
     }
 
+  if (ratio < crazy_min_ratio || ratio > crazy_max_ratio)
+    {
+      if (ratio < crazy_min_ratio)
+        hlim = it->xgwa.height;
+      else
+        wlim = it->xgwa.width;
+# ifdef DEBUG
+      fprintf (stderr,
+               "size: aspect: %dx%d in %dx%d (%.3f < %.3f < %.3f)\n",
+               wlim, hlim, it->xgwa.width, it->xgwa.height,
+               min_ratio, ratio, max_ratio);
+# endif
+    }
+
 
   height_diff = ((hlim + ANALOGTV_VISLINES/2) % ANALOGTV_VISLINES) - ANALOGTV_VISLINES/2;
-  if (height_diff != 0 && fabs(height_diff) < hlim * height_snap)
+  if (height_diff != 0 && abs(height_diff) < hlim * height_snap)
     {
       hlim -= height_diff;
     }
@@ -508,18 +507,11 @@ analogtv_allocate(Display *dpy, Window window)
 
   it->n_colors=0;
 
-#ifdef HAVE_XSHM_EXTENSION
-  it->use_shm=1;
-#else
-  it->use_shm=0;
-#endif
-
   XGetWindowAttributes (it->dpy, it->window, &it->xgwa);
 
   it->screen=it->xgwa.screen;
   it->colormap=it->xgwa.colormap;
-  it->visclass=it->xgwa.visual->class;
-  it->visbits=it->xgwa.visual->bits_per_rgb;
+  it->visclass=visual_class(it->xgwa.screen, it->xgwa.visual);
   it->visdepth=it->xgwa.depth;
   if (it->visclass == TrueColor || it->visclass == DirectColor) {
     if (get_integer_resource (it->dpy, "use_cmap", "Integer")) {
@@ -538,9 +530,8 @@ analogtv_allocate(Display *dpy, Window window)
     it->use_color=0;
   }
 
-  it->red_mask=it->xgwa.visual->red_mask;
-  it->green_mask=it->xgwa.visual->green_mask;
-  it->blue_mask=it->xgwa.visual->blue_mask;
+  visual_rgb_masks (it->xgwa.screen, it->xgwa.visual,
+                    &it->red_mask, &it->green_mask, &it->blue_mask);
   it->red_shift=it->red_invprec=-1;
   it->green_shift=it->green_invprec=-1;
   it->blue_shift=it->blue_invprec=-1;
@@ -577,6 +568,9 @@ analogtv_allocate(Display *dpy, Window window)
                                     "background", "Background");
 
   it->gc = XCreateGC(it->dpy, it->window, GCBackground, &gcv);
+# ifdef HAVE_JWXYZ
+  jwxyz_XSetAntiAliasing (it->dpy, it->gc, False);
+# endif
   XSetWindowBackground(it->dpy, it->window, gcv.background);
   XClearWindow(dpy,window);
 
@@ -599,15 +593,7 @@ void
 analogtv_release(analogtv *it)
 {
   if (it->image) {
-    if (it->use_shm) {
-#ifdef HAVE_XSHM_EXTENSION
-      destroy_xshm_image(it->dpy, it->image, &it->shm_info);
-#endif
-    } else {
-      thread_free(it->image->data);
-      it->image->data = NULL;
-      XDestroyImage(it->image);
-    }
+    destroy_xshm_image(it->dpy, it->image, &it->shm_info);
     it->image=NULL;
   }
   if (it->gc) XFreeGC(it->dpy, it->gc);
@@ -1963,20 +1949,11 @@ analogtv_draw(analogtv *it, double noiselevel,
   }
 
   if (overall_bot > overall_top) {
-    if (it->use_shm) {
-#ifdef HAVE_XSHM_EXTENSION
-      XShmPutImage(it->dpy, it->window, it->gc, it->image,
+    put_xshm_image(it->dpy, it->window, it->gc, it->image,
                    0, overall_top,
                    it->screen_xo, it->screen_yo+overall_top,
                    it->usewidth, overall_bot - overall_top,
-                   False);
-#endif
-    } else {
-      XPutImage(it->dpy, it->window, it->gc, it->image,
-                0, overall_top,
-                it->screen_xo, it->screen_yo+overall_top,
-                it->usewidth, overall_bot - overall_top);
-    }
+                   &it->shm_info);
   }
 
 #ifdef DEBUG
@@ -2009,10 +1986,16 @@ analogtv_input_allocate()
   This takes a screen image and encodes it as a video camera would,
   including all the bandlimiting and YIQ modulation.
   This isn't especially tuned for speed.
+
+  xoff, yoff: top left corner of rendered image, in window pixels.
+  w, h: scaled size of rendered image, in window pixels.
+  mask: BlackPixel means don't render (it's not full alpha)
 */
 
 int
-analogtv_load_ximage(analogtv *it, analogtv_input *input, XImage *pic_im)
+analogtv_load_ximage(analogtv *it, analogtv_input *input,
+                     XImage *pic_im, XImage *mask_im,
+                     int xoff, int yoff, int target_w, int target_h)
 {
   int i,x,y;
   int img_w,img_h;
@@ -2021,14 +2004,24 @@ analogtv_load_ximage(analogtv *it, analogtv_input *input, XImage *pic_im)
   int fqx[4],fqy[4];
   XColor col1[ANALOGTV_PIC_LEN];
   XColor col2[ANALOGTV_PIC_LEN];
+  char mask[ANALOGTV_PIC_LEN];
   int multiq[ANALOGTV_PIC_LEN+4];
+  unsigned long black = 0; /* not BlackPixelOfScreen (it->xgwa.screen); */
+
+  int x_length=ANALOGTV_PIC_LEN;
   int y_overscan=5; /* overscan this much top and bottom */
   int y_scanlength=ANALOGTV_VISLINES+2*y_overscan;
 
-  img_w=pic_im->width;
-  img_h=pic_im->height;
+  if (target_w > 0) x_length     = x_length     * target_w / it->xgwa.width;
+  if (target_h > 0) y_scanlength = y_scanlength * target_h / it->xgwa.height;
+
+  img_w = pic_im->width;
+  img_h = pic_im->height;
   
-  for (i=0; i<ANALOGTV_PIC_LEN+4; i++) {
+  xoff = ANALOGTV_PIC_LEN  * xoff / it->xgwa.width;
+  yoff = ANALOGTV_VISLINES * yoff / it->xgwa.height;
+
+  for (i=0; i<x_length+4; i++) {
     double phase=90.0-90.0*i;
     double ampl=1.0;
     multiq[i]=(int)(-cos(3.1415926/180.0*(phase-303)) * 4096.0 * ampl);
@@ -2038,21 +2031,27 @@ analogtv_load_ximage(analogtv *it, analogtv_input *input, XImage *pic_im)
     int picy1=(y*img_h)/y_scanlength;
     int picy2=(y*img_h + y_scanlength/2)/y_scanlength;
 
-    for (x=0; x<ANALOGTV_PIC_LEN; x++) {
-      int picx=(x*img_w)/ANALOGTV_PIC_LEN;
+    for (x=0; x<x_length; x++) {
+      int picx=(x*img_w)/x_length;
       col1[x].pixel=XGetPixel(pic_im, picx, picy1);
       col2[x].pixel=XGetPixel(pic_im, picx, picy2);
+      if (mask_im)
+        mask[x] = (XGetPixel(mask_im, picx, picy1) != black);
+      else
+        mask[x] = 1;
     }
-    XQueryColors(it->dpy, it->colormap, col1, ANALOGTV_PIC_LEN);
-    XQueryColors(it->dpy, it->colormap, col2, ANALOGTV_PIC_LEN);
-
+    XQueryColors(it->dpy, it->colormap, col1, x_length);
+    XQueryColors(it->dpy, it->colormap, col2, x_length);
     for (i=0; i<7; i++) fyx[i]=fyy[i]=0;
     for (i=0; i<4; i++) fix[i]=fiy[i]=fqx[i]=fqy[i]=0.0;
 
-    for (x=0; x<ANALOGTV_PIC_LEN; x++) {
+    for (x=0; x<x_length; x++) {
       int rawy,rawi,rawq;
       int filty,filti,filtq;
       int composite;
+
+      if (!mask[x]) continue;
+
       /* Compute YIQ as:
            y=0.30 r + 0.59 g + 0.11 b
            i=0.60 r - 0.28 g - 0.32 b
@@ -2104,7 +2103,8 @@ analogtv_load_ximage(analogtv *it, analogtv_input *input, XImage *pic_im)
       composite = ((composite*100)>>14) + ANALOGTV_BLACK_LEVEL;
       if (composite>125) composite=125;
       if (composite<0) composite=0;
-      input->signal[y-y_overscan+ANALOGTV_TOP][x+ANALOGTV_PIC_START] = composite;
+
+      input->signal[y-y_overscan+ANALOGTV_TOP+yoff][x+ANALOGTV_PIC_START+xoff] = composite;
     }
   }
 
@@ -2200,10 +2200,10 @@ analogtv_reception_update(analogtv_reception *rec)
 }
 
 
-/* jwz: since MacOS doesn't have "6x10", I dumped this font to an XBM...
+/* jwz: since MacOS doesn't have "6x10", I dumped this font to a PNG...
  */
 
-#include "images/6x10font.xbm"
+#include "images/gen/6x10font_png.h"
 
 void
 analogtv_make_font(Display *dpy, Window window, analogtv_font *f,
@@ -2223,18 +2223,40 @@ analogtv_make_font(Display *dpy, Window window, analogtv_font *f,
 
   if (fontname && !strcmp (fontname, "6x10")) {
 
-    text_pm = XCreatePixmapFromBitmapData (dpy, window,
-                                           (char *) font6x10_bits,
-                                           font6x10_width,
-                                           font6x10_height,
-                                           1, 0, 1);
-    f->text_im = XGetImage(dpy, text_pm, 0, 0, font6x10_width, font6x10_height,
-                           1, XYPixmap);
-    XFreePixmap(dpy, text_pm);
+    int pix_w, pix_h;
+    XWindowAttributes xgwa;
+    Pixmap m = 0;
+    Pixmap p = image_data_to_pixmap (dpy, window,
+                                     _6x10font_png, sizeof(_6x10font_png),
+                                     &pix_w, &pix_h, &m);
+    XImage *im = XGetImage (dpy, p, 0, 0, pix_w, pix_h, ~0L, ZPixmap);
+    XImage *mm = XGetImage (dpy, m, 0, 0, pix_w, pix_h, 1, XYPixmap);
+    unsigned long black = BlackPixelOfScreen (DefaultScreenOfDisplay (dpy));
+    int x, y;
+
+    XFreePixmap (dpy, p);
+    XFreePixmap (dpy, m);
+    if (pix_w != 256*7) abort();
+    if (pix_h != 10) abort();
+
+    XGetWindowAttributes (dpy, window, &xgwa);
+    f->text_im = XCreateImage (dpy, xgwa.visual, 1, XYBitmap, 0, 0,
+                               pix_w, pix_h, 8, 0);
+    f->text_im->data = malloc (f->text_im->bytes_per_line * f->text_im->height);
+
+    /* Convert deep image to 1 bit */
+    for (y = 0; y < pix_h; y++)
+      for (x = 0; x < pix_w; x++)
+        XPutPixel (f->text_im, x, y,
+                   (XGetPixel (mm, x, y)
+                    ? XGetPixel (im, x, y) == black
+                    : 0));
+    XDestroyImage (im);
+    XDestroyImage (mm);
 
   } else if (fontname) {
 
-    font = XLoadQueryFont (dpy, fontname);
+    font = load_font_retry (dpy, fontname);
     if (!font) {
       fprintf(stderr, "analogtv: can't load font %s\n", fontname);
       abort();
@@ -2247,6 +2269,9 @@ analogtv_make_font(Display *dpy, Window window, analogtv_font *f,
     gcv.background=0;
     gcv.font=font->fid;
     gc=XCreateGC(dpy, text_pm, GCFont|GCBackground|GCForeground, &gcv);
+# ifdef HAVE_JWXYZ
+  jwxyz_XSetAntiAliasing (dpy, gc, False);
+# endif
 
     XSetForeground(dpy, gc, 0);
     XFillRectangle(dpy, text_pm, gc, 0, 0, 256*f->char_w, f->char_h);
@@ -2403,116 +2428,4 @@ analogtv_draw_string_centered(analogtv_input *input, analogtv_font *f,
   x -= width/2;
 
   analogtv_draw_string(input, f, s, x, y, ntsc);
-}
-
-
-static const char hextonib[128] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
-                                   0, 10,11,12,13,14,15,0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                   0, 10,11,12,13,14,15,0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-/*
-  Much of this function was adapted from logo.c
- */
-void
-analogtv_draw_xpm(analogtv *tv, analogtv_input *input,
-                  const char * const *xpm, int left, int top)
-{
-  int xpmw,xpmh;
-  int x,y,tvx,tvy,i;
-  int rawy,rawi,rawq;
-  int ncolors, nbytes;
-  char dummyc;
-  struct {
-    int r; int g; int b;
-  } cmap[256];
-
-
-  if (4 != sscanf ((const char *) *xpm,
-                   "%d %d %d %d %c",
-                   &xpmw, &xpmh, &ncolors, &nbytes, &dummyc))
-    abort();
-  if (ncolors < 1 || ncolors > 255)
-    abort();
-  if (nbytes != 1) /* a serious limitation */
-    abort();
-  xpm++;
-
-  for (i = 0; i < ncolors; i++) {
-    const char *line = *xpm;
-    int colori = ((unsigned char)*line++)&0xff;
-    while (*line)
-      {
-        int r, g, b;
-        char which;
-        while (*line == ' ' || *line == '\t')
-          line++;
-        which = *line++;
-        if (which != 'c' && which != 'm')
-          abort();
-        while (*line == ' ' || *line == '\t')
-          line++;
-        if (!strncasecmp(line, "None", 4))
-          {
-            r = g = b = -1;
-            line += 4;
-          }
-        else
-          {
-            if (*line == '#')
-              line++;
-            r = (hextonib[(int) line[0]] << 4) | hextonib[(int) line[1]];
-            line += 2;
-            g = (hextonib[(int) line[0]] << 4) | hextonib[(int) line[1]];
-            line += 2;
-            b = (hextonib[(int) line[0]] << 4) | hextonib[(int) line[1]];
-            line += 2;
-          }
-
-        if (which == 'c')
-          {
-            cmap[colori].r = r;
-            cmap[colori].g = g;
-            cmap[colori].b = b;
-          }
-      }
-
-    xpm++;
-  }
-
-  for (y=0; y<xpmh; y++) {
-    const char *line = *xpm++;
-    tvy=y+top;
-    if (tvy<ANALOGTV_TOP || tvy>=ANALOGTV_BOT) continue;
-
-    for (x=0; x<xpmw; x++) {
-      int cbyte=((unsigned char)line[x])&0xff;
-      int ntsc[4];
-      tvx=x*4+left;
-      if (tvx<ANALOGTV_PIC_START || tvx+4>ANALOGTV_PIC_END) continue;
-
-      rawy=( 5*cmap[cbyte].r + 11*cmap[cbyte].g + 2*cmap[cbyte].b) / 64;
-      rawi=(10*cmap[cbyte].r -  4*cmap[cbyte].g - 5*cmap[cbyte].b) / 64;
-      rawq=( 3*cmap[cbyte].r -  8*cmap[cbyte].g + 5*cmap[cbyte].b) / 64;
-
-      ntsc[0]=rawy+rawq;
-      ntsc[1]=rawy-rawi;
-      ntsc[2]=rawy-rawq;
-      ntsc[3]=rawy+rawi;
-
-      for (i=0; i<4; i++) {
-        if (ntsc[i]>ANALOGTV_WHITE_LEVEL) ntsc[i]=ANALOGTV_WHITE_LEVEL;
-        if (ntsc[i]<ANALOGTV_BLACK_LEVEL) ntsc[i]=ANALOGTV_BLACK_LEVEL;
-      }
-
-      input->signal[tvy][tvx+0]= ntsc[(tvx+0)&3];
-      input->signal[tvy][tvx+1]= ntsc[(tvx+1)&3];
-      input->signal[tvy][tvx+2]= ntsc[(tvx+2)&3];
-      input->signal[tvy][tvx+3]= ntsc[(tvx+3)&3];
-    }
-  }
 }

@@ -1,5 +1,5 @@
 /* -*- mode: C; tab-width: 4 -*-
- * xscreensaver, Copyright (c) 1992-2014 Jamie Zawinski <jwz@jwz.org>
+ * xscreensaver, Copyright (c) 1992-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -32,15 +32,15 @@
  *    on wood).
  * 08 Oct 1999 Jonas Munsin (jmunsin@iki.fi)
  *	Corrected several bugs causing references beyond allocated memory.
+ * 09 Oct 2016 Dave Odell (dmo2118@gmail.com)
+ *  Updated for new xshm.c.
  */
 
 #include <math.h>
+#include <time.h>
 #include "screenhack.h"
 /*#include <X11/Xmd.h>*/
-
-#ifdef HAVE_XSHM_EXTENSION
 # include "xshm.h"
-#endif /* HAVE_XSHM_EXTENSION */
 
 #define CARD32 unsigned int
 #define CARD16 unsigned short
@@ -77,16 +77,14 @@ struct state {
 
   int bpp_size;
 
-#ifdef HAVE_XSHM_EXTENSION
-  Bool use_shm;
   XShmSegmentInfo shm_info;
-#endif /* HAVE_XSHM_EXTENSION */
 
   void (*effect) (struct state *, int);
   void (*draw) (struct state *, int);
   void (*draw_routine) (struct state *st, XImage *, XImage *, int, int, int *);
 
   async_load_state *img_loader;
+  Pixmap pm;
 };
 
 
@@ -127,6 +125,8 @@ distort_reset (struct state *st)
 	st->reflect = get_boolean_resource(st->dpy, "reflect", "Boolean");
 	st->slow = get_boolean_resource(st->dpy, "slow", "Boolean");
 	
+    if (st->xgwa.width > 2560) st->radius *= 3;  /* Retina displays */
+
     if (st->delay < 0) st->delay = 0;
     if (st->duration < 1) st->duration = 1;
 
@@ -272,10 +272,6 @@ distort_init (Display *dpy, Window window)
     st->dpy = dpy;
     st->window = window;
 
-#ifdef HAVE_XSHM_EXTENSION
-	st->use_shm = get_boolean_resource(st->dpy, "useSHM", "Boolean");
-#endif /* HAVE_XSHM_EXTENSION */
-	
     distort_reset (st);
 
 	st->black_pixel = BlackPixelOfScreen( st->xgwa.screen );
@@ -287,8 +283,15 @@ distort_init (Display *dpy, Window window)
 		gcflags |= GCSubwindowMode;
 	st->gc = XCreateGC (st->dpy, st->window, gcflags, &gcv);
 
+    /* On MacOS X11, XGetImage on a Window often gets an inexplicable BadMatch,
+       possibly due to the window manager having occluded something?  It seems
+       nondeterministic. Loading the image into a pixmap instead fixes it. */
+    if (st->pm) XFreePixmap (st->dpy, st->pm);
+    st->pm = XCreatePixmap (st->dpy, st->window,
+                            st->xgwa.width, st->xgwa.height, st->xgwa.depth);
+
     st->img_loader = load_image_async_simple (0, st->xgwa.screen, st->window,
-                                              st->window, 0, 0);
+                                              st->pm, 0, 0);
     st->start_time = time ((time_t *) 0);
     return st;
 }
@@ -300,9 +303,13 @@ distort_finish_loading (struct state *st)
 
     st->start_time = time ((time_t *) 0);
 
-	st->buffer_map = 0;
-	st->orig_map = XGetImage(st->dpy, st->window, 0, 0, st->xgwa.width, st->xgwa.height,
-						 ~0L, ZPixmap);
+    if (! st->pm) abort();
+    XClearWindow (st->dpy, st->window);
+    XCopyArea (st->dpy, st->pm, st->window, st->gc, 
+               0, 0, st->xgwa.width, st->xgwa.height, 0, 0);
+	st->orig_map = XGetImage(st->dpy, st->pm, 0, 0,
+                             st->xgwa.width, st->xgwa.height,
+                             ~0L, ZPixmap);
 	st->buffer_map_cache = malloc(sizeof(unsigned long)*(2*st->radius+st->speed+2)*(2*st->radius+st->speed+2));
 
 	if (st->buffer_map_cache == NULL) {
@@ -310,28 +317,10 @@ distort_finish_loading (struct state *st)
 		exit(EXIT_FAILURE);
 	}
 
-# ifdef HAVE_XSHM_EXTENSION
-
-	if (st->use_shm)
-	  {
-		st->buffer_map = create_xshm_image(st->dpy, st->xgwa.visual, st->orig_map->depth,
-									   ZPixmap, 0, &st->shm_info,
-									   2*st->radius + st->speed + 2,
-									   2*st->radius + st->speed + 2);
-		if (!st->buffer_map)
-		  st->use_shm = False;
-	  }
-# endif /* HAVE_XSHM_EXTENSION */
-
-	if (!st->buffer_map)
-	  {
-		st->buffer_map = XCreateImage(st->dpy, st->xgwa.visual,
-								  st->orig_map->depth, ZPixmap, 0, 0,
-								  2*st->radius + st->speed + 2, 2*st->radius + st->speed + 2,
-								  8, 0);
-		st->buffer_map->data = (char *)
-		  calloc(st->buffer_map->height, st->buffer_map->bytes_per_line);
-	}
+	st->buffer_map = create_xshm_image(st->dpy, st->xgwa.visual, st->orig_map->depth,
+	                                   ZPixmap, &st->shm_info,
+	                                   2*st->radius + st->speed + 2,
+	                                   2*st->radius + st->speed + 2);
 
 	if ((st->buffer_map->byte_order == st->orig_map->byte_order)
 			&& (st->buffer_map->depth == st->orig_map->depth)
@@ -598,17 +587,8 @@ static void plain_draw(struct state *st, int k)
 
 	st->draw_routine(st, st->orig_map, st->buffer_map, st->xy_coo[k].x, st->xy_coo[k].y, st->fast_from);
 
-# ifdef HAVE_XSHM_EXTENSION
-	if (st->use_shm)
-		XShmPutImage(st->dpy, st->window, st->gc, st->buffer_map, 0, 0, st->xy_coo[k].x, st->xy_coo[k].y,
-				2*st->radius+st->speed+2, 2*st->radius+st->speed+2, False);
-	else
-
-	if (!st->use_shm)
-# endif
-		XPutImage(st->dpy, st->window, st->gc, st->buffer_map, 0, 0, st->xy_coo[k].x, st->xy_coo[k].y,
-				2*st->radius+st->speed+2, 2*st->radius+st->speed+2);
-
+	put_xshm_image(st->dpy, st->window, st->gc, st->buffer_map, 0, 0, st->xy_coo[k].x, st->xy_coo[k].y,
+	               2*st->radius+st->speed+2, 2*st->radius+st->speed+2, &st->shm_info);
 }
 
 
@@ -772,8 +752,11 @@ distort_draw (Display *dpy, Window window, void *closure)
 
   if (!st->img_loader &&
       st->start_time + st->duration < time ((time_t *) 0)) {
+    if (st->pm) XFreePixmap (st->dpy, st->pm);
+    st->pm = XCreatePixmap (st->dpy, st->window,
+                            st->xgwa.width, st->xgwa.height, st->xgwa.depth);
     st->img_loader = load_image_async_simple (0, st->xgwa.screen, st->window,
-                                              st->window, 0, 0);
+                                              st->pm, 0, 0);
     return st->delay;
   }
 
@@ -814,8 +797,9 @@ distort_free (Display *dpy, Window window, void *closure)
 {
   struct state *st = (struct state *) closure;
   XFreeGC (st->dpy, st->gc);
+  if (st->pm) XFreePixmap (dpy, st->pm);
   if (st->orig_map) XDestroyImage (st->orig_map);
-  if (st->buffer_map) XDestroyImage (st->buffer_map);
+  if (st->buffer_map) destroy_xshm_image (st->dpy, st->buffer_map, &st->shm_info);
   if (st->from) free (st->from);
   if (st->fast_from) free (st->fast_from);
   if (st->from_array) free (st->from_array);
@@ -847,7 +831,7 @@ static const char *distort_defaults [] = {
 #ifdef HAVE_XSHM_EXTENSION
 	"*useSHM:			False",		/* xshm turns out not to help. */
 #endif /* HAVE_XSHM_EXTENSION */
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation:     True",
   "*rotateImages:       True",
 #endif

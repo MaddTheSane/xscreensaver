@@ -75,9 +75,10 @@ static const char sccsid[] = "@(#)apollonian.c	5.02 2001/07/01 xlockmore";
 					"*fpsSolid: true   \n" \
 					"*ignoreRotation: True" \
 
-# define refresh_apollonian 0
+# define release_apollonian 0
+# define reshape_apollonian 0
+# define apollonian_handle_event 0
 # include "xlockmore.h"		/* in xscreensaver distribution */
-# include "erase.h"
 #else /* STANDALONE */
 # include "xlock.h"		/* in xlockmore distribution */
 #endif /* STANDALONE */
@@ -117,8 +118,8 @@ extern XFontStruct *getFont(Display * display);
 
 #ifdef USE_MODULES
 ModStruct   apollonian_description =
-{"apollonian", "init_apollonian", "draw_apollonian", "release_apollonian",
- "init_apollonian", "init_apollonian", (char *) NULL, &apollonian_opts,
+{"apollonian", "init_apollonian", "draw_apollonian", (char *) NULL,
+ "init_apollonian", "init_apollonian", "free_apollonian", &apollonian_opts,
  1000000, 64, 20, 1, 64, 1.0, "",
  "Shows Apollonian Circles", 0, NULL};
 
@@ -298,9 +299,6 @@ typedef struct {
 #endif
 	int         time;
 	int         game;
-#ifdef STANDALONE
-  eraser_state *eraser;
-#endif
 } apollonianstruct;
 
 static apollonianstruct *apollonians = (apollonianstruct *) NULL;
@@ -506,7 +504,7 @@ static void
 p(ModeInfo *mi, circle c)
 {
 	apollonianstruct *cp = &apollonians[MI_SCREEN(mi)];
-	char string[10];
+	char string[15];
 	double g, e;
 	int g_width;
 
@@ -637,8 +635,10 @@ f(ModeInfo *mi, circle c1, circle c2, circle c3, circle c4, int depth)
 }
 
 ENTRYPOINT void
-free_apollonian (Display *display, apollonianstruct *cp)
+free_apollonian (ModeInfo * mi)
 {
+	apollonianstruct *cp = &apollonians[MI_SCREEN(mi)];
+
 	if (cp->quad != NULL) {
 		(void) free((void *) cp->quad);
 		cp->quad = (apollonian_quadruple *) NULL;
@@ -679,11 +679,7 @@ init_apollonian (ModeInfo * mi)
 	apollonianstruct *cp;
 	int i;
 
-	if (apollonians == NULL) {
-		if ((apollonians = (apollonianstruct *) calloc(MI_NUM_SCREENS(mi),
-					     sizeof (apollonianstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, apollonians);
 	cp = &apollonians[MI_SCREEN(mi)];
 
 	cp->size = MAX(MIN(MI_WIDTH(mi), MI_HEIGHT(mi)) - 1, 1);
@@ -728,9 +724,7 @@ init_apollonian (ModeInfo * mi)
 			cquad(&(cp->c1), &(cp->c2), &(cp->c3), &(cp->c4));
 	}
 	cp->time = 0;
-#ifndef STANDALONE
 	MI_CLEARWINDOW(mi);
-#endif
 	if (cp->game != 0) {
 		double q123;
 
@@ -783,12 +777,6 @@ draw_apollonian (ModeInfo * mi)
 		return;
 	cp = &apollonians[MI_SCREEN(mi)];
 
-#ifdef STANDALONE
-    if (cp->eraser) {
-      cp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), cp->eraser);
-      return;
-    }
-#endif
 
 	MI_IS_DRAWN(mi) = True;
 
@@ -814,43 +802,7 @@ draw_apollonian (ModeInfo * mi)
 		}
 	}
 	if (++cp->time > MI_CYCLES(mi))
-      {
-#ifdef STANDALONE
-        cp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), cp->eraser);
-#endif /* STANDALONE */
 		init_apollonian(mi);
-      }
-}
-
-ENTRYPOINT void
-reshape_apollonian(ModeInfo * mi, int width, int height)
-{
-  XClearWindow (MI_DISPLAY (mi), MI_WINDOW(mi));
-  init_apollonian (mi);
-}
-
-ENTRYPOINT Bool
-apollonian_handle_event (ModeInfo *mi, XEvent *event)
-{
-  if (screenhack_event_helper (MI_DISPLAY(mi), MI_WINDOW(mi), event))
-    {
-      reshape_apollonian (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
-      return True;
-    }
-  return False;
-}
-
-ENTRYPOINT void
-release_apollonian (ModeInfo * mi)
-{
-	if (apollonians != NULL) {
-		int         screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-			free_apollonian(MI_DISPLAY(mi), &apollonians[screen]);
-		(void) free((void *) apollonians);
-		apollonians = (apollonianstruct *) NULL;
-	}
 }
 
 XSCREENSAVER_MODULE ("Apollonian", apollonian)

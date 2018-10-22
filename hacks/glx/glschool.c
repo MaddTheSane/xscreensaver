@@ -16,9 +16,9 @@
                     "*showFPS:      False       \n" \
                     "*wireframe:    False       \n" \
 
-#define refresh_glschool		(0)
+#define free_glschool			(0)
 #define release_glschool		(0)
-#define glschool_handle_event	(0)
+#define glschool_handle_event	(xlockmore_no_events)
 
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -142,13 +142,7 @@ init_glschool(ModeInfo *mi)
 	Bool					wire = MI_IS_WIREFRAME(mi);
 	glschool_configuration	*sc;
 
-	if (!scs) {
-		scs = (glschool_configuration *)calloc(MI_NUM_SCREENS(mi), sizeof(glschool_configuration));
-		if (!scs) {
-			perror("init_glschool: ");
-			exit(1);
-		}
-	}
+	MI_INIT (mi, scs);
 	sc = &scs[MI_SCREEN(mi)];
 
 	sc->drawGoal = DoDrawGoal;

@@ -19,14 +19,15 @@ static const char sccsid[] = "@(#)swirl.c	4.00 97/01/01 xlockmore";
  * event will the author be liable for any lost revenue or profits or
  * other special, indirect and consequential damages.
  *
- * 13-May-97: jwz@jwz.org: turned into a standalone program.
- * 21-Apr-95: improved startup time for TrueColour displays
- *            (limited to 16bpp to save memory) S.Early <sde1000@cam.ac.uk>
- * 09-Jan-95: fixed colour maps (more colourful) and the image now spirals
- *            outwards from the centre with a fixed number of points drawn
- *            every iteration. Thanks to M.Dobie <mrd@ecs.soton.ac.uk>.
- * 1994:      written.   Copyright (c) 1994 M.Dobie <mrd@ecs.soton.ac.uk>
- *            based on original code by R.Taylor
+ * 09-Oct-2016: dmo2118@gmail.com: Updated for new xshm.c.
+ * 13-May-1997: jwz@jwz.org: turned into a standalone program.
+ * 21-Apr-1995: improved startup time for TrueColour displays
+ *              (limited to 16bpp to save memory) S.Early <sde1000@cam.ac.uk>
+ * 09-Jan-1995: fixed colour maps (more colourful) and the image now spirals
+ *              outwards from the centre with a fixed number of points drawn
+ *              every iteration. Thanks to M.Dobie <mrd@ecs.soton.ac.uk>.
+ * 1994:        written.   Copyright (c) 1994 M.Dobie <mrd@ecs.soton.ac.uk>
+ *              based on original code by R.Taylor
  */
 
 #ifdef STANDALONE
@@ -36,13 +37,15 @@ static const char sccsid[] = "@(#)swirl.c	4.00 97/01/01 xlockmore";
 					"*useSHM:		True    \n" \
 					"*fpsSolid:		true    \n" \
 					"*ignoreRotation: True \n" \
+					".lowrez:         True \n" \
 
 # define SMOOTH_COLORS
 # define WRITABLE_COLORS
+# define release_swirl 0
+# define reshape_swirl 0
+# define swirl_handle_event 0
 # include "xlockmore.h"				/* from the xscreensaver distribution */
-# ifdef HAVE_XSHM_EXTENSION
-#  include "xshm.h"
-# endif /* HAVE_XSHM_EXTENSION */
+# include "xshm.h"
 #else  /* !STANDALONE */
 # include "xlock.h"					/* from the xlockmore distribution */
 # undef HAVE_XSHM_EXTENSION
@@ -124,6 +127,7 @@ typedef struct swirl_data {
 	/* image stuff */
 	unsigned char *image;	/* image data */
 	XImage     *ximage;
+	XShmSegmentInfo shm_info;
 
 	/* colours stuff */
 	int         colours;	/* how many colours possible */
@@ -247,29 +251,11 @@ initialise_image(ModeInfo * mi, SWIRL_P swirl)
   Display *dpy = MI_DISPLAY(mi);
 
   if (swirl->ximage != NULL)
-	XDestroyImage(swirl->ximage);
+	destroy_xshm_image(dpy, swirl->ximage, &swirl->shm_info);
 
-  swirl->ximage = 0;
-#ifdef HAVE_XSHM_EXTENSION
-  if (mi->use_shm)
-	{
-	  swirl->ximage = create_xshm_image(dpy, swirl->visual, swirl->rdepth,
-										ZPixmap, 0, &mi->shm_info,
-										swirl->width, swirl->height);
-	  if (!swirl->ximage)
-		mi->use_shm = False;
-	}
-#endif /* HAVE_XSHM_EXTENSION */
-
-  if (!swirl->ximage)
-	{
-	  swirl->ximage = XCreateImage(dpy, swirl->visual, swirl->rdepth, ZPixmap,
-								   0, 0, swirl->width, swirl->height,
-								   8, 0);
-	  swirl->image = (unsigned char *)
-        calloc(swirl->height, swirl->ximage->bytes_per_line);
-      swirl->ximage->data = (char *) swirl->image;
-	}
+  swirl->ximage = create_xshm_image(dpy, swirl->visual, swirl->rdepth,
+                                    ZPixmap, &swirl->shm_info,
+                                    swirl->width, swirl->height);
 }
 
 /****************************************************************/
@@ -1125,16 +1111,8 @@ draw_point(ModeInfo * mi, SWIRL_P swirl)
 
 	/* update the screen */
 
-#ifdef HAVE_XSHM_EXTENSION
-	if (mi->use_shm)
-	  XShmPutImage(MI_DISPLAY(mi), MI_WINDOW(mi), MI_GC(mi), swirl->ximage,
-				   x, y, x, y, r, r, False);
-	else
-#endif /* !HAVE_XSHM_EXTENSION */
-	  /* PURIFY 4.0.1 on SunOS4 and on Solaris 2 reports a 256 byte memory
-		 leak on the next line. */
-	  XPutImage(MI_DISPLAY(mi), MI_WINDOW(mi), MI_GC(mi), swirl->ximage,
-				x, y, x, y, r, r);
+	put_xshm_image(MI_DISPLAY(mi), MI_WINDOW(mi), MI_GC(mi), swirl->ximage,
+	               x, y, x, y, r, r, &swirl->shm_info);
 }
 
 /****************************************************************/
@@ -1251,14 +1229,9 @@ init_swirl(ModeInfo * mi)
 	Window      window = MI_WINDOW(mi);
 	SWIRL_P     swirl;
 
-	/* does the swirls array exist? */
-	if (swirls == NULL) {
-		/* allocate an array, one entry for each screen */
-		swirls = (SWIRL_P) calloc(MI_NUM_SCREENS(mi), sizeof (SWIRL));
-	}
-	/* get a pointer to this swirl */
+	MI_INIT (mi, swirls);
 	swirl = &(swirls[MI_SCREEN(mi)]);
-        initialise_swirl(mi, swirl);
+    initialise_swirl(mi, swirl);
                 
         /* get window parameters */
 	swirl->win = window;
@@ -1355,123 +1328,107 @@ draw_swirl(ModeInfo * mi)
 			rotate_colors(mi->xgwa.screen, MI_COLORMAP(mi),
 						  swirl->rgb_values, swirl->colours, 1);
 #else  /* !STANDALONE */
-			/* rotate the colours */
-			install_map(MI_DISPLAY(mi), swirl, swirl->dshift);
+          /* rotate the colours */
+          install_map(MI_DISPLAY(mi), swirl, swirl->dshift);
 #endif /* !STANDALONE */
 
-			/* draw a batch of points */
-			swirl->batch_todo = BATCH_DRAW;
-			while ((swirl->batch_todo > 0) && swirl->drawing) {
-				/* draw a point */
-				draw_point(mi, swirl);
+          /* draw a batch of points */
+          swirl->batch_todo = BATCH_DRAW;
+          while ((swirl->batch_todo > 0) && swirl->drawing) {
+            /* draw a point */
+            draw_point(mi, swirl);
 
-				/* move to the next point */
-				next_point(swirl);
+            /* move to the next point */
+            next_point(swirl);
 
-				/* done a point */
-				swirl->batch_todo--;
-			}
+            /* done a point */
+            swirl->batch_todo--;
+          }
 		} else {
 #ifdef STANDALONE
 		  if (mi->writable_p)
 			rotate_colors(mi->xgwa.screen, MI_COLORMAP(mi),
 						  swirl->rgb_values, swirl->colours, 1);
 #else  /* !STANDALONE */
-			/* rotate the colours */
-			install_map(MI_DISPLAY(mi), swirl, swirl->shift);
+          /* rotate the colours */
+          install_map(MI_DISPLAY(mi), swirl, swirl->shift);
 #endif /* !STANDALONE */
 
-			/* time for a higher resolution? */
-			if (swirl->resolution > swirl->max_resolution) {
-				/* move to higher resolution */
-				swirl->resolution--;
+          /* time for a higher resolution? */
+          if (swirl->resolution > swirl->max_resolution) {
+            /* move to higher resolution */
+            swirl->resolution--;
 
-				/* calculate the pixel step for this resulution */
-				swirl->r = (1 << (swirl->resolution - 1));
+            /* calculate the pixel step for this resulution */
+            swirl->r = (1 << (swirl->resolution - 1));
 
-				/* start drawing again */
-				swirl->drawing = True;
+            /* start drawing again */
+            swirl->drawing = True;
 
-				/* start in the middle of the screen */
-				swirl->x = (swirl->width - swirl->r) / 2;
-				swirl->y = (swirl->height - swirl->r) / 2;
+            /* start in the middle of the screen */
+            swirl->x = (swirl->width - swirl->r) / 2;
+            swirl->y = (swirl->height - swirl->r) / 2;
 
-				/* initialise spiral drawing parameters */
-				swirl->direction = DRAW_RIGHT;
-				swirl->dir_todo = 1;
-				swirl->dir_done = 0;
-			} else {
-				/* all done, decide when to restart */
-				if (swirl->start_again == -1) {
-					/* start the counter */
-					swirl->start_again = RESTART;
-				} else if (swirl->start_again == 0) {
-					/* reset the counter */
-					swirl->start_again = -1;
+            /* initialise spiral drawing parameters */
+            swirl->direction = DRAW_RIGHT;
+            swirl->dir_todo = 1;
+            swirl->dir_done = 0;
+          } else {
+            /* all done, decide when to restart */
+            if (swirl->start_again == -1) {
+              /* start the counter */
+              swirl->start_again = RESTART;
+            } else if (swirl->start_again == 0) {
+              /* reset the counter */
+              swirl->start_again = -1;
 
 #ifdef STANDALONE
-					/* Pick a new colormap! */
-					XClearWindow (MI_DISPLAY(mi), MI_WINDOW(mi));
-					free_colors (mi->xgwa.screen, MI_COLORMAP(mi),
-								 mi->colors, mi->npixels);
-					make_smooth_colormap (mi->xgwa.screen, MI_VISUAL(mi),
-										  MI_COLORMAP(mi),
-										  mi->colors, &mi->npixels, True,
-										  &mi->writable_p, True);
-					swirl->colours = mi->npixels;
+              /* Pick a new colormap! */
+              XClearWindow (MI_DISPLAY(mi), MI_WINDOW(mi));
+              free_colors (mi->xgwa.screen, MI_COLORMAP(mi),
+                           mi->colors, mi->npixels);
+              make_smooth_colormap (mi->xgwa.screen, MI_VISUAL(mi),
+                                    MI_COLORMAP(mi),
+                                    mi->colors, &mi->npixels, True,
+                                    &mi->writable_p, True);
+              swirl->colours = mi->npixels;
 #endif /* STANDALONE */
 
-					/* start again */
-					init_swirl(mi);
-				} else
-					/* decrement the counter */
-					swirl->start_again--;
-			}
+              /* start again */
+              init_swirl(mi);
+            } else
+              /* decrement the counter */
+              swirl->start_again--;
+          }
 		}
 	}
-}
-
-ENTRYPOINT void
-reshape_swirl(ModeInfo * mi, int width, int height)
-{
-  XClearWindow (MI_DISPLAY (mi), MI_WINDOW(mi));
-  init_swirl (mi);
 }
 
 /****************************************************************/
 
 ENTRYPOINT void
-release_swirl (ModeInfo * mi)
+free_swirl (ModeInfo * mi)
 {
-	/* does the swirls array exist? */
-	if (swirls != NULL) {
-		int         i;
-
-		/* free them all */
-		for (i = 0; i < MI_NUM_SCREENS(mi); i++) {
-			SWIRL_P     swirl = &(swirls[i]);
+	SWIRL_P     swirl = &(swirls[MI_SCREEN(mi)]);
 
 #ifndef STANDALONE
-			if (swirl->cmap != (Colormap) NULL)
-				XFreeColormap(MI_DISPLAY(mi), swirl->cmap);
+	if (swirl->cmap != (Colormap) NULL)
+		XFreeColormap(MI_DISPLAY(mi), swirl->cmap);
 #endif /* STANDALONE */
 #ifndef STANDALONE
-			if (swirl->rgb_values != NULL)
-				XFree((void *) swirl->rgb_values);
+	if (swirl->rgb_values != NULL)
+		XFree((void *) swirl->rgb_values);
 #endif /* !STANDALONE */
-			if (swirl->ximage != NULL)
-				XDestroyImage(swirl->ximage);
-			if (swirl->knots)
-				(void) free((void *) swirl->knots);
-		}
-		/* deallocate an array, one entry for each screen */
-		(void) free((void *) swirls);
-		swirls = NULL;
-	}
+	if (swirl->ximage != NULL)
+		destroy_xshm_image(MI_DISPLAY(mi), swirl->ximage,
+		                   &swirl->shm_info);
+	if (swirl->knots)
+		(void) free((void *) swirl->knots);
 }
 
 /****************************************************************/
 
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_swirl (ModeInfo * mi)
 {
@@ -1483,16 +1440,6 @@ refresh_swirl (ModeInfo * mi)
 		swirl->drawing = False;
 	}
 }
-
-ENTRYPOINT Bool
-swirl_handle_event (ModeInfo *mi, XEvent *event)
-{
-  if (screenhack_event_helper (MI_DISPLAY(mi), MI_WINDOW(mi), event))
-    {
-      reshape_swirl (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
-      return True;
-    }
-  return False;
-}
+#endif
 
 XSCREENSAVER_MODULE ("Swirl", swirl)

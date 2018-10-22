@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1997-2015 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1997-2017 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -55,15 +55,16 @@
 		  "*wireframe:		False	\n" \
 		  "*desktopGrabber:   xscreensaver-getimage -no-desktop %s\n" \
 		  "*grabDesktopImages:	False	\n" \
-		  "*chooseRandomImages:	True	\n"
+		  "*chooseRandomImages:	True	\n" \
+		  "*suppressRotationAnimation: True\n" \
 
 
-# define refresh_jigsaw 0
+# define free_jigsaw 0
 # define release_jigsaw 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
 #else
 # include <X11/Xlib.h>
@@ -823,8 +824,8 @@ image_loaded_cb (const char *filename, XRectangle *geometry,
 
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   make_puzzle_grid (mi);
 }
@@ -1324,8 +1325,15 @@ reshape_jigsaw (ModeInfo *mi, int width, int height)
 {
   jigsaw_configuration *jc = &sps[MI_SCREEN(mi)];
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -1336,6 +1344,14 @@ reshape_jigsaw (ModeInfo *mi, int width, int height)
   gluLookAt( 0.0, 0.0, 30.0,
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -1369,14 +1385,7 @@ init_jigsaw (ModeInfo *mi)
   jigsaw_configuration *jc;
   int wire = MI_IS_WIREFRAME(mi);
 
-  if (!sps) {
-    sps = (jigsaw_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (jigsaw_configuration));
-    if (!sps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, sps);
   jc = &sps[MI_SCREEN(mi)];
   jc->glx_context = init_GL(mi);
 
@@ -1434,7 +1443,7 @@ draw_jigsaw (ModeInfo *mi)
   mi->polygon_count = 0;
 
   glPushMatrix ();
-  glRotatef(current_device_rotation(), 0, 0, 1);
+/*  glRotatef(current_device_rotation(), 0, 0, 1); */
   gltrackball_rotate (jc->trackball);
 
   animate (mi);

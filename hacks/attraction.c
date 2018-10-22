@@ -162,6 +162,7 @@ attraction_init (Display *dpy, Window window)
   double th;
   Colormap cmap;
   char *mode_str, *graph_mode_str;
+  double size_scale;
 
   XGetWindowAttributes (dpy, window, &xgwa);
   st->xlim = xgwa.width;
@@ -337,13 +338,17 @@ attraction_init (Display *dpy, Window window)
   st->erase_gc = XCreateGC (dpy, window, GCForeground|GCLineWidth|GCCapStyle,&gcv);
 
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
   jwxyz_XSetAntiAliasing (dpy, st->draw_gc,  False);
   jwxyz_XSetAntiAliasing (dpy, st->erase_gc, False);
 #endif
 
+  size_scale = 3;
+  if (xgwa.width < 100 || xgwa.height < 100)  /* tiny windows */
+    size_scale = 0.75;
+
   /* let's make the balls bigger by default */
-#define rand_size() (3 * (8 + (random () % 7)))
+#define rand_size() (size_scale * (8 + (random () % 7)))
 
   if (st->orbit_p && !st->global_size)
     /* To orbit, all objects must be the same mass, or the math gets
@@ -1067,7 +1072,7 @@ static const char *attraction_defaults [] = {
   "*vx:		0",
   "*vy:		0",
   "*mouseForeground: white",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation: True",
 #endif
   0

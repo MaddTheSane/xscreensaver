@@ -1,4 +1,4 @@
-/* winduprobot, Copyright (c) 2014, 2015 Jamie Zawinski <jwz@jwz.org>
+/* winduprobot, Copyright (c) 2014-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -14,7 +14,7 @@
  * came for us to throw the Cocktail Robotics Grand Challenge at DNA Lounge, I
  * photographed this robot (holding a tiny martini glass) to make a flyer for
  * the event.  You can see that photo here:
- * http://www.dnalounge.com/flyers/2014/09/14.html
+ * https://www.dnalounge.com/flyers/2014/09/14.html
  *
  * Then I decided to try and make award statues for the contest by modeling
  * this robot and 3D-printing it (a robot on a post, with the DNA Lounge
@@ -35,8 +35,8 @@
  *
  * We did eventually end up with robotic award statues, but we constructed
  * them out of mass-produced wind-up robots, rather than 3D printing them:
- * http://www.dnalounge.com/gallery/2014/09-14/045.html
- * http://www.youtube.com/watch?v=EZF4ZAAy49g
+ * https://www.dnalounge.com/gallery/2014/09-14/045.html
+ * https://www.youtube.com/watch?v=EZF4ZAAy49g
  */
 
 #define LABEL_FONT "-*-helvetica-bold-r-normal-*-*-240-*-*-*-*-*-*"
@@ -68,7 +68,7 @@
 #undef DEBUG
 #define WORDBUBBLES
 
-# define refresh_robot 0
+# define release_robot 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
@@ -81,7 +81,7 @@
 
 #include "xlockmore.h"
 #include "gltrackball.h"
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include "involute.h"
 #include "sphere.h"
 
@@ -97,7 +97,7 @@
 #endif
 
 #ifdef HAVE_TEXTURE
-# include "../images/chromesphere.xpm"
+# include "images/gen/chromesphere_png.h"
 #endif
 
 #ifdef USE_GL /* whole file */
@@ -236,8 +236,15 @@ ENTRYPOINT void
 reshape_robot (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, width, height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -245,7 +252,7 @@ reshape_robot (ModeInfo *mi, int width, int height)
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt( 0, 20, 30,
+  gluLookAt( 0, 0, 30,
              0, 0, 0,
              0, 1, 0);
 
@@ -312,8 +319,8 @@ load_textures (ModeInfo *mi)
   robot_configuration *bp = &bps[MI_SCREEN(mi)];
   XImage *xi;
 
-  xi = xpm_to_ximage (mi->dpy, mi->xgwa.visual, mi->xgwa.colormap,
-                      chromesphere_xpm);
+  xi = image_data_to_ximage (mi->dpy, mi->xgwa.visual,
+                             chromesphere_png, sizeof(chromesphere_png));
   clear_gl_error();
 
   glGenTextures (1, &bp->chrome_texture);
@@ -323,13 +330,7 @@ load_textures (ModeInfo *mi)
   glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                 xi->width, xi->height, 0,
-                GL_RGBA,
-# ifndef USE_IPHONE
-                GL_UNSIGNED_INT_8_8_8_8_REV,
-# else
-                GL_UNSIGNED_BYTE,
-# endif
-                xi->data);
+                GL_RGBA, GL_UNSIGNED_BYTE, xi->data);
   check_gl_error("texture");
 
   glEnable(GL_TEXTURE_GEN_S);
@@ -369,14 +370,7 @@ init_robot (ModeInfo *mi)
   robot_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
   int i;
-  if (!bps) {
-    bps = (robot_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (robot_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -428,7 +422,7 @@ init_robot (ModeInfo *mi)
       char *key = 0;
       GLfloat spec1[4] = {1.00, 1.00, 1.00, 1.0};
       GLfloat spec2[4] = {0.40, 0.40, 0.70, 1.0};
-      GLfloat *spec = spec1;
+      GLfloat *spec = 0;
       GLfloat shiny = 20;
 
       glNewList (bp->dlists[i], GL_COMPILE);
@@ -593,16 +587,13 @@ init_robot (ModeInfo *mi)
 
 # endif /* WORDBUBBLES */
 
-  /* Let's tilt the floor a little. */
 # ifdef DEBUG
   if (!debug_p)
 # endif
-    {
-      gltrackball_start (bp->user_trackball, 0, 500,  1000, 1000);
-      gltrackball_track (bp->user_trackball,
-                         0, 500 + (random() % 200) - 100,
-                         1000, 1000);
-    }
+    /* Let's tilt the floor a little. */
+    gltrackball_reset (bp->user_trackball,
+                       -0.6 + frand(1.2),
+                       -0.6 + frand(0.2));
 }
 
 
@@ -1683,10 +1674,20 @@ static int
 draw_ground (ModeInfo *mi, GLfloat color[4])
 {
   int wire = MI_IS_WIREFRAME(mi);
-  GLfloat i;
-  GLfloat cell_size = 0.9;
-  int cells = 1000 * size;
+  GLfloat i, j, k;
+
+  /* When using fog, iOS apparently doesn't like lines or quads that are
+     really long, and extend very far outside of the scene. Maybe?  If the
+     length of the line (cells * cell_size) is greater than 25 or so, lines
+     that are oriented steeply away from the viewer tend to disappear
+     (whether implemented as GL_LINES or as GL_QUADS).
+
+     So we do a bunch of smaller grids instead of one big one.
+  */
+  int cells = 30;
+  GLfloat cell_size = 0.8;
   int points = 0;
+  int grids = 12;
 
 # ifdef DEBUG
   if (debug_p) return 0;
@@ -1700,7 +1701,7 @@ draw_ground (ModeInfo *mi, GLfloat color[4])
     {
       GLfloat fog_color[4] = { 0, 0, 0, 1 };
 
-      glLineWidth (2);
+      glLineWidth (4);
       glEnable (GL_LINE_SMOOTH);
       glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
       glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
@@ -1708,25 +1709,36 @@ draw_ground (ModeInfo *mi, GLfloat color[4])
 
       glFogi (GL_FOG_MODE, GL_EXP2);
       glFogfv (GL_FOG_COLOR, fog_color);
-      glFogf (GL_FOG_DENSITY, 0.017);
-      glFogf (GL_FOG_START, -cells/2 * cell_size);
-# ifndef USE_IPHONE  /* #### Not working on iOS for some reason */
+      glFogf (GL_FOG_DENSITY, 0.015);
+      glFogf (GL_FOG_START, -cells/2 * cell_size * grids);
       glEnable (GL_FOG);
-# endif
     }
 
   glColor4fv (color);
   glMaterialfv (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
 
-  glBegin (GL_LINES);
-  for (i = -cells/2; i < cells/2; i++)
+  glTranslatef (-cells * grids * cell_size / 2,
+                -cells * grids * cell_size / 2, 0);
+
+  for (j = 0; j < grids; j++)
     {
-      GLfloat a = i * cell_size;
-      GLfloat b = cells/2 * cell_size;
-      glVertex3f (a, -b, 0); glVertex3f (a, b, 0); points++;
-      glVertex3f (-b, a, 0); glVertex3f (b, a, 0); points++;
+      glPushMatrix();
+      for (k = 0; k < grids; k++)
+        {
+          glBegin (GL_LINES);
+          for (i = -cells/2; i < cells/2; i++)
+            {
+              GLfloat a = i * cell_size;
+              GLfloat b = cells/2 * cell_size;
+              glVertex3f (a, -b, 0); glVertex3f (a, b, 0); points++;
+              glVertex3f (-b, a, 0); glVertex3f (b, a, 0); points++;
+            }
+          glEnd();
+          glTranslatef (cells * cell_size, 0, 0);
+        }
+      glPopMatrix();
+      glTranslatef (0, cells * cell_size, 0);
     }
-  glEnd();
 
   if (!wire)
     {
@@ -2293,8 +2305,14 @@ draw_robot (ModeInfo *mi)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPushMatrix ();
-  glRotatef(current_device_rotation(), 0, 0, 1);
+
+# ifdef HAVE_MOBILE
+  glRotatef (current_device_rotation(), 0, 0, 1);  /* right side up */
+# endif
+
   gltrackball_rotate (bp->user_trackball);
+
+  glTranslatef (0, -20, 0);  /* Move the horizon down the screen */
 
   robot_size = size * 7;
   glScalef (robot_size, robot_size, robot_size);
@@ -2442,7 +2460,6 @@ draw_robot (ModeInfo *mi)
     }
   free (sorted);
 
-
   glPopMatrix ();
 
   if (mi->fps_p) do_fps (mi);
@@ -2452,11 +2469,12 @@ draw_robot (ModeInfo *mi)
 }
 
 ENTRYPOINT void
-release_robot (ModeInfo *mi)
+free_robot (ModeInfo *mi)
 {
 # ifdef WORDBUBBLES
   robot_configuration *bp = &bps[MI_SCREEN(mi)];
-  textclient_close (bp->tc);
+  if (bp->tc)
+    textclient_close (bp->tc);
 # endif
 }
 

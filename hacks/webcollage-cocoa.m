@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2006-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2006-2015 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -99,8 +99,7 @@ display_image (Display *dpy, Window window, state *st, const char *file)
     return;
   }
 
-  jwxyz_draw_NSImage_or_CGImage (dpy, window, True, image, 0, 0);
-  [image release];
+  jwxyz_draw_NSImage_or_CGImage (dpy, window, True, (__bridge void *)(image), 0, 0);
 }
 
 
@@ -124,26 +123,26 @@ open_pipe (state *st)
   char *filter  = get_string_resource  (st->dpy, "filter",  "Filter");
   char *filter2 = get_string_resource  (st->dpy, "filter2", "Filter2");
 
-  av[ac++] = "webcollage";
-  av[ac++] = "-cocoa";
+  av[ac++] = strdup ("webcollage");
+  av[ac++] = strdup ("-cocoa");
 
-  av[ac++] = "-size";
+  av[ac++] = strdup ("-size");
   sprintf (buf, "%dx%d", st->xgwa.width, st->xgwa.height);
   av[ac++] = strdup (buf);
 
-  av[ac++] = "-timeout"; sprintf (buf, "%d", timeout);
+  av[ac++] = strdup ("-timeout"); sprintf (buf, "%d", timeout);
   av[ac++] = strdup (buf);
-  av[ac++] = "-delay";   sprintf (buf, "%d", delay);
+  av[ac++] = strdup ("-delay");   sprintf (buf, "%d", delay);
   av[ac++] = strdup (buf);
-  av[ac++] = "-opacity"; sprintf (buf, "%.2f", opacity);
+  av[ac++] = strdup ("-opacity"); sprintf (buf, "%.2f", opacity);
   av[ac++] = strdup (buf);
 
   if (filter && *filter) {
-    av[ac++] = "-filter";
+    av[ac++] = strdup ("-filter");
     av[ac++] = filter;
   }
   if (filter2 && *filter2) {
-    av[ac++] = "-filter2";
+    av[ac++] = strdup ("-filter2");
     av[ac++] = filter2;
   }
 
@@ -206,6 +205,9 @@ open_pipe (state *st)
         close (out);  /* don't need this one */
       }
     }
+
+  while (ac > 0)
+    free (av[--ac]);
 
   if (! st->pipe_fd) abort();
 

@@ -1,5 +1,5 @@
 /* lock.c --- handling the password dialog for locking-mode.
- * xscreensaver, Copyright (c) 1993-2014 Jamie Zawinski <jwz@jwz.org>
+ * xscreensaver, Copyright (c) 1993-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -200,7 +200,6 @@ new_passwd_window (saver_info *si)
   passwd_dialog_data *pw;
   Screen *screen;
   Colormap cmap;
-  char *f;
   saver_screen_info *ssi = &si->screens [mouse_screen (si)];
 
   pw = (passwd_dialog_data *) calloc (1, sizeof(*pw));
@@ -277,40 +276,20 @@ new_passwd_window (saver_info *si)
 
   pw->passwd_string = strdup("");
 
-  f = get_string_resource (si->dpy, "passwd.headingFont", "Dialog.Font");
-  pw->heading_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!pw->heading_font) pw->heading_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
-
-  f = get_string_resource (si->dpy, "passwd.buttonFont", "Dialog.Font");
-  pw->button_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!pw->button_font) pw->button_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
-
-  f = get_string_resource(si->dpy, "passwd.bodyFont", "Dialog.Font");
-  pw->body_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!pw->body_font) pw->body_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
-
-  f = get_string_resource(si->dpy, "passwd.labelFont", "Dialog.Font");
-  pw->label_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!pw->label_font) pw->label_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
-
-  f = get_string_resource(si->dpy, "passwd.passwdFont", "Dialog.Font");
-  pw->passwd_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!pw->passwd_font) pw->passwd_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
-
-  f = get_string_resource(si->dpy, "passwd.dateFont", "Dialog.Font");
-  pw->date_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!pw->date_font) pw->date_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
-
-  f = get_string_resource(si->dpy, "passwd.unameFont", "Dialog.Font");
-  pw->uname_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!pw->uname_font) pw->uname_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
+  pw->heading_font =
+    splash_load_font (si->dpy, "passwd.headingFont", "Dialog.Font");
+  pw->button_font =
+    splash_load_font (si->dpy, "passwd.buttonFont", "Dialog.Font");
+  pw->body_font =
+    splash_load_font (si->dpy, "passwd.bodyFont", "Dialog.Font");
+  pw->label_font =
+    splash_load_font (si->dpy, "passwd.labelFont", "Dialog.Font");
+  pw->passwd_font =
+    splash_load_font (si->dpy, "passwd.passwdFont", "Dialog.Font");
+  pw->date_font =
+    splash_load_font (si->dpy, "passwd.dateFont", "Dialog.Font");
+  pw->uname_font =
+    splash_load_font (si->dpy, "passwd.unameFont", "Dialog.Font");
   
   pw->show_uname_p = get_boolean_resource(si->dpy, "passwd.uname", "Boolean");
 
@@ -487,7 +466,7 @@ make_passwd_window (saver_info *si,
    * room for the dialog to grow without going off the edge of the screen. */
   max_string_width_px *= 0.75;
 
-  if (!info_msg && senescent_p())
+  if (!info_msg && senesculent_p())
     info_msg = ("\n"
                 "This version of XScreenSaver\n"
                 "is very old! Please upgrade!\n");
@@ -534,7 +513,7 @@ make_passwd_window (saver_info *si,
       /* Measure the info_label. */
       if (pw->info_label->overall_width > pw->width)
         pw->width = pw->info_label->overall_width;
-	h2 += pw->info_label->overall_height;
+      h2 += pw->info_label->overall_height;
 
       /* Measure the user string. */
       XTextExtents (pw->passwd_font,

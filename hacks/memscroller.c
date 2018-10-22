@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2002-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2002-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -12,16 +12,13 @@
  */
 
 #include "screenhack.h"
-#include <stdio.h>
-
-#ifdef HAVE_XSHM_EXTENSION
 #include "xshm.h"
-#endif
+#include <stdio.h>
 
 #undef countof
 #define countof(x) (sizeof(x)/sizeof(*(x)))
 
-#ifndef USE_IPHONE
+#ifndef HAVE_MOBILE
 # define READ_FILES
 #endif
 
@@ -54,10 +51,7 @@ typedef struct {
   int nscrollers;
   scroller *scrollers;
 
-# ifdef HAVE_XSHM_EXTENSION
-  Bool shm_p;
   XShmSegmentInfo shm_info;
-# endif
 
   int delay;
 
@@ -91,6 +85,7 @@ memscroller_init (Display *dpy, Window window)
   }
 
   st->border = get_integer_resource (dpy, "borderSize", "BorderSize");
+  if (st->xgwa.width > 2560) st->border *= 2;  /* Retina displays */
 
   {
     int i;
@@ -111,7 +106,7 @@ memscroller_init (Display *dpy, Window window)
               {
                 token = 0;
                 while (*f == ' ' || *f == '\t') f++;
-                st->fonts[i] = XLoadQueryFont (dpy, f);
+                st->fonts[i] = load_font_retry (dpy, f);
               }
             free (f2);
             if (!st->fonts[i] && i < nfonts-1)
@@ -124,13 +119,8 @@ memscroller_init (Display *dpy, Window window)
       }
 
     if (!st->fonts[0])
-      st->fonts[0] = XLoadQueryFont (dpy, "fixed");
-
-    if (!st->fonts[0])
-      {
-        fprintf (stderr, "%s: unable to load any fonts!", progname);
-        exit (1);
-      }
+      st->fonts[0] = load_font_retry (dpy, "fixed");
+    if (!st->fonts[0]) abort();
   }
 
   gcv.line_width = st->border;
@@ -199,29 +189,14 @@ memscroller_init (Display *dpy, Window window)
       sc->which = i;
       sc->speed = i+1;
 
-      sc->image = 0;
-# ifdef HAVE_XSHM_EXTENSION
-      st->shm_p = get_boolean_resource (dpy, "useSHM", "Boolean");
-      if (st->shm_p)
-        {
-          sc->image = create_xshm_image (st->dpy, st->xgwa.visual,
-                                         st->xgwa.depth,
-                                         ZPixmap, 0, &st->shm_info,
-                                         1, max_height);
-          if (! sc->image)
-            st->shm_p = False;
-        }
-# endif /* HAVE_XSHM_EXTENSION */
+      if (st->xgwa.width > 2560) sc->speed *= 2.5;  /* Retina displays */
+
+      sc->image = create_xshm_image (st->dpy, st->xgwa.visual,
+                                     st->xgwa.depth,
+                                     ZPixmap, &st->shm_info,
+                                     1, max_height);
 
       if (!sc->image)
-        sc->image = XCreateImage (st->dpy, st->xgwa.visual, st->xgwa.depth,
-                                  ZPixmap, 0, 0, 1, max_height, 8, 0);
-
-      if (sc->image && !sc->image->data)
-        sc->image->data = (char *)
-          malloc (sc->image->bytes_per_line * sc->image->height + 1);
-
-      if (!sc->image || !sc->image->data)
         {
           fprintf (stderr, "%s: out of memory (allocating 1x%d image)\n",
                    progname, sc->image->height);
@@ -248,6 +223,8 @@ reshape_memscroller (state *st)
       if (i == 0)
         {
           sc->rez = 6;  /* #### */
+
+          if (st->xgwa.width > 2560) sc->rez *= 2.5;  /* Retina displays */
 
           sc->rect.width  = (((int) (st->xgwa.width * 0.8)
                               / sc->rez) * sc->rez);
@@ -335,7 +312,7 @@ more_bits (state *st, scroller *sc)
   vv = sc->value;
 
   /* Pack RGB into a pixel according to the XImage component masks;
-     set the remaining bits to 1 for the benefit of HAVE_COCOA alpha.
+     set the remaining bits to 1 for the benefit of HAVE_JWXYZ alpha.
    */
 # undef PACK
 # define PACK() ((((r << 24) | (r << 16) | (r << 8) | r) & rmsk) | \
@@ -368,7 +345,7 @@ more_bits (state *st, scroller *sc)
         }
 
       /* I don't understand what's going on there, but on MacOS X, we're
-         getting insane values for lomem and himem (both Xlib and HAVE_COCOA).
+         getting insane values for lomem and himem (both Xlib and HAVE_JWXYZ).
          Does malloc() draw from more than one heap? */
       if ((unsigned long) himem - (unsigned long) lomem > 0x0FFFFFFF) {
 # if 0
@@ -526,7 +503,7 @@ draw_string (state *st)
         {
           XSetFont (st->dpy, st->text_gc, st->fonts[i]->fid);
           XFillRectangle (st->dpy, st->window, st->erase_gc,
-                          x-w, y, w*3, h);
+                          x-w-1, y-1, w*3+2, h+2);
           XDrawString (st->dpy, st->window, st->text_gc,
                        x, y + ascent, buf, strlen(buf));
           break;
@@ -572,21 +549,12 @@ memscroller_draw (Display *dpy, Window window, void *closure)
 
       for (j = 0; j < sc->speed; j++)
         {
-# ifdef HAVE_XSHM_EXTENSION
-          if (st->shm_p)
-            XShmPutImage (st->dpy, st->window, st->draw_gc, sc->image,
+          put_xshm_image (st->dpy, st->window, st->draw_gc, sc->image,
                           0, 0,
                           sc->rect.x + sc->rect.width - sc->image->width - j,
                           sc->rect.y,
                           sc->rect.width, sc->rect.height,
-                          False);
-          else
-# endif /* HAVE_XSHM_EXTENSION */
-            XPutImage (st->dpy, st->window, st->draw_gc, sc->image,
-                       0, 0,
-                       sc->rect.x + sc->rect.width - sc->image->width - j,
-                       sc->rect.y,
-                       sc->rect.width, sc->rect.height);
+                          &st->shm_info);
         }
     }
 
@@ -626,21 +594,28 @@ static const char *memscroller_defaults [] = {
   ".foreground:		   #00FF00",
   "*borderSize:		   2",
 
-#if defined(HAVE_COCOA) && !defined(USE_IPHONE)
+#if defined(HAVE_COCOA) || defined(HAVE_ANDROID)
   ".font1:		   OCR A Std 192, Lucida Console 192, Monaco 192",
   ".font2:		   OCR A Std 144, Lucida Console 144, Monaco 144",
   ".font3:		   OCR A Std 128, Lucida Console 128, Monaco 128",
   ".font4:		   OCR A Std 96,  Lucida Console 96,  Monaco 96",
   ".font5:		   OCR A Std 48,  Lucida Console 48,  Monaco 48",
   ".font6:		   OCR A Std 24,  Lucida Console 24,  Monaco 24",
-#else  /* !HAVE_COCOA */
+#elif 0  /* real X11, XQueryFont() */
   ".font1:		   -*-courier-bold-r-*-*-*-1440-*-*-m-*-*-*",
   ".font2:		   -*-courier-bold-r-*-*-*-960-*-*-m-*-*-*",
   ".font3:		   -*-courier-bold-r-*-*-*-480-*-*-m-*-*-*",
   ".font4:		   -*-courier-bold-r-*-*-*-320-*-*-m-*-*-*",
   ".font5:		   -*-courier-bold-r-*-*-*-180-*-*-m-*-*-*",
   ".font6:		   fixed",
-#endif /* !HAVE_COCOA */
+#else    /* real X11, load_font_retry() */
+  ".font1:		   -*-ocr a std-medium-r-*-*-*-1440-*-*-m-*-*-*",
+  ".font2:		   -*-ocr a std-medium-r-*-*-*-960-*-*-m-*-*-*",
+  ".font3:		   -*-ocr a std-medium-r-*-*-*-480-*-*-m-*-*-*",
+  ".font4:		   -*-ocr a std-medium-r-*-*-*-320-*-*-m-*-*-*",
+  ".font5:		   -*-ocr a std-medium-r-*-*-*-180-*-*-m-*-*-*",
+  ".font6:		   -*-ocr a std-medium-r-*-*-*-120-*-*-m-*-*-*",
+#endif /* X11 */
 
   "*delay:		   10000",
   "*offset:		   0",

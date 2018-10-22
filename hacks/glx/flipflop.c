@@ -43,7 +43,7 @@
                        "*showFPS:   False     \n" \
                        "*wireframe: False     \n"
 
-# define refresh_flipflop 0
+# define release_flipflop 0
 # include "xlockmore.h"
 
 #else
@@ -94,8 +94,8 @@ ENTRYPOINT ModeSpecOpt flipflop_opts = {countof(opts), opts, countof(vars), vars
 
 #ifdef USE_MODULES
 ModStruct   flipflop_description =
-    {"flipflop", "init_flipflop", "draw_flipflop", "release_flipflop",
-     "draw_flipflop", "init_flipflop", NULL, &flipflop_opts,
+    {"flipflop", "init_flipflop", "draw_flipflop", NULL,
+     "draw_flipflop", "init_flipflop", "free_flipflop", &flipflop_opts,
      1000, 1, 2, 1, 4, 1.0, "",
      "Flipflop", 0, NULL};
 
@@ -169,7 +169,7 @@ static void randsheet_move( randsheet *rs, float rot );
 static int randsheet_draw( randsheet *rs );
 static void setup_lights(void);
 static int drawBoard(Flipflopcreen *);
-static int display(Flipflopcreen *c);
+static int display(ModeInfo *mi);
 static int draw_sheet(float *tex);
 
 
@@ -233,8 +233,9 @@ drawBoard(Flipflopcreen *c)
 
 
 static int
-display(Flipflopcreen *c)
+display(ModeInfo *mi)
 {
+    Flipflopcreen *c = &qs[MI_SCREEN(mi)];
     GLfloat amb[] = { 0.8, 0.8, 0.8, 1.0 };
     int polys = 0;
 
@@ -242,7 +243,6 @@ display(Flipflopcreen *c)
     glClear(clearbits);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
     glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.2);
     glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.15/board_avg_size );
     glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.15/board_avg_size );
@@ -262,6 +262,15 @@ display(Flipflopcreen *c)
     if(textured)
       glBindTexture(GL_TEXTURE_2D, c->texid);
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180)
+        glScalef (1/h, 1/h, 1/h);
+    }
+# endif
+
     polys = drawBoard(c);
 
     if (!c->button_down_p) {
@@ -274,12 +283,20 @@ display(Flipflopcreen *c)
 ENTRYPOINT void
 reshape_flipflop(ModeInfo *mi, int width, int height)
 {
-    GLfloat h = (GLfloat) height / (GLfloat) width;
-    glViewport(0,0, width, height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45, 1/h, 1.0, 300.0);
-    glMatrixMode(GL_MODELVIEW);
+  GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
+
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport(0,y, width, height);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(45, 1/h, 1.0, 300.0);
+  glMatrixMode(GL_MODELVIEW);
 }
 
 static void
@@ -383,9 +400,7 @@ init_flipflop(ModeInfo *mi)
     screen = MI_SCREEN(mi);
     wire = MI_IS_WIREFRAME(mi);
 
-    if(!qs &&
-       !(qs = (Flipflopcreen *) calloc(MI_NUM_SCREENS(mi), sizeof(Flipflopcreen))))
-        return;
+    MI_INIT(mi, qs);
 
     c = &qs[screen];
     c->window = MI_WINDOW(mi);
@@ -443,7 +458,7 @@ draw_flipflop(ModeInfo *mi)
 
     glXMakeCurrent(disp, w, *(c->glx_context));
 
-    mi->polygon_count = display(c);
+    mi->polygon_count = display(mi);
 
     if(mi->fps_p){
         do_fps(mi);
@@ -456,27 +471,13 @@ draw_flipflop(ModeInfo *mi)
 }
 
 ENTRYPOINT void
-release_flipflop(ModeInfo *mi)
+free_flipflop(ModeInfo *mi)
 {
-  if(qs) {
-    int screen;
-
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-    {
-      Flipflopcreen *c = &qs[MI_SCREEN(mi)];
-      if (c->glx_context)
-        c->glx_context = 0;
-      if (c->sheet) {
-        randsheet_free(c->sheet);
-        free (c->sheet);
-        c->sheet = 0;
-      }
-    }
-    free(qs);
-    qs = 0;
+  Flipflopcreen *c = &qs[MI_SCREEN(mi)];
+  if (c->sheet) {
+    randsheet_free(c->sheet);
+    free (c->sheet);
   }
-
-  FreeAllGL(mi);
 }
 
 /*** ADDED RANDSHEET FUNCTIONS ***/

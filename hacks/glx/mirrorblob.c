@@ -41,9 +41,10 @@
                  "*useSHM:              True       \n"                      \
                  "*desktopGrabber:  xscreensaver-getimage -no-desktop %s\n" \
                  "*grabDesktopImages:   True  \n"                           \
-                 "*chooseRandomImages:  True  \n"
+                 "*chooseRandomImages:  True  \n"                           \
+		 "*suppressRotationAnimation: True\n"                       \
 
-# define refresh_mirrorblob 0
+# define release_mirrorblob 0
 # include "xlockmore.h"
 #else /* !STANDALONE */
 # include "xlock.h"        /* from the xlockmore distribution */
@@ -176,8 +177,8 @@ ENTRYPOINT ModeSpecOpt mirrorblob_opts = {countof(opts), opts, countof(vars), va
 
 #ifdef USE_MODULES
 ModStruct   mirrorblob_description =
-{"mirrorblob", "init_mirrorblob", "draw_mirrorblob", "release_mirrorblob",
- "draw_mirrorblob", "init_mirrorblob", "handle_event", &mirrorblob_opts,
+{"mirrorblob", "init_mirrorblob", "draw_mirrorblob", NULL,
+ "draw_mirrorblob", "init_mirrorblob", "free_mirrorblob", &mirrorblob_opts,
  1000, 1, 2, 1, 4, 1.0, "",
  "OpenGL mirrorblob", 0, NULL};
 #endif
@@ -1415,7 +1416,7 @@ draw_blob (mirrorblobstruct *gp)
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glRotatef(current_device_rotation(), 0, 0, 1);
+/*  glRotatef(current_device_rotation(), 0, 0, 1); */
 
   /* Move down the z-axis. */
   glTranslatef (0.0, 0.0, -4.0);
@@ -1472,13 +1473,15 @@ draw_background (ModeInfo *mi)
   glPushMatrix();
   glLoadIdentity();
 
-  glRotatef (rot, 0, 0, 1);
+  glRotatef (-rot, 0, 0, 1);
+/*
   if ((rot >  45 && rot <  135) ||
       (rot < -45 && rot > -135))
     {
       GLfloat s = MI_WIDTH(mi) / (GLfloat) MI_HEIGHT(mi);
       glScalef (s, 1/s, 1);
     }
+*/
 
   glOrtho(0.0, MI_WIDTH(mi), MI_HEIGHT(mi), 0.0, -1000.0, 1000.0);
 
@@ -1793,14 +1796,7 @@ init_mirrorblob(ModeInfo * mi)
 
   mirrorblobstruct *gp;
 
-  if (Mirrorblob == NULL)
-    {
-      if ((Mirrorblob = (mirrorblobstruct *)
-           calloc(MI_NUM_SCREENS(mi), sizeof (mirrorblobstruct))) == NULL)
-        {
-          return;
-        }
-    }
+  MI_INIT(mi, Mirrorblob);
   gp = &Mirrorblob[screen];
 
   gp->window = MI_WINDOW(mi);
@@ -1827,26 +1823,17 @@ init_mirrorblob(ModeInfo * mi)
  * XMirrorblob cleanup entry
  */
 ENTRYPOINT void
-release_mirrorblob(ModeInfo * mi)
+free_mirrorblob(ModeInfo * mi)
 {
-  if (Mirrorblob != NULL) {
-    int i;
-    for (i = 0; i < MI_NUM_SCREENS(mi); i++) {
-      mirrorblobstruct *gp = &Mirrorblob[i];
-      if (gp->nodes) free(gp->nodes);
-      if (gp->faces) free(gp->faces);
-      if (gp->bump_data) free(gp->bump_data);
-      if (gp->colours) free(gp->colours);
-      if (gp->tex_coords) free(gp->tex_coords);
-      if (gp->dots) free(gp->dots);
-      if (gp->wall_shape) free(gp->wall_shape);
-      if (gp->bump_shape) free(gp->bump_shape);
-    }
-
-    free(Mirrorblob);
-    Mirrorblob = NULL;
-  }
-  FreeAllGL(mi);
+  mirrorblobstruct *gp = &Mirrorblob[MI_SCREEN(mi)];
+  if (gp->nodes) free(gp->nodes);
+  if (gp->faces) free(gp->faces);
+  if (gp->bump_data) free(gp->bump_data);
+  if (gp->colours) free(gp->colours);
+  if (gp->tex_coords) free(gp->tex_coords);
+  if (gp->dots) free(gp->dots);
+  if (gp->wall_shape) free(gp->wall_shape);
+  if (gp->bump_shape) free(gp->bump_shape);
 }
 
 XSCREENSAVER_MODULE ("MirrorBlob", mirrorblob)

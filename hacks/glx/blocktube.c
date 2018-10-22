@@ -16,9 +16,10 @@
 #define DEFAULTS        "*delay:	40000           \n" \
                         "*wireframe:    False           \n" \
 			"*showFPS:      False           \n" \
+			"*suppressRotationAnimation: True\n" \
 
-# define refresh_blocktube 0
-# define blocktube_handle_event 0
+# define release_blocktube 0
+# define blocktube_handle_event xlockmore_no_events
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
@@ -37,10 +38,10 @@
 
 #if defined(USE_XPM) || defined(USE_XPMINC) || defined(STANDALONE)
 /* USE_XPM & USE_XPMINC in xlock mode ; HAVE_XPM in xscreensaver mode */
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #define I_HAVE_XPM
 
-#include "../images/blocktube.xpm"
+#include "images/gen/blocktube_png.h"
 #endif /* HAVE_XPM */
 
 typedef struct {
@@ -108,8 +109,8 @@ ENTRYPOINT ModeSpecOpt blocktube_opts = {countof(opts), opts, countof(vars), var
 
 #ifdef USE_MODULES
 ModStruct blocktube_description =
-    {"blocktube", "init_blocktube", "draw_blocktube", "release_blocktube",
-     "draw_blocktube", "init_blocktube", (char *)NULL, &blocktube_opts,
+    {"blocktube", "init_blocktube", "draw_blocktube", (char *)NULL,
+     "draw_blocktube", "init_blocktube", "free_blocktube", &blocktube_opts,
      40000, 30, 1, 1, 64, 1.0, "",
      "A shifting tunnel of reflective blocks", 0, NULL};
 #endif /* USE_MODULES */
@@ -123,14 +124,14 @@ static Bool LoadGLTextures(ModeInfo *mi)
     status = True;
     glGenTextures(1, &lp->envTexture);
     glBindTexture(GL_TEXTURE_2D, lp->envTexture);
-    lp->texti = xpm_to_ximage(MI_DISPLAY(mi), MI_VISUAL(mi), MI_COLORMAP(mi),
-                          blocktube_xpm);
+    lp->texti = image_data_to_ximage(MI_DISPLAY(mi), MI_VISUAL(mi),
+                                     blocktube_png, sizeof(blocktube_png));
     if (!lp->texti) {
         status = False;
     } else {
         glPixelStorei(GL_UNPACK_ALIGNMENT,1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lp->texti->width, lp->texti->height, 0,
-            GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV, lp->texti->data);
+                     GL_RGBA, GL_UNSIGNED_BYTE, lp->texti->data);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 # ifndef HAVE_JWZGLES /* #### Sphere maps unimplemented */
@@ -211,14 +212,7 @@ ENTRYPOINT void init_blocktube (ModeInfo *mi)
     blocktube_configuration *lp;
     int wire = MI_IS_WIREFRAME(mi);
 
-    if (!lps) {
-      lps = (blocktube_configuration *)
-        calloc (MI_NUM_SCREENS(mi), sizeof (blocktube_configuration));
-      if (!lps) {
-        fprintf(stderr, "%s: out of memory\n", progname);
-        exit(1);
-      }
-    }
+    MI_INIT(mi, lps);
 
     lp = &lps[MI_SCREEN(mi)];
     lp->glx_context = init_GL(mi);
@@ -293,34 +287,48 @@ ENTRYPOINT void init_blocktube (ModeInfo *mi)
     glFlush();
 }
 
-ENTRYPOINT void release_blocktube (ModeInfo *mi)
+ENTRYPOINT void free_blocktube (ModeInfo *mi)
 {
-  if (lps) {
-    int screen;
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-      blocktube_configuration *lp = &lps[screen];
+  blocktube_configuration *lp = &lps[MI_SCREEN(mi)];
 # if defined ( I_HAVE_XPM )
-      if (lp->envTexture)
-        glDeleteTextures(1, &lp->envTexture);
-      if (lp->texti)
-        XDestroyImage(lp->texti);
-# endif
-    }
-    free (lps);
-    lps = 0;
+  if (lp->glx_context) {
+    glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(lp->glx_context));
+
+    if (lp->envTexture)
+      glDeleteTextures(1, &lp->envTexture);
+    if (lp->texti)
+      XDestroyImage(lp->texti);
   }
-  FreeAllGL(mi);
+# endif
 }
 
 ENTRYPOINT void reshape_blocktube (ModeInfo *mi, int width, int height)
 {
+    blocktube_configuration *lp = &lps[MI_SCREEN(mi)];
     GLfloat h = (GLfloat) height / (GLfloat) width;
+    int y = 0;
 
-    glViewport(0, 0, (GLint) width, (GLint) height);
+    glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(lp->glx_context));
+
+    if (width > height * 5) {   /* tiny window: show middle */
+      height = width;
+      y = -height/2;
+      h = height / (GLfloat) width;
+    }
+
+    glViewport(0, y, (GLint) width, (GLint) height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45.0, 1/h, 1.0, 100.0);
     glMatrixMode(GL_MODELVIEW);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180)
+        glScalef (1/h, 1/h, 1/h);
+    }
+# endif
 }
 
 static int cube_vertices(float x, float y, float z, int wire)

@@ -39,10 +39,12 @@ static const char sccsid[] = "@(#)discrete.c	5.00 2000/11/01 xlockmore";
 					"*ncolors: 100 \n" \
 					"*fpsSolid: true \n" \
 				    "*ignoreRotation: True \n" \
+				    "*lowrez: True \n" \
 
 # define SMOOTH_COLORS
+# define release_discrete 0
+# define discrete_handle_event 0
 # include "xlockmore.h"		/* in xscreensaver distribution */
-# include "erase.h"
 #else /* STANDALONE */
 # include "xlock.h"		/* in xlockmore distribution */
 #endif /* STANDALONE */
@@ -54,8 +56,8 @@ ENTRYPOINT ModeSpecOpt discrete_opts =
 
 #ifdef USE_MODULES
 ModStruct   discrete_description =
-{"discrete", "init_discrete", "draw_discrete", "release_discrete",
- "refresh_discrete", "init_discrete", (char *) NULL, &discrete_opts,
+{"discrete", "init_discrete", "draw_discrete", (char *) NULL,
+ "refresh_discrete", "init_discrete", "free_discrete", &discrete_opts,
  1000, 4096, 2500, 1, 64, 1.0, "",
  "Shows various discrete maps", 0, NULL};
 
@@ -101,10 +103,6 @@ typedef struct {
 
     int sqrt_sign, std_sign;
 
-#ifdef STANDALONE
-  eraser_state *eraser;
-#endif
-
 } discretestruct;
 
 static discretestruct *discretes = (discretestruct *) NULL;
@@ -115,12 +113,7 @@ init_discrete (ModeInfo * mi)
 	double      range;
 	discretestruct *hp;
 
-	if (discretes == NULL) {
-		if ((discretes =
-		     (discretestruct *) calloc(MI_NUM_SCREENS(mi),
-					   sizeof (discretestruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, discretes);
 	hp = &discretes[MI_SCREEN(mi)];
 
 	hp->maxx = MI_WIDTH(mi);
@@ -249,10 +242,8 @@ init_discrete (ModeInfo * mi)
 		/* if fails will check later */
 	}
 
-#ifndef STANDALONE
 	/* Clear the background. */
 	MI_CLEARWINDOW(mi);
-#endif
 
 	XSetForeground(MI_DISPLAY(mi), MI_GC(mi), MI_WHITE_PIXEL(mi));
 	hp->count = 0;
@@ -405,18 +396,12 @@ draw_discrete (ModeInfo * mi)
   int cycles = MI_CYCLES(mi);
   int i;
 
-  if (hp->eraser) {
-    hp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), hp->eraser);
-    return;
-  }
-
   for (i = 0; i < 10; i++) {
     draw_discrete_1 (mi);
     hp->count++;
   }
 
   if (hp->count > cycles) {
-    hp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), hp->eraser);
     init_discrete(mi);
   }
 }
@@ -432,43 +417,23 @@ reshape_discrete(ModeInfo * mi, int width, int height)
 }
 
 ENTRYPOINT void
-release_discrete(ModeInfo * mi)
+free_discrete(ModeInfo * mi)
 {
-	if (discretes != NULL) {
-		int         screen;
+	discretestruct *hp = &discretes[MI_SCREEN(mi)];
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			discretestruct *hp = &discretes[screen];
-
-			if (hp->pointBuffer != NULL) {
-				(void) free((void *) hp->pointBuffer);
-				/* hp->pointBuffer = NULL; */
-			}
-		}
-		(void) free((void *) discretes);
-		discretes = (discretestruct *) NULL;
+	if (hp->pointBuffer != NULL) {
+		(void) free((void *) hp->pointBuffer);
+		/* hp->pointBuffer = NULL; */
 	}
 }
 
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_discrete(ModeInfo * mi)
 {
 	MI_CLEARWINDOW(mi);
 }
-
-ENTRYPOINT Bool
-discrete_handle_event (ModeInfo *mi, XEvent *event)
-{
-  discretestruct *hp = &discretes[MI_SCREEN(mi)];
-  if (screenhack_event_helper (MI_DISPLAY(mi), MI_WINDOW(mi), event))
-    {
-      hp->count = MI_CYCLES(mi);
-      return True;
-    }
-  return False;
-}
-
-
+#endif
 
 XSCREENSAVER_MODULE ("Discrete", discrete)
 

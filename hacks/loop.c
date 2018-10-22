@@ -79,7 +79,7 @@ static const char sccsid[] = "@(#)loop.c	5.01 2000/03/15 xlockmore";
    there is handedness at both the initial condition and the transition rule.
  */
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # define DO_STIPPLE
 #endif
 
@@ -92,7 +92,10 @@ static const char sccsid[] = "@(#)loop.c	5.01 2000/03/15 xlockmore";
 					"*ncolors: 15     \n" \
 					"*fpsSolid: true     \n" \
 					"*ignoreRotation: True \n" \
+					".lowrez: True \n" \
 
+# define reshape_loop 0
+# define loop_handle_event 0
 # define UNIFORM_COLORS
 # include "xlockmore.h"		/* in xscreensaver distribution */
 #else /* STANDALONE */
@@ -131,7 +134,7 @@ ENTRYPOINT ModeSpecOpt loop_opts =
 #ifdef USE_MODULES
 ModStruct   loop_description =
 {"loop", "init_loop", "draw_loop", "release_loop",
- "refresh_loop", "init_loop", (char *) NULL, &loop_opts,
+ "refresh_loop", "init_loop", "free_loop", &loop_opts,
  100000, 5, 1600, -12, 64, 1.0, "",
  "Shows Langton's self-producing loops", 0, NULL};
 
@@ -139,8 +142,8 @@ ModStruct   loop_description =
 
 #define LOOPBITS(n,w,h)\
   if ((lp->pixmaps[lp->init_bits]=\
-  XCreatePixmapFromBitmapData(display,window,(char *)n,w,h,1,0,1))==None){\
-  free_loop(display,lp); return;} else {lp->init_bits++;}
+  XCreatePixmapFromBitmapData(MI_DISPLAY(mi),window,(char *)n,w,h,1,0,1))==None){\
+  free_loop(mi); return;} else {lp->init_bits++;}
 
 static int  local_neighbors = 0;
 
@@ -188,7 +191,8 @@ static int  local_neighbors = 0;
 #define HEX_ADAM_LOOPY 7
 #endif
 #define HEX_MINGRIDSIZE (6*HEX_ADAM_LOOPX)
-#define MINSIZE ((MI_NPIXELS(mi)>=COLORS)?1:(2+(local_neighbors==6)))
+/* #define MINSIZE ((MI_NPIXELS(mi)>=COLORS)?1:(2+(local_neighbors==6))) */
+#define MINSIZE 5
 #define NEIGHBORKINDS 2
 #define ANGLES 360
 #define MAXNEIGHBORS 6
@@ -916,9 +920,11 @@ free_list(loopstruct * lp)
 		free_state(lp, state);
 }
 
-static void
-free_loop(Display *display, loopstruct * lp)
+ENTRYPOINT void
+free_loop(ModeInfo * mi)
 {
+	Display    *display = MI_DISPLAY(mi);
+	loopstruct *lp = &loops[MI_SCREEN(mi)];
 	int         shade;
 
 	for (shade = 0; shade < lp->init_bits; shade++)
@@ -950,7 +956,7 @@ addtolist(ModeInfo * mi, int col, int row, unsigned char state)
 	if ((lp->cellList[state] = (CellList *) malloc(sizeof (CellList))) ==
 			NULL) {
 		lp->cellList[state] = current;
-		free_loop(MI_DISPLAY(mi), lp);
+		free_loop(mi);
 		return False;
 	}
 	lp->cellList[state]->pt.x = col;
@@ -1422,14 +1428,6 @@ do_gen(loopstruct * lp)
 ENTRYPOINT void
 release_loop (ModeInfo * mi)
 {
-	if (loops != NULL) {
-		int         screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-			free_loop(MI_DISPLAY(mi), &loops[screen]);
-		(void) free((void *) loops);
-		loops = (loopstruct *) NULL;
-	}
 	if (table != NULL) {
 		(void) free((void *) table);
 		table = (unsigned int *) NULL;
@@ -1442,20 +1440,18 @@ static void *stop_warning_about_triangleUnit_already;
 ENTRYPOINT void
 init_loop (ModeInfo * mi)
 {
-	Display    *display = MI_DISPLAY(mi);
 	int         i, size = MI_SIZE(mi);
 	loopstruct *lp;
 
     stop_warning_about_triangleUnit_already = (void *) &triangleUnit;
 
-	if (loops == NULL) {
-		if ((loops = (loopstruct *) calloc(MI_NUM_SCREENS(mi),
-					       sizeof (loopstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, loops);
 	lp = &loops[MI_SCREEN(mi)];
 
 	lp->redrawing = 0;
+
+    if (MI_WIDTH(mi) < 100 || MI_HEIGHT(mi) < 100)  /* tiny window */
+      size = MIN(MI_WIDTH(mi), MI_HEIGHT(mi));
 
 #ifdef DO_STIPPLE
 	if ((MI_NPIXELS(mi) < COLORS) && (lp->init_bits == 0)) {
@@ -1463,9 +1459,9 @@ init_loop (ModeInfo * mi)
           XGCValues   gcv;
         if (lp->stippledGC == None) {
 			gcv.fill_style = FillOpaqueStippled;
-			if ((lp->stippledGC = XCreateGC(display, window,
+			if ((lp->stippledGC = XCreateGC(MI_DISPLAY(mi), window,
 				 GCFillStyle, &gcv)) == None) {
-				free_loop(display, lp);
+				free_loop(mi);
 				return;
 			}
 		}
@@ -1574,7 +1570,7 @@ init_loop (ModeInfo * mi)
 	}
 	if ((lp->oldcells = (unsigned char *) calloc(lp->bncols * lp->bnrows,
 			sizeof (unsigned char))) == NULL) {
-		free_loop(display, lp);
+		free_loop(mi);
 		return;
 	}
 	if (lp->newcells != NULL) {
@@ -1583,7 +1579,7 @@ init_loop (ModeInfo * mi)
 	}
 	if ((lp->newcells = (unsigned char *) calloc(lp->bncols * lp->bnrows,
 			sizeof (unsigned char))) == NULL) {
-		free_loop(display, lp);
+		free_loop(mi);
 		return;
 	}
 	if (!init_table()) {
@@ -1653,7 +1649,7 @@ draw_loop (ModeInfo * mi)
 	}
 	for (i = 0; i < COLORS; i++)
 		if (!draw_state(mi, i)) {
-			free_loop(MI_DISPLAY(mi), lp);
+			free_loop(mi);
 			return;
 		}
 	if (++lp->generation > MI_CYCLES(mi) || lp->dead) {
@@ -1677,13 +1673,7 @@ draw_loop (ModeInfo * mi)
 	}
 }
 
-ENTRYPOINT void
-reshape_loop(ModeInfo * mi, int width, int height)
-{
-  XClearWindow (MI_DISPLAY (mi), MI_WINDOW(mi));
-  init_loop (mi);
-}
-
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_loop (ModeInfo * mi)
 {
@@ -1697,17 +1687,7 @@ refresh_loop (ModeInfo * mi)
 	lp->redrawing = 1;
 	lp->redrawpos = lp->by * lp->ncols + lp->bx;
 }
-
-ENTRYPOINT Bool
-loop_handle_event (ModeInfo *mi, XEvent *event)
-{
-  if (screenhack_event_helper (MI_DISPLAY(mi), MI_WINDOW(mi), event))
-    {
-      reshape_loop (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
-      return True;
-    }
-  return False;
-}
+#endif
 
 XSCREENSAVER_MODULE ("Loop", loop)
 

@@ -13,7 +13,7 @@
 
 #include "screenhack.h"
 #include <stdio.h>
-#include "xpm-pixmap.h"
+#include "ximage-loader.h"
 
 #define BELLRAND(n) ((frand((n)) + frand((n)) + frand((n))) / 3)
 
@@ -193,7 +193,7 @@ static const char *cwaves_defaults [] = {
   "*scale:		   2",
   "*debug:		   False",
   "*delay:		   20000",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation:        True",
 #endif
   0

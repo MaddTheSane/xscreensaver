@@ -63,9 +63,10 @@
 #define DEFAULTS "*delay:	30000	    \n" \
 		 "*showFPS:	False	    \n" \
 		 "*wireframe:	False	    \n" \
+		 "*suppressRotationAnimation: True\n" \
 	 "*labelfont:   -*-helvetica-medium-r-normal-*-*-180-*-*-*-*-*-*\n"
 
-# define refresh_spheremonics 0
+# define free_spheremonics 0
 # define release_spheremonics 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -165,8 +166,15 @@ ENTRYPOINT void
 reshape_spheremonics (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -178,6 +186,14 @@ reshape_spheremonics (ModeInfo *mi, int width, int height)
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+
+# endif
   glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -686,14 +702,7 @@ init_spheremonics (ModeInfo *mi)
 {
   spheremonics_configuration *cc;
 
-  if (!ccs) {
-    ccs = (spheremonics_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (spheremonics_configuration));
-    if (!ccs) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, ccs);
 
   cc = &ccs[MI_SCREEN(mi)];
 

@@ -16,8 +16,9 @@
 			"*count:        0           \n" \
 			"*showFPS:      False       \n" \
 			"*wireframe:    False       \n" \
+			"*suppressRotationAnimation: True\n" \
 
-# define refresh_gears 0
+# define free_gears 0
 # define release_gears 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -85,8 +86,15 @@ ENTRYPOINT void
 reshape_gears (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -97,6 +105,14 @@ reshape_gears (ModeInfo *mi, int width, int height)
   gluLookAt( 0.0, 0.0, 30.0,
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -689,14 +705,7 @@ init_gears (ModeInfo *mi)
   int wire = MI_IS_WIREFRAME(mi);
   int i;
 
-  if (!bps) {
-    bps = (gears_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (gears_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -759,7 +768,7 @@ init_gears (ModeInfo *mi)
       bp->planetary_p = False;
 
       if (total_gears <= 0)
-        total_gears = 3 + abs (BELLRAND (8) - 4);  /* 3 - 7, mostly 3. */
+        total_gears = 3 + fabs (BELLRAND (8) - 4);  /* 3 - 7, mostly 3. */
       bp->gears = (gear **) calloc (total_gears+2, sizeof(**bp->gears));
       bp->ngears = 0;
 

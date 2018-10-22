@@ -24,9 +24,11 @@
 #ifdef STANDALONE
 #define DEFAULTS        "*delay:           30000        \n" \
                         "*showFPS:         False        \n" \
+			"*suppressRotationAnimation: True\n" \
 	"*titleFont:  -*-helvetica-medium-r-normal-*-*-180-*-*-*-*-*-*\n" \
 
-# define refresh_engine 0
+# define free_engine 0
+# define release_engine 0
 # include "xlockmore.h"              /* from the xscreensaver distribution */
 #else  /* !STANDALONE */
 # include "xlock.h"                  /* from the xlockmore distribution */
@@ -77,7 +79,7 @@ ENTRYPOINT ModeSpecOpt engine_opts = {countof(opts), opts, countof(vars), vars, 
 
 #ifdef USE_MODULES
 ModStruct   engine_description =
-{"engine", "init_engine", "draw_engine", "release_engine",
+{"engine", "init_engine", "draw_engine", NULL,
  "draw_engine", "init_engine", NULL, &engine_opts,
  1000, 1, 2, 1, 4, 1.0, "",
  "A four stroke engine", 0, NULL};
@@ -326,8 +328,10 @@ static int cylinder (Engine *e, GLfloat x, GLfloat y, GLfloat z,
   for (a = sangle ; a <= angle || b <= angle ; a+= step) {
     y2=outer*(float)e->sin_table[a]+y;
     z2=outer*(float)e->cos_table[a]+z;
-    if (endcaps)
-       y2c[a] = y2; z2c[a] = z2; /* cache for later */
+    if (endcaps) {
+       y2c[a] = y2;
+       z2c[a] = z2; /* cache for later */
+    }
     if (tube) {
       Y2=inner*(float)e->sin_table[a]+y;
       Z2=inner*(float)e->cos_table[a]+z;
@@ -598,8 +602,9 @@ static int boom(Engine *e, GLfloat x, GLfloat y, int s)
   return polys;
 }
 
-static int display(Engine *e)
+static int display(ModeInfo *mi)
 {
+ Engine *e = &engine[MI_SCREEN(mi)];
   int polys = 0;
   GLfloat zb, yb;
   float rightSide;
@@ -614,6 +619,15 @@ static int display(Engine *e)
             e->lookat[0], e->lookat[1], e->lookat[2], 
             0.0, 1.0, 0.0);
   glPushMatrix();
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
   glLightfv(GL_LIGHT0, GL_SPECULAR, light_sp);
@@ -833,11 +847,19 @@ static int makeshaft (Engine *e)
 ENTRYPOINT void reshape_engine(ModeInfo *mi, int width, int height)
 {
  Engine *e = &engine[MI_SCREEN(mi)];
- glViewport(0,0,(GLint)width, (GLint) height);
+ double h = (GLfloat) height / (GLfloat) width;  
+ int y = 0;
+
+ if (width > height * 5) {   /* tiny window: show middle */
+   height = width * 9/16;
+   y = -height/2;
+   h = height / (GLfloat) width;
+ }
+
+ glViewport(0, y, width, height);
  glMatrixMode(GL_PROJECTION);
  glLoadIdentity();
-/* glFrustum(-1.0,1.0,-1.0,1.0,1.5,70.0);*/
- gluPerspective(40.0,((GLdouble)width)/height,1.5,70.0);
+ gluPerspective(40, 1/h, 1.5, 70.0);
  glMatrixMode(GL_MODELVIEW);
  e->win_h = height; 
  e->win_w = width;
@@ -849,11 +871,7 @@ ENTRYPOINT void init_engine(ModeInfo *mi)
   int screen = MI_SCREEN(mi);
   Engine *e;
 
- if (engine == NULL) {
-   if ((engine = (Engine *) calloc(MI_NUM_SCREENS(mi),
-                                        sizeof(Engine))) == NULL)
-          return;
- }
+ MI_INIT(mi, engine);
  e = &engine[screen];
  e->window = MI_WINDOW(mi);
 
@@ -970,7 +988,7 @@ ENTRYPOINT void draw_engine(ModeInfo *mi)
   glXMakeCurrent(disp, w, *(e->glx_context));
 
 
-  mi->polygon_count = display(e);
+  mi->polygon_count = display(mi);
 
   glColor3f (1, 1, 0);
   if (do_titles)
@@ -981,16 +999,6 @@ ENTRYPOINT void draw_engine(ModeInfo *mi)
   if(mi->fps_p) do_fps(mi);
   glFinish(); 
   glXSwapBuffers(disp, w);
-}
-
-ENTRYPOINT void
-release_engine(ModeInfo *mi) 
-{
-  if (engine != NULL) {
-   (void) free((void *) engine);
-   engine = NULL;
-  }
-  FreeAllGL(mi);
 }
 
 XSCREENSAVER_MODULE ("Engine", engine)

@@ -34,7 +34,8 @@ static const char sccsid[] = "@(#)slip.c	5.00 2000/11/01 xlockmore";
 					"*fpsSolid:	true \n" \
 					"*ignoreRotation: True \n" \
 
-# define refresh_slip 0
+# define free_slip 0
+# define release_slip 0
 # include "xlockmore.h"		/* in xscreensaver distribution */
 #else /* STANDALONE */
 # include "xlock.h"		/* in xlockmore distribution */
@@ -47,7 +48,7 @@ ENTRYPOINT ModeSpecOpt slip_opts =
 
 #ifdef USE_MODULES
 ModStruct   slip_description =
-{"slip", "init_slip", "draw_slip", "release_slip",
+{"slip", "init_slip", "draw_slip", (char *) NULL,
  "init_slip", "init_slip", (char *) NULL, &slip_opts,
  50000, 35, 50, 1, 64, 1.0, "",
  "Shows slipping blits", 0, NULL};
@@ -117,7 +118,7 @@ image_loaded_cb (Screen *screen, Window w, Drawable d,
 }
 #endif /* STANDALONE */
 
-static void
+static Bool
 prepare_screen(ModeInfo * mi, slipstruct * sp)
 {
 
@@ -128,12 +129,17 @@ prepare_screen(ModeInfo * mi, slipstruct * sp)
 
 	sp->backwards = (int) (LRAND() & 1);	/* jwz: go the other way sometimes */
 
-	if (sp->first_time || !halfrandom(sp, 10)) {
-		MI_CLEARWINDOW(mi);
+	if (sp->first_time) {
+		XClearWindow (display, MI_WINDOW(mi));
 		n = 300;
+	} else if (!sp->image_loading_p && !halfrandom(sp, 10)) {
+		sp->first_time = 1;
+		sp->nblits_remaining = 0;
+		MI_CLEARWINDOW(mi);
+		return False;
 	} else {
 		if (halfrandom(sp, 5))
-			return;
+			return True;
 		if (halfrandom(sp, 5))
 			n = 100;
 		else
@@ -179,6 +185,8 @@ prepare_screen(ModeInfo * mi, slipstruct * sp)
                         MI_WINDOW(mi), p, image_loaded_cb, mi);
 	}
 #endif
+
+	return True;
 }
 
 static int
@@ -210,11 +218,7 @@ init_slip (ModeInfo * mi)
 {
 	slipstruct *sp;
 
-	if (slips == NULL) {
-		if ((slips = (slipstruct *) calloc(MI_NUM_SCREENS(mi),
-					       sizeof (slipstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, slips);
 	sp = &slips[MI_SCREEN(mi)];
 
 	sp->nblits_remaining = 0;
@@ -242,8 +246,6 @@ draw_slip (ModeInfo * mi)
 
 	timer = MI_COUNT(mi) * MI_CYCLES(mi);
 
-	MI_IS_DRAWN(mi) = True;
-
 	while (timer--) {
 		int         xi = halfrandom(sp, MAX(sp->width - sp->blit_width, 1));
 		int         yi = halfrandom(sp, MAX(sp->height - sp->blit_height, 1));
@@ -252,7 +254,9 @@ draw_slip (ModeInfo * mi)
 		if (0 == sp->nblits_remaining--) {
 			static const int lut[] = {0, 0, 0, 1, 1, 1, 2};
 
-			prepare_screen(mi, sp);
+			if (!prepare_screen(mi, sp))
+				break;
+			MI_IS_DRAWN(mi) = True;
 			sp->nblits_remaining = MI_COUNT(mi) *
 				(2000 + halfrandom(sp, 1000) + halfrandom(sp, 1000));
 			if (sp->mode == 2)
@@ -350,15 +354,6 @@ X Error of failed request:  BadDrawable (invalid Pixmap or Window parameter)
 					break;
 			}
 		}
-	}
-}
-
-ENTRYPOINT void
-release_slip (ModeInfo * mi)
-{
-	if (slips != NULL) {
-		(void) free((void *) slips);
-		slips = (slipstruct *) NULL;
 	}
 }
 

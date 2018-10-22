@@ -55,9 +55,12 @@ static const char sccsid[] = "@(#)morph3d.c	5.01 2001/03/01 xlockmore";
 # define MODE_moebius
 # define DEFAULTS		"*delay:		40000	\n"		\
 						"*showFPS:      False   \n"		\
-						"*count: 		0		\n"
-# define refresh_morph3d 0
-# define morph3d_handle_event 0
+						"*count: 		0		\n"		\
+						"*suppressRotationAnimation: True\n" \
+
+# define free_morph3d 0
+# define release_morph3d 0
+# define morph3d_handle_event xlockmore_no_events
 # include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 # include "xlock.h"		/* from the xlockmore distribution */
@@ -70,7 +73,7 @@ ENTRYPOINT ModeSpecOpt morph3d_opts =
 
 #ifdef USE_MODULES
 ModStruct   morph3d_description =
-{"morph3d", "init_morph3d", "draw_morph3d", "release_morph3d",
+{"morph3d", "init_morph3d", "draw_morph3d", (char *) NULL,
  "draw_morph3d", "change_morph3d", (char *) NULL, &morph3d_opts,
  1000, 0, 1, 1, 4, 1.0, "",
  "Shows GL morphing polyhedra", 0, NULL};
@@ -592,8 +595,14 @@ ENTRYPOINT void
 reshape_morph3d(ModeInfo * mi, int width, int height)
 {
 	morph3dstruct *mp = &morph3d[MI_SCREEN(mi)];
+    int y = 0;
 
-	glViewport(0, 0, mp->WindW = (GLint) width, mp->WindH = (GLint) height);
+    if (width > height * 5) {   /* tiny window: show middle */
+      height = width;
+      y = -height/2;
+    }
+
+	glViewport(0, y, mp->WindW = (GLint) width, mp->WindH = (GLint) height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 5.0, 15.0);
@@ -716,11 +725,7 @@ init_morph3d(ModeInfo * mi)
 {
 	morph3dstruct *mp;
 
-	if (morph3d == NULL) {
-		if ((morph3d = (morph3dstruct *) calloc(MI_NUM_SCREENS(mi),
-					    sizeof (morph3dstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, morph3d);
 	mp = &morph3d[MI_SCREEN(mi)];
 	mp->step = NRAND(90);
 	mp->VisibleSpikes = 1;
@@ -770,6 +775,15 @@ draw_morph3d(ModeInfo * mi)
 		glScalef(Scale4Iconic * mp->WindH / mp->WindW, Scale4Iconic, Scale4Iconic);
 	}
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180)
+        glScalef (1/h, h, 1);
+    }
+# endif
+
 	glRotatef(mp->step * 100, 1, 0, 0);
 	glRotatef(mp->step * 95, 0, 1, 0);
 	glRotatef(mp->step * 90, 0, 0, 1);
@@ -817,16 +831,6 @@ change_morph3d(ModeInfo * mi)
 	pinit(mi);
 }
 #endif /* !STANDALONE */
-
-ENTRYPOINT void
-release_morph3d(ModeInfo * mi)
-{
-	if (morph3d != NULL) {
-		(void) free((void *) morph3d);
-		morph3d = (morph3dstruct *) NULL;
-	}
-	FreeAllGL(mi);
-}
 
 #endif
 

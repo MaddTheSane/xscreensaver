@@ -13,10 +13,10 @@
                           of the command-line options provided by screenhack.c.
 */
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # define FASTDRAW
 # define FASTCOPY
-#endif /* !HAVE_COCOA */
+#endif /* !HAVE_JWXYZ */
 
 #include <stdio.h>
 #include <math.h>
@@ -325,7 +325,7 @@ initialize (struct state *st)
 
   st->planes=st->xgwa.depth;
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
 # define GXandInverted GXcopy  /* #### this can't be right, right? */
 #endif
  st->gc = XCreateGC (st->dpy, st->window, 0,  xgc);
@@ -527,7 +527,10 @@ static void
 fill_kugel(struct state *st, int i, Pixmap buf, int setcol)
 {
   double ra;
-  int m,col,inc=1,inr=3,d;
+  int m,col,inr=3,d;
+#ifdef USE_POLYGON
+  int inc=1;
+#endif
   d=(int)((ABS(st->kugeln[i].r1)*2));
   if (d==0) d=1;
   
@@ -557,16 +560,23 @@ fill_kugel(struct state *st, int i, Pixmap buf, int setcol)
 #ifdef PRTDBX
 	  printf("Radius: %f\n",ra);
 #endif
+#ifdef USE_POLYGON
 	  if(-ra< 3.0) inc=14;
 	  else if(-ra< 6.0) inc=8;
 	  else if(-ra<20.0) inc=4;
 	  else if(-ra<40.0) inc=2;
+#endif
 	  if(setcol)
 	    {
-	      if (m==27) col=33;
+	      if (m==27)
+                col=33;
 	      else
 		col=(int)(m);
-	      if (col>33) col=33;	col/=3;
+
+	      if (col>33)
+                col=33;
+
+              col/=3;
 	      setink(st->colors[col].pixel);
 	    }
 

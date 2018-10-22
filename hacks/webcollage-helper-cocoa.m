@@ -1,5 +1,5 @@
 /* webcollage-helper-cocoa --- scales and pastes one image into another
- * xscreensaver, Copyright (c) 2002-2014 Jamie Zawinski <jwz@jwz.org>
+ * xscreensaver, Copyright (c) 2002-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -91,7 +91,6 @@ load_ppm_image (const char *file)
 
   NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize (w, h)];
   [image addRepresentation: rep];
-  [rep release];
 
   // #### 'bits' is leaked... the NSImageRep doesn't free it when freed.
 
@@ -222,9 +221,6 @@ bevel_image (NSImage *img, int bevel_pct,
                 fraction: 1.0];
   [img unlockFocus];
 
-  [rep release];
-  [bevel_img release];
-
   if (verbose_p)
     fprintf (stderr, "%s: added %d%% bevel (%d px)\n", progname,
              bevel_pct, bevel_size);
@@ -278,9 +274,61 @@ paste (const char *paste_file,
     fprintf (stderr, "%s: pasted %dx%d (%dx%d) from %d,%d to %d,%d\n",
              progname, w, h, scaled_w, scaled_h, from_x, from_y, to_x, to_y);
 
-  [paste_img release];
   write_image (base_img, base_file);
-  [base_img release];
+}
+
+
+static NSColor *
+parse_color (const char *s)
+{
+  static const char hex[128] =
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
+     0, 10,11,12,13,14,15,0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 10,11,12,13,14,15,0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+  unsigned char r=0, g=0, b=0;
+
+  if      (!strcasecmp (s, "black")) ;
+  else if (!strcasecmp (s, "white")) r = g = b = 0xFF;
+  else if (!strcasecmp (s, "red"))   r = 0xFF;
+  else if (!strcasecmp (s, "green")) g = 0xFF;
+  else if (!strcasecmp (s, "blue"))  b = 0xFF;
+  else
+    {
+      if (*s != '#' || strlen(s) != 7)
+        {
+          fprintf (stderr, "%s: unparsable color: \"%s\"\n", progname, s);
+          exit (1);
+        }
+      s++;
+      r = (hex[(int) s[0]] << 4) | hex[(int) s[1]], s += 2;
+      g = (hex[(int) s[0]] << 4) | hex[(int) s[1]], s += 2;
+      b = (hex[(int) s[0]] << 4) | hex[(int) s[1]], s += 2;
+    }
+
+  return [NSColor colorWithRed: r / 255.0
+                         green: g / 255.0
+                          blue: b / 255.0
+                         alpha: 1.0];
+}
+
+
+static void
+create (const char *color,
+        int w, int h,
+        const char *file)
+{
+  NSColor *c = parse_color (color);
+  NSImage *img = [[NSImage alloc] initWithSize:NSMakeSize(w, h)];
+  [img lockFocus];
+  [c drawSwatchInRect:NSMakeRect(0, 0, w, h)];
+  [img unlockFocus];
+  write_image (img, file);
 }
 
 
@@ -289,9 +337,34 @@ write_image (NSImage *img, const char *file)
 {
   float jpeg_quality = .85;
 
-  // Load the NSImage's contents into an NSBitmapImageRep:
+  // Load the NSImage's contents into an NSBitmapImageRep.
+
+#if 0
+  // If the local display is Retina, this doubles the size of the output JPEG.
   NSBitmapImageRep *bit_rep = [NSBitmapImageRep
                                 imageRepWithData:[img TIFFRepresentation]];
+#else
+  // Render the image into a rep using pixels instead of points.
+  NSBitmapImageRep *bit_rep = [[NSBitmapImageRep alloc]
+                                initWithBitmapDataPlanes:NULL
+                                pixelsWide:[img size].width
+                                pixelsHigh:[img size].height
+                                bitsPerSample:8
+                                samplesPerPixel:4
+                                hasAlpha:YES
+                                isPlanar:NO
+                                colorSpaceName:NSCalibratedRGBColorSpace
+                                bytesPerRow:0
+                                bitsPerPixel:0];
+    bit_rep.size = [img size];
+    [NSGraphicsContext saveGraphicsState];
+    [NSGraphicsContext setCurrentContext:
+                         [NSGraphicsContext
+                           graphicsContextWithBitmapImageRep:bit_rep]];
+    [img drawInRect:NSMakeRect(0, 0, [img size].width, [img size].height)
+         fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+    [NSGraphicsContext restoreGraphicsState];
+#endif
 
   // Write the bitmapImageRep to a JPEG file.
   if (bit_rep == nil)
@@ -304,13 +377,10 @@ write_image (NSImage *img, const char *file)
     fprintf (stderr, "%s: writing %s (q=%d%%) ", progname, file, 
              (int) (jpeg_quality * 100));
 
-  NSDictionary *props = [NSDictionary
-                          dictionaryWithObject:
-                            [NSNumber numberWithFloat:jpeg_quality]
-                          forKey:NSImageCompressionFactor];
   NSData *jpeg_data = [bit_rep representationUsingType:NSJPEGFileType
-                               properties:props];
-
+                               properties:@{ NSImageCompressionFactor: 
+                                             [NSNumber numberWithFloat:
+                                                         jpeg_quality] }];
   [jpeg_data writeToFile:
                [NSString stringWithCString:file
                                   encoding:NSISOLatin1StringEncoding]
@@ -334,14 +404,18 @@ write_image (NSImage *img, const char *file)
 static void
 usage (void)
 {
-  fprintf (stderr, "usage: %s [-v] paste-file base-file\n"
+  fprintf (stderr,
+           "\nusage: %s [-v] paste-file base-file\n"
            "\t from-scale opacity\n"
            "\t from-x from-y to-x to-y w h\n"
            "\n"
            "\t Pastes paste-file into base-file.\n"
            "\t base-file will be overwritten (with JPEG data.)\n"
-           "\t scaling is applied first: coordinates apply to scaled image.\n",
-           progname);
+           "\t scaling is applied first: coordinates apply to scaled image.\n"
+           "\n"
+           "usage: %s [-v] color width height output-file\n"
+           "\t Creates a new image of a solid color.\n\n",
+           progname, progname);
   exit (1);
 }
 
@@ -359,57 +433,70 @@ main (int argc, char **argv)
   s = strrchr (progname, '/');
   if (s) progname = s+1;
 
-  if (argc != 11 && argc != 12) usage();
+  // Much of Cocoa needs one of these to be available.
+  @autoreleasepool {
+
+  //Need an NSApp instance to make [NSImage TIFFRepresentation] work
+  NSApp = [NSApplication sharedApplication];
 
   if (!strcmp(argv[i], "-v"))
     verbose_p++, i++;
 
-  paste_file = argv[i++];
-  base_file = argv[i++];
+  if (argc == 11 || argc == 12)
+    {
+      paste_file = argv[i++];
+      base_file = argv[i++];
 
-  if (*paste_file == '-') usage();
-  if (*base_file == '-') usage();
+      if (*paste_file == '-') usage();
+      if (*base_file == '-') usage();
 
-  s = argv[i++];
-  if (1 != sscanf (s, " %lf %c", &from_scale, &dummy)) usage();
-  if (from_scale <= 0 || from_scale > 100) usage();
+      s = argv[i++];
+      if (1 != sscanf (s, " %lf %c", &from_scale, &dummy)) usage();
+      if (from_scale <= 0 || from_scale > 100) usage();
 
-  s = argv[i++];
-  if (1 != sscanf (s, " %lf %c", &opacity, &dummy)) usage();
-  if (opacity <= 0 || opacity > 1) usage();
+      s = argv[i++];
+      if (1 != sscanf (s, " %lf %c", &opacity, &dummy)) usage();
+      if (opacity <= 0 || opacity > 1) usage();
 
-  s = argv[i++]; if (1 != sscanf (s, " %d %c", &from_x, &dummy)) usage();
-  s = argv[i++]; if (1 != sscanf (s, " %d %c", &from_y, &dummy)) usage();
-  s = argv[i++]; if (1 != sscanf (s, " %d %c", &to_x, &dummy)) usage();
-  s = argv[i++]; if (1 != sscanf (s, " %d %c", &to_y, &dummy)) usage();
-  s = argv[i++]; if (1 != sscanf (s, " %d %c", &w, &dummy)) usage();
-  s = argv[i];   if (1 != sscanf (s, " %d %c", &h, &dummy)) usage();
+      s = argv[i++]; if (1 != sscanf (s, " %d %c", &from_x, &dummy)) usage();
+      s = argv[i++]; if (1 != sscanf (s, " %d %c", &from_y, &dummy)) usage();
+      s = argv[i++]; if (1 != sscanf (s, " %d %c", &to_x, &dummy)) usage();
+      s = argv[i++]; if (1 != sscanf (s, " %d %c", &to_y, &dummy)) usage();
+      s = argv[i++]; if (1 != sscanf (s, " %d %c", &w, &dummy)) usage();
+      s = argv[i];   if (1 != sscanf (s, " %d %c", &h, &dummy)) usage();
 
-  bevel_pct = 10; /* #### */
+      bevel_pct = 10; /* #### */
 
-  if (w < 0) usage();
-  if (h < 0) usage();
+      if (w < 0) usage();
+      if (h < 0) usage();
 
-  if (w == 0 || h == 0 || 
-      w > 10240 || h > 10240) {
-    fprintf (stderr, "%s: absurd size: %d x %d\n", progname, w, h);
-    exit (1);
+      if (w == 0 || h == 0 || 
+          w > 10240 || h > 10240) {
+        fprintf (stderr, "%s: absurd size: %d x %d\n", progname, w, h);
+        exit (1);
+      }
+
+      paste (paste_file, base_file,
+             from_scale, opacity, bevel_pct,
+             from_x, from_y, to_x, to_y,
+             w, h);
+    }
+  else if (argc == 4 || argc == 5)
+    {
+      char *color = argv[i++];
+      s = argv[i++]; if (1 != sscanf (s, " %d %c", &w, &dummy)) usage();
+      s = argv[i++]; if (1 != sscanf (s, " %d %c", &h, &dummy)) usage();
+      paste_file = argv[i++];
+      if (*paste_file == '-') usage();
+
+      create (color, w, h, paste_file);
+    }
+  else
+    {
+      usage();
+    }
+
   }
-
-
-  // Much of Cocoa needs one of these to be available.
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-  //Need an NSApp instance to make [NSImage TIFFRepresentation] work
-  NSApp = [NSApplication sharedApplication];
-  [NSApp autorelease];
-
-  paste (paste_file, base_file,
-         from_scale, opacity, bevel_pct,
-         from_x, from_y, to_x, to_y,
-         w, h);
-
-  [pool release];
 
   exit (0);
 }

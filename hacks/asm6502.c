@@ -20,8 +20,6 @@
       I changed the structure of the assembler in this version.
 */
 
-#define NDEBUG  /* Uncomment when done with debugging */
-
 #include <stdlib.h>
 #include <stdio.h>
 /*#include <malloc.h>*/
@@ -31,7 +29,14 @@
 #include <assert.h>
 #include <ctype.h>
 #include <math.h>
-#include <inttypes.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+#if defined(HAVE_STDINT_H)
+# include <stdint.h>
+#elif defined(HAVE_INTTYPES_H)
+# include <inttypes.h>
+#endif
 #include <unistd.h>
 
 #include "yarandom.h"
@@ -41,7 +46,7 @@
 #  define random rand
 #endif*/
 
-#ifndef USE_IPHONE
+#ifndef HAVE_MOBILE
 # define READ_FILES
 #endif
 
@@ -544,7 +549,7 @@ static void jmpBIT(machine_6502 *machine, m6502_AddrMode adm){
   Pointer ptr;
   BOOL isValue = getValue(machine, adm, &ptr);
   warnValue(isValue);
-  machine->regP = setBit(machine->regP, ZERO_FL, (ptr.value & machine->regA));
+  machine->regP = setBit(machine->regP, ZERO_FL, !(ptr.value & machine->regA));
   machine->regP = setBit(machine->regP, OVERFLOW_FL, bitOn(ptr.value, OVERFLOW_FL));
   machine->regP = setBit(machine->regP, NEGATIVE_FL, bitOn(ptr.value, NEGATIVE_FL));
   
@@ -1876,7 +1881,7 @@ static BOOL translate(m6502_Opcodes *op,Param *param, machine_6502 *machine){
 	if (op->BRA) {
 	  pushByte(machine, op->BRA);
           {
-            int diff = abs(param->lbladdr - machine->defaultCodePC);
+            int diff = abs((int)param->lbladdr - (int)machine->defaultCodePC);
             int backward = (param->lbladdr < machine->defaultCodePC);
             pushByte(machine, (backward) ? 0xff - diff : diff - 1);
           }
@@ -2037,7 +2042,7 @@ static BOOL compileCode(machine_6502 *machine, const char *code){
       AsmLine *p;
       if(asmlist != NULL){
         for (p = asmlist; p != NULL; p = p->next)
-          fprintf(stderr,"%s lbl: %s addr: %d ParamLbl: %s ParamAddr: %d\n",
+          fprintf(stderr,"%s lbl: %s addr: %x ParamLbl: %s ParamAddr: %x\n",
                   p->command, p->label->label, p->label->addr,
                   p->param->label, p->param->lbladdr);
             }
@@ -2194,7 +2199,7 @@ void m6502_eval_file(machine_6502 *machine, const char *filename, m6502_Plotter 
   do{
     sleep(0); /* XXX */
 #if 0
-    trace(machine);
+    m6502_trace(machine, stdout);
 #endif
     execute(machine);
   }while(machine->codeRunning);

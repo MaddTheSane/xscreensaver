@@ -1,4 +1,4 @@
-/* splitflap, Copyright (c) 2015 Jamie Zawinski <jwz@jwz.org>
+/* splitflap, Copyright (c) 2015-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -26,7 +26,7 @@
 			"*program:      xscreensaver-text\n" \
 			"*usePty:       False\n"
 
-# define refresh_splitflap 0
+# define release_splitflap 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
@@ -46,7 +46,7 @@
 
 #include "gltrackball.h"
 #include "rotator.h"
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include "utf8wc.h"
 #include "textclient.h"
 #include "texfont.h"
@@ -213,6 +213,14 @@ reshape_splitflap (ModeInfo *mi, int width, int height)
              0, 0, 0,
              0, 1, 0);
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (h, h, h);
+  }
+# endif
+
   glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -291,14 +299,7 @@ init_splitflap (ModeInfo *mi)
   splitflap_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
   int i;
-  if (!bps) {
-    bps = (splitflap_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (splitflap_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
   bp->glx_context = init_GL(mi);
@@ -1362,7 +1363,7 @@ draw_splitflap (ModeInfo *mi)
                  ? grid_width * r
                  : grid_height);
     GLfloat s = 8;
-# ifdef USE_IPHONE
+# ifdef HAVE_MOBILE
     s *= 2; /* #### What. Why is this necessary? */
 #endif
     s /= cells;
@@ -1393,11 +1394,12 @@ draw_splitflap (ModeInfo *mi)
 }
 
 ENTRYPOINT void
-release_splitflap (ModeInfo *mi)
+free_splitflap (ModeInfo *mi)
 {
   splitflap_configuration *bp = &bps[MI_SCREEN(mi)];
   if (bp->tc)
     textclient_close (bp->tc);
+  bp->tc = 0;
   /* #### bp->texinfo */
 }
 

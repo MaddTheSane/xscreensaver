@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# Copyright © 2005-2015 Jamie Zawinski <jwz@jwz.org>
+# Copyright © 2005-2017 Jamie Zawinski <jwz@jwz.org>
 #
 # Permission to use, copy, modify, distribute, and sell this software and its
 # documentation for any purpose is hereby granted without fee, provided that
@@ -34,10 +34,10 @@ BEGIN { eval 'use HTML::Entities;' }
 use Socket;
 use POSIX qw(strftime);
 use Text::Wrap qw(wrap);
-use bytes;
+#use bytes;  # This breaks shit.
 
 my $progname = $0; $progname =~ s@.*/@@g;
-my ($version) = ('$Revision: 1.38 $' =~ m/\s(\d[.\d]+)\s/s);
+my ($version) = ('$Revision: 1.46 $' =~ m/\s(\d[.\d]+)\s/s);
 
 my $verbose = 0;
 my $http_proxy = undef;
@@ -158,6 +158,7 @@ sub get_x11_prefs_1($) {
 
   my $got_any_p = 0;
   $body =~ s@\\\n@@gs;
+  $body =~ s@^[ \t]*#[^\n]*$@@gm;
 
   if ($body =~ m/^[.*]*textMode:[ \t]*([^\s]+)\s*$/im) {
     $text_mode = $1;
@@ -277,6 +278,9 @@ sub which($) {
 
 sub output() {
 
+  binmode (STDOUT, ($latin1_p ? ':raw' : ':utf8'));
+  binmode (STDERR, ':utf8');
+
   # Do some basic sanity checking (null text, null file names, etc.)
   #
   if (($text_mode eq 'literal' && $text_literal =~ m/^\s*$/i) ||
@@ -298,8 +302,9 @@ sub output() {
 
     $text_file =~ s@^~/@$ENV{HOME}/@s;     # allow literal "~/"
 
-    if (open (my $in, '<', $text_file)) {
+    if (open (my $in, '<:raw', $text_file)) {
       print STDERR "$progname: reading $text_file\n" if ($verbose);
+      binmode (STDOUT, ':raw');
 
       if (($wrap_columns && $wrap_columns > 0) || $truncate_lines) {
         # read it, then reformat it.
@@ -473,8 +478,8 @@ sub reformat_html($$) {
 
     # Try to omit all tables, since they're impossible to read as text.
     #
-    1 while (s/{{[^{}]*}}/ /gs);		   # {{ ... }}
-    1 while (s/{\|.*?\|}/\n\n/gs);		   # {| ... |}
+    1 while (s/\{\{[^{}]*}}/ /gs);		   # {{ ... }}
+    1 while (s/\{\|.*?\|\}/\n\n/gs);		   # {| ... |}
     1 while (s/\|-.*?\|/ /gs);			   # |- ... |  (table cell)
 
     # Convert anchors to something more readable.
@@ -659,16 +664,21 @@ sub reformat_text($) {
 sub set_proxy($) {
   my ($ua) = @_;
 
-  if (!defined($ENV{http_proxy}) && !defined($ENV{HTTP_PROXY})) {
-    my $proxy_data = `scutil --proxy 2>/dev/null`;
-    my ($server) = ($proxy_data =~ m/\bHTTPProxy\s*:\s*([^\s]+)/s);
-    my ($port)   = ($proxy_data =~ m/\bHTTPPort\s*:\s*([^\s]+)/s);
-    if ($server) {
+  my $proxy_data = `scutil --proxy 2>/dev/null`;
+  foreach my $proto ('http', 'https') {
+    my ($server) = ($proxy_data =~ m/\b${proto}Proxy\s*:\s*([^\s]+)/si);
+    my ($port)   = ($proxy_data =~ m/\b${proto}Port\s*:\s*([^\s]+)/si);
+    my ($enable) = ($proxy_data =~ m/\b${proto}Enable\s*:\s*([^\s]+)/si);
+
+    if ($server && $enable) {
       # Note: this ignores the "ExceptionsList".
-      $ENV{http_proxy} = "http://" . $server . ($port ? ":$port" : "") . "/";
-      print STDERR "$progname: MacOS proxy: $ENV{http_proxy}\n"
-        if ($verbose > 2)
-      }
+      my $proto2 = 'http';
+      $ENV{"${proto}_proxy"} = ("${proto2}://" . $server .
+                                ($port ? ":$port" : "") . "/");
+      print STDERR "$progname: MacOS $proto proxy: " .
+                   $ENV{"${proto}_proxy"} . "\n"
+        if ($verbose > 2);
+    }
   }
 
   $ua->env_proxy();
@@ -682,9 +692,27 @@ sub get_url_text($) {
 
   if (! $ua) {
     print STDOUT ("\n\tPerl is broken. Do this to repair it:\n" .
-                  "\n\tsudo cpan LWP::UserAgent\n\n");
+                  "\n\tsudo cpan LWP::UserAgent" .
+                  " LWP::Protocol::https Mozilla::CA\n\n");
     return;
   }
+
+  # Half the time, random Linux systems don't have Mozilla::CA installed,
+  # which results in "Can't verify SSL peers without knowning which
+  # Certificate Authorities to trust".
+  #
+  # I'm going to take a controversial stand here and say that, for the
+  # purposes of plain-text being displayed in a screen saver via RSS,
+  # the chances of a certificate-based man-in-the-middle attack having
+  # a malicious effect on anyone anywhere at any time is so close to
+  # zero that it can be discounted.  So, just don't bother validating
+  # SSL connections.
+  #
+  $ENV{'PERL_LWP_SSL_VERIFY_HOSTNAME'} = 0;
+  eval {
+    $ua->ssl_opts (verify_hostname => 0, SSL_verify_mode => 0);
+  };
+
 
   set_proxy ($ua);
   $ua->agent ("$progname/$version");
@@ -705,7 +733,9 @@ sub get_url_text($) {
     $ct = 'text/plain';
   }
 
-  utf8::decode ($body);  # Pack multi-byte UTF-8 back into wide chars.
+  # This is not necessary, since HTTP::Message::decoded_content() has
+  # already done 'decode (<charset-header>, $body)'.
+  # utf8::decode ($body);  # Pack multi-byte UTF-8 back into wide chars.
 
   $ct = guess_content_type ($ct, $body);
   if ($ct eq 'html') {
@@ -776,6 +806,8 @@ sub main() {
                               $load_p = 0; }
     elsif (m/^--?text$/)    { $text_mode = 'literal';
                               $text_literal = shift @ARGV || '';
+                              $text_literal =~ s@\\n@\n@gs;
+                              $text_literal =~ s@\\\n@\n@gs;
                               $load_p = 0; }
     elsif (m/^--?file$/)    { $text_mode = 'file';
                               $text_file = shift @ARGV || '';

@@ -1,5 +1,5 @@
 /* timers.c --- detecting when the user is idle, and other timer-related tasks.
- * xscreensaver, Copyright (c) 1991-2014 Jamie Zawinski <jwz@jwz.org>
+ * xscreensaver, Copyright (c) 1991-2017 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -18,6 +18,7 @@
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 #include <X11/Xos.h>
+#include <X11/Xatom.h>
 #include <time.h>
 #include <sys/time.h>
 #ifdef HAVE_XMU
@@ -561,6 +562,21 @@ check_pointer_timer (XtPointer closure, XtIntervalId *id)
    We only do this when we'd be polling the mouse position anyway.
    This amounts to an assumption that machines with APM support also
    have /proc/interrupts.
+
+   Now here's a thing that sucks about this: if the user actually changes
+   the time of the machine, it will either trigger or delay the triggering
+   of a lock.  On most systems, that requires root, but I'll bet at least
+   some GUI configs let non-root do it.  Also, NTP attacks.
+
+   On Linux 2.6.39+ systems, there exists clock_gettime(CLOCK_BOOTTIME)
+   which would allow us to detect the "laptop CPU had been halted" state
+   independently of changes in wall-clock time.  But of course that's not
+   portable.
+
+   When the wall clock changes, what do Xt timers do, anyway?  If I have
+   a timer set for 30 seconds from now, and adjust the wall clock +15 seconds,
+   does the timer fire 30 seconds from now or 15?  I actually have no idea.
+   It does not appear to be specified.
  */
 static void
 check_for_clock_skew (saver_info *si)
@@ -989,29 +1005,90 @@ sleep_until_idle (saver_info *si, Bool until_idle_p)
 
       case PropertyNotify:
 
+        /* Starting in late 2014, GNOME programs don't actually select for
+           or receive KeyPress events: they do it behind the scenes through
+           some kind of Input Method magic, even when running in an en_US
+           locale.  However, those applications *do* update the WM_USER_TIME
+           property on their own windows every time they recieve a secret
+           KeyPress, so we must *also* monitor that property on every
+           window, and treat changes to it as identical to KeyPress.
+
+           _NET_WM_USER_TIME is documented (such as it is) here:
+
+             http://standards.freedesktop.org/wm-spec/latest/ar01s05.html
+             #idm139870829932528
+
+           Specifically:
+
+             "Contains the XServer time at which last user activity in this
+             window took place. [...]  A client [...] might, for example,
+             use the timestamp of the last KeyPress or ButtonPress event."
+
+           As of early 2016, KDE4 does something really stupid, though: some
+           hidden power management thing reduces the display brightness 150
+           seconds after the screen is blanked -- and sets a WM_USER_TIME
+           property on a hidden "kded4" window whose time is in the distant
+           past (the time at which the X server launched).
+
+           So we ignore any WM_USER_TIME whose timestamp is more than a
+           couple seconds old.
+         */
         if (event.x_event.xproperty.state == PropertyNewValue &&
             event.x_event.xproperty.atom == XA_NET_WM_USER_TIME)
           {
-            /* Let's just assume that they only ever set USER_TIME to the
-               current time, and don't do something stupid like repeatedly
-               setting it to 20 minutes ago. */
+            int threshold = 2; /* seconds */
+            Bool bogus_p = True;
+            Window w = event.x_event.xproperty.window;
+
+            Atom type;
+            int format;
+            unsigned long nitems, bytesafter;
+            unsigned char *data = 0;
+            Cardinal user_time = 0;
+            XErrorHandler old_handler = XSetErrorHandler (BadWindow_ehandler);
+
+            if (XGetWindowProperty (si->dpy, w, 
+                                    XA_NET_WM_USER_TIME, 0L, 1L, False,
+                                    XA_CARDINAL, &type, &format, &nitems,
+                                    &bytesafter, &data)
+                == Success &&
+                data &&
+                type == XA_CARDINAL &&
+                format == 32 &&
+                nitems == 1)
+              {
+                long diff;
+                user_time = ((Cardinal *) data)[0];
+                diff = event.x_event.xproperty.time - user_time;
+                if (diff >= 0 && diff < threshold)
+                  bogus_p = False;
+              }
+
+            if (data) XFree (data);
 
             why = "WM_USER_TIME";
 
             if (p->debug_p)
               {
-                Window w = event.x_event.xproperty.window;
                 XWindowAttributes xgwa;
                 int i;
+
                 XGetWindowAttributes (si->dpy, w, &xgwa);
                 for (i = 0; i < si->nscreens; i++)
                   if (xgwa.root == RootWindowOfScreen (si->screens[i].screen))
                     break;
-                fprintf (stderr,"%s: %d: %s on 0x%lx\n",
-                         blurb(), i, why, (unsigned long) w);
+                fprintf (stderr,"%s: %d: %s = %ld%s on 0x%lx\n",
+                         blurb(), i, why, (unsigned long) user_time,
+                         (bogus_p ? " (bad)" : ""),
+                         (unsigned long) w);
               }
 
-            if (until_idle_p)
+            XSync (si->dpy, False);
+            XSetErrorHandler (old_handler);
+
+            if (bogus_p)
+              break;
+            else if (until_idle_p)
               reset_timers (si);
             else
               goto DONE;

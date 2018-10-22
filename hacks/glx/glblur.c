@@ -24,9 +24,10 @@
 
 #define DEFAULTS	"*delay:    10000 \n" \
 			"*showFPS:  False \n" \
-	               	"*fpsSolid: True  \n"
+	               	"*fpsSolid: True  \n" \
+			"*suppressRotationAnimation: True\n" \
 
-# define refresh_glblur 0
+# define free_glblur 0
 # define release_glblur 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -123,6 +124,14 @@ reshape_glblur (ModeInfo *mi, int width, int height)
   gluLookAt( 0.0, 0.0, 8.0,
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -241,10 +250,7 @@ init_texture (ModeInfo *mi)
   glBindTexture (GL_TEXTURE_2D, bp->texture);
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                 bp->tex_w, bp->tex_h, 0,
-		GL_RGBA,
-                /* GL_UNSIGNED_BYTE, */
-                GL_UNSIGNED_INT_8_8_8_8_REV,
-                bp->tex_data);
+		GL_RGBA, GL_UNSIGNED_BYTE, bp->tex_data);
   check_gl_error ("texture generation");
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -358,14 +364,7 @@ init_glblur (ModeInfo *mi)
   glblur_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
 
-  if (!bps) {
-    bps = (glblur_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (glblur_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 

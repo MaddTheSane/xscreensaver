@@ -17,9 +17,10 @@
 			"*wireframe:    False       \n" \
 			"*showFPS:      False       \n" \
 		        "*texFontCacheSize: 100     \n" \
+			"*suppressRotationAnimation: True\n" \
 		"*font:  -*-helvetica-medium-r-normal-*-*-160-*-*-*-*-*-*\n" \
 
-# define refresh_geodesic 0
+# define release_geodesic 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
@@ -1314,9 +1315,19 @@ make_182 (ModeInfo *mi, const GLfloat *args)
 ENTRYPOINT void
 reshape_geodesic (ModeInfo *mi, int width, int height)
 {
+  geodesic_configuration *bp = &bps[MI_SCREEN(mi)];
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(bp->glx_context));
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -1327,6 +1338,14 @@ reshape_geodesic (ModeInfo *mi, int width, int height)
   gluLookAt( 0.0, 0.0, 30.0,
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -1396,14 +1415,7 @@ init_geodesic (ModeInfo *mi)
   geodesic_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
 
-  if (!bps) {
-    bps = (geodesic_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (geodesic_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -1773,9 +1785,12 @@ draw_geodesic (ModeInfo *mi)
 }
 
 ENTRYPOINT void
-release_geodesic (ModeInfo *mi)
+free_geodesic (ModeInfo *mi)
 {
   geodesic_configuration *bp = &bps[MI_SCREEN(mi)];
+  if (!bp->glx_context)
+    return;
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(bp->glx_context));
   free_texture_font (bp->font);
   free (bp->colors);
   free_sphere_gears (mi);

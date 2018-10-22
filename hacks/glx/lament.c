@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1998-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1998-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -29,8 +29,10 @@
 
 #define DEFAULTS	"*delay:	20000   \n"	\
 			"*showFPS:      False   \n"     \
-			"*wireframe:	False	\n"
-# define refresh_lament 0
+			"*wireframe:	False	\n"	\
+			"*suppressRotationAnimation: True\n" \
+
+# define free_lament 0
 # define release_lament 0
 #include "xlockmore.h"
 
@@ -161,17 +163,12 @@ static argtype vars[] = {
 
 ENTRYPOINT ModeSpecOpt lament_opts = {countof(opts), opts, countof(vars), vars, NULL};
 
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include "rotator.h"
 #include "gltrackball.h"
 #include "normals.h"
 
-#ifdef __GNUC__
- __extension__ /* don't warn about "string length is greater than the length
-                  ISO C89 compilers are required to support" when including
-                  the following XPM file... */
-#endif
-#include "../images/lament512.xpm"
+#include "images/gen/lament512_png.h"
 
 #define RANDSIGN() ((random() & 1) ? 1 : -1)
 
@@ -323,15 +320,24 @@ scale_for_window (ModeInfo *mi)
   if (MI_WIDTH(mi) > MI_HEIGHT(mi))
     scale /= MI_WIDTH(mi) / (GLfloat) MI_HEIGHT(mi);
 
+  /* If the window is super wide, make it bigger. */
+  if (scale < 8) scale = 8;
+
   /* Constrain it to roughly life-sized on the screen, not huge.
    */
-# ifdef USE_IPHONE
-  if (size > 768)  /* iPad retina */
+# ifdef HAVE_MOBILE
+  if (size > 768)  /* iPad retina / iPhone 6 */
     target_size *= 1.5;
   else
 # endif
     {
       GLfloat max = 500;  /* 3" on my screen... */
+
+      if (MI_WIDTH(mi) > 2560) {  /* Retina displays */
+        target_size *= 2.5;
+        max *= 2.5;
+      }
+
       if (target_size > max)
         target_size = max;
     }
@@ -453,8 +459,8 @@ leviathan (ModeInfo *mi, GLfloat ratio, GLfloat alpha, Bool top_p)
       int j = (i + 1) % countof(p);
 /*      if (top_p)*/
         do_normal (z, 0, 0,
-                   0, p[i].y, p[i].z,
-                   0, p[j].y, p[j].z);
+                   0, p[i].x, p[i].y,
+                   0, p[j].x, p[j].y);
 /*
       else
         do_normal (z, 0, 0,
@@ -1571,10 +1577,8 @@ gl_init (ModeInfo *mi)
       for (i = 0; i < countof(lc->texids); i++)
 	glGenTextures(1, &lc->texids[i]);
 
-      lc->texture = xpm_to_ximage (mi->dpy,
-                                   mi->xgwa.visual,
-                                   mi->xgwa.colormap,
-                                   lament512);
+      lc->texture = image_data_to_ximage (mi->dpy, mi->xgwa.visual,
+                                          lament512_png, sizeof(lament512_png));
 
       glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
       /* messes up -fps */
@@ -1588,10 +1592,8 @@ gl_init (ModeInfo *mi)
           clear_gl_error();
 	  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
 		       lc->texture->width, height, 0,
-		       GL_RGBA,
-                       /* GL_UNSIGNED_BYTE, */
-                       GL_UNSIGNED_INT_8_8_8_8_REV,
-		       (lc->texture->data +
+		       GL_RGBA, GL_UNSIGNED_BYTE,
+                       (lc->texture->data +
 			(lc->texture->bytes_per_line * height * i)));
           check_gl_error("texture");
 
@@ -1703,16 +1705,7 @@ init_lament (ModeInfo *mi)
 {
   lament_configuration *lc;
   int i;
-  if (!lcs)
-    {
-      lcs = (lament_configuration *)
-	calloc(MI_NUM_SCREENS(mi), sizeof (lament_configuration));
-      if (!lcs)
-	{
-	  fprintf(stderr, "%s: out of memory\n", progname);
-	  exit(1);
-	}
-    }
+  MI_INIT (mi, lcs);
 
   lc = &lcs[MI_SCREEN(mi)];
 

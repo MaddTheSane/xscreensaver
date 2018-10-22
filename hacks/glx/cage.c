@@ -79,11 +79,12 @@ static const char sccsid[] = "@(#)cage.c	5.01 2001/03/01 xlockmore";
 # define MODE_cage
 # define DEFAULTS			"*delay:		25000   \n"			\
 							"*showFPS:      False   \n"			\
-							"*wireframe:	False	\n"
+							"*wireframe:	False	\n"			\
+							"*suppressRotationAnimation: True\n" \
 
-# define refresh_cage 0
-# define reshape_cage 0
-# define cage_handle_event 0
+# define free_cage 0
+# define release_cage 0
+# define cage_handle_event xlockmore_no_events
 # include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 # include "xlock.h"		/* from the xlockmore distribution */
@@ -94,8 +95,8 @@ static const char sccsid[] = "@(#)cage.c	5.01 2001/03/01 xlockmore";
 #if 0
 #include "e_textures.h"
 #else
-#include "xpm-ximage.h"
-#include "../images/wood.xpm"
+#include "ximage-loader.h"
+#include "images/gen/wood_png.h"
 #endif
 
 ENTRYPOINT ModeSpecOpt cage_opts =
@@ -103,7 +104,7 @@ ENTRYPOINT ModeSpecOpt cage_opts =
 
 #ifdef USE_MODULES
 ModStruct   cage_description =
-{"cage", "init_cage", "draw_cage", "release_cage",
+{"cage", "init_cage", "draw_cage", NULL,
  "draw_cage", "change_cage", (char *) NULL, &cage_opts,
  25000, 1, 1, 1, 1.0, 4, "",
  "Shows the Impossible Cage, an Escher-like GL scene", 0, NULL};
@@ -291,12 +292,18 @@ draw_impossiblecage(ModeInfo *mi, cagestruct * cp, int wire)
 }
 
 static void
-reshape(ModeInfo * mi, int width, int height)
+reshape_cage(ModeInfo * mi, int width, int height)
 {
 	cagestruct *cp = &cage[MI_SCREEN(mi)];
 	int i;
+    int y = 0;
 
-	glViewport(0, 0, cp->WindW = (GLint) width, cp->WindH = (GLint) height);
+    if (width > height * 5) {   /* tiny window: show middle */
+      height = width * 9/16;
+      y = -height/2;
+    }
+
+	glViewport(0, y, cp->WindW = (GLint) width, cp->WindH = (GLint) height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 5.0, 15.0);
@@ -356,16 +363,11 @@ pinit(ModeInfo *mi)
 	check_gl_error("mipmapping");
 #else
     {
-      XImage *img = xpm_to_ximage (mi->dpy,
-                                   mi->xgwa.visual,
-                                   mi->xgwa.colormap,
-                                   wood_texture);
+      XImage *img = image_data_to_ximage (mi->dpy, mi->xgwa.visual,
+                                          wood_png, sizeof(wood_png));
 	  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                     img->width, img->height, 0,
-                    GL_RGBA,
-                    /* GL_UNSIGNED_BYTE, */
-                    GL_UNSIGNED_INT_8_8_8_8_REV,
-                    img->data);
+                    GL_RGBA, GL_UNSIGNED_BYTE, img->data);
       check_gl_error("texture");
       XDestroyImage (img);
     }
@@ -382,40 +384,17 @@ pinit(ModeInfo *mi)
 }
 
 ENTRYPOINT void
-release_cage (ModeInfo * mi)
-{
-	if (cage != NULL) {
-		int screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			cagestruct *cp = &cage[screen];
-
-			if (cp->glx_context) {
-				cp->glx_context = (GLXContext *) NULL;
-			}
-		}
-		(void) free((void *) cage);
-		cage = (cagestruct *) NULL;
-	}
-	FreeAllGL(mi);
-}
-
-ENTRYPOINT void
 init_cage (ModeInfo * mi)
 {
 	cagestruct *cp;
 
-	if (cage == NULL) {
-		if ((cage = (cagestruct *) calloc(MI_NUM_SCREENS(mi),
-					       sizeof (cagestruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, cage);
 	cp = &cage[MI_SCREEN(mi)];
 
 	cp->step = NRAND(90);
 	if ((cp->glx_context = init_GL(mi)) != NULL) {
 
-		reshape(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
+		reshape_cage(mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 		glDrawBuffer(GL_BACK);
 		pinit(mi);
 	} else {
@@ -452,12 +431,24 @@ draw_cage (ModeInfo * mi)
 		glScalef(Scale4Iconic * cp->WindH / cp->WindW, Scale4Iconic, Scale4Iconic);
 	}
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    if (o != 0 && o != 180 && o != -180) {
+      glScalef (1/h, h, 1/h);  /* #### not quite right */
+      h = 1.7;
+      glScalef (h, h, h);
+    }
+  }
+# endif
+
 	/* cage */
 	glRotatef(cp->step * 100, 0, 0, 1);
 	glRotatef(25 + cos(cp->step * 5) * 6, 1, 0, 0);
 	glRotatef(204.5 - sin(cp->step * 5) * 8, 0, 1, 0);
 	if (!draw_impossiblecage(mi, cp, MI_IS_WIREFRAME(mi))) {
-		release_cage(mi);
+		MI_ABORT(mi);
 		return;
 	}
 

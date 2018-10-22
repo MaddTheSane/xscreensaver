@@ -21,9 +21,11 @@
 
 #define DEFAULTS   "*delay:         20000         \n" \
                    "*showFPS:       False         \n" \
-                   "*wireframe:     False         \n"
+                   "*wireframe:     False         \n" \
+		   "*suppressRotationAnimation: True\n" \
 
-# define refresh_cubicgrid 0
+# define free_cubicgrid 0
+# define release_cubicgrid 0
 #include "xlockmore.h"
 
 #ifdef USE_GL
@@ -65,7 +67,7 @@ ENTRYPOINT ModeSpecOpt cubicgrid_opts = {countof(opts), opts, countof(vars), var
 
 #ifdef USE_MODULES
 ModStruct   cubicgrid_description =
-{ "cubicgrid", "init_cubicgrid", "draw_cubicgrid", "release_cubicgrid",
+{ "cubicgrid", "init_cubicgrid", "draw_cubicgrid", NULL,
   "draw_cubicgrid", "change_cubicgrid", NULL, &cubicgrid_opts,
   25000, 1, 1, 1, 1.0, 4, "",
   "Shows a rotating 3D lattice from inside", 0, NULL
@@ -103,8 +105,9 @@ cubicgrid_handle_event (ModeInfo *mi, XEvent *event)
 }
 
 
-static Bool draw_main(cubicgrid_conf *cp) 
+static Bool draw_main(ModeInfo *mi)
 {
+  cubicgrid_conf *cp = &cubicgrid[MI_SCREEN(mi)];
   double x, y, z;
 
   glClear(GL_COLOR_BUFFER_BIT);
@@ -116,6 +119,16 @@ static Bool draw_main(cubicgrid_conf *cp)
   glTranslatef(0, 0, zpos);
 
   glScalef(size/ticks, size/ticks, size/ticks);
+
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1);
+  }
+# endif
 
   gltrackball_rotate (cp->trackball);
 
@@ -179,9 +192,17 @@ static void init_gl(ModeInfo *mi)
 ENTRYPOINT void reshape_cubicgrid(ModeInfo *mi, int width, int height) 
 {
   cubicgrid_conf *cp = &cubicgrid[MI_SCREEN(mi)];
+  int y = 0;
   if(!height) height = 1;
   cp->ratio = (GLfloat)width/(GLfloat)height;
-  glViewport(0, 0, (GLint) width, (GLint) height);
+
+  if (width > height * 3) {   /* tiny window: show middle */
+    height = width;
+    y = -height/2;
+    cp->ratio = (GLfloat)width/(GLfloat)height;
+  }
+
+  glViewport(0, y, (GLint) width, (GLint) height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(30.0, cp->ratio, 1.0, 100.0);
@@ -189,29 +210,10 @@ ENTRYPOINT void reshape_cubicgrid(ModeInfo *mi, int width, int height)
   glClear(GL_COLOR_BUFFER_BIT);
 }
 
-ENTRYPOINT void release_cubicgrid(ModeInfo *mi) 
-{
-  if (cubicgrid != NULL) {
-    int screen;
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-      cubicgrid_conf *cp = &cubicgrid[screen];
-      if (cp->glx_context) {
-        cp->glx_context = NULL;
-      }
-    }
-    free((void *)cubicgrid);
-    cubicgrid = NULL;
-  }
-  FreeAllGL(mi);
-}
-
 ENTRYPOINT void init_cubicgrid(ModeInfo *mi) 
 {
   cubicgrid_conf *cp;
-  if(!cubicgrid) {
-    cubicgrid = (cubicgrid_conf *)calloc(MI_NUM_SCREENS(mi), sizeof(cubicgrid_conf));
-    if(!cubicgrid) return;
-  }
+  MI_INIT(mi, cubicgrid);
   cp = &cubicgrid[MI_SCREEN(mi)];
 
   if ((cp->glx_context = init_GL(mi)) != NULL) {
@@ -241,8 +243,8 @@ ENTRYPOINT void draw_cubicgrid(ModeInfo * mi)
   MI_IS_DRAWN(mi) = True;
   if (!cp->glx_context) return;
   glXMakeCurrent(display, window, *(cp->glx_context));
-  if (!draw_main(cp)) {
-    release_cubicgrid(mi);
+  if (!draw_main(mi)) {
+    MI_ABORT(mi);
     return;
   }
   mi->polygon_count = cp->npoints;
