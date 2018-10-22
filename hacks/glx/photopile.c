@@ -1,4 +1,4 @@
-/* photopile, Copyright (c) 2008-2015 Jens Kilian <jjk@acm.org>
+/* photopile, Copyright (c) 2008-2018 Jens Kilian <jjk@acm.org>
  * Based on carousel, Copyright (c) 2005-2008 Jamie Zawinski <jwz@jwz.org>
  * Loads a sequence of images and shuffles them into a pile.
  *
@@ -11,7 +11,14 @@
  * implied warranty.
  */
 
-#define DEF_FONT "-*-helvetica-bold-r-normal-*-*-480-*-*-*-*-*-*"
+#if defined(HAVE_COCOA) || defined(HAVE_ANDROID)
+# define DEF_FONT "OCR A Std 48, Lucida Console 48, Monaco 48"
+#elif 0  /* real X11, XQueryFont() */
+# define DEF_FONT "-*-helvetica-bold-r-normal-*-*-480-*-*-*-*-*-*"
+#else    /* real X11, load_font_retry() */
+# define DEF_FONT "-*-ocr a std-medium-r-*-*-*-480-*-*-m-*-*-*"
+#endif
+
 #define DEFAULTS  "*count:           7         \n" \
                   "*delay:           10000     \n" \
                   "*wireframe:       False     \n" \
@@ -21,16 +28,17 @@
                   "*font:          " DEF_FONT "\n" \
                   "*desktopGrabber:  xscreensaver-getimage -no-desktop %s\n" \
                   "*grabDesktopImages:   False \n" \
-                  "*chooseRandomImages:  True  \n"
+                  "*chooseRandomImages:  True  \n" \
+		  "*suppressRotationAnimation: True\n" \
 
-# define refresh_photopile 0
+# define free_photopile 0
 # define release_photopile 0
-# define photopile_handle_event 0
+# define photopile_handle_event xlockmore_no_events
 
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # include <X11/Intrinsic.h>     /* for XrmDatabase in -debug mode */
 #endif
 #include <math.h>
@@ -47,7 +55,7 @@
 # define DEF_SPEED          "1.0"
 # define DEF_DURATION       "5"
 # define DEF_MIPMAP         "True"
-# define DEF_TITLES         "False"
+# define DEF_TITLES         "True"
 # define DEF_POLAROID       "True"
 # define DEF_CLIP           "True"
 # define DEF_SHADOWS        "True"
@@ -433,6 +441,15 @@ reshape_photopile (ModeInfo *mi, int width, int height)
   glLoadIdentity();
   glOrtho(0, MI_WIDTH(mi), 0, MI_HEIGHT(mi), -1, 1);
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, h, 1);
+  }
+# endif
+
   glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -442,7 +459,7 @@ reshape_photopile (ModeInfo *mi, int width, int height)
 static void
 hack_resources (Display *dpy)
 {
-# ifndef HAVE_COCOA
+# ifndef HAVE_JWXYZ
   char *res = "desktopGrabber";
   char *val = get_string_resource (dpy, res, "DesktopGrabber");
   char buf1[255];
@@ -454,7 +471,7 @@ hack_resources (Display *dpy)
   value.addr = buf2;
   value.size = strlen(buf2);
   XrmPutResource (&db, buf1, "String", &value);
-# endif /* !HAVE_COCOA */
+# endif /* !HAVE_JWXYZ */
 }
 
 
@@ -465,11 +482,7 @@ init_photopile (ModeInfo *mi)
   photopile_state *ss;
   int wire = MI_IS_WIREFRAME(mi);
 
-  if (sss == NULL) {
-    if ((sss = (photopile_state *)
-         calloc (MI_NUM_SCREENS(mi), sizeof(photopile_state))) == NULL)
-      return;
-  }
+  MI_INIT (mi, sss);
   ss = &sss[screen];
   ss->mi = mi;
 
@@ -634,26 +647,45 @@ draw_image (ModeInfo *mi, int i, GLfloat t, GLfloat s, GLfloat z)
    */
   if (titles_p)
     {
-      int sw, sh, ascent, descent;
+      int sw = 0, sh = 0;
+      int ascent, descent;
+      GLfloat tw = w * 2;
+      GLfloat th = h1 - h;
       GLfloat scale = 1;
       const char *title = frame->title ? frame->title : "(untitled)";
       XCharStruct e;
 
-      /* #### Highly approximate, but doing real clipping is harder... */
-      int max = 35;
-      if (strlen(title) > max)
-        title += strlen(title) - max;
-
       texture_string_metrics (ss->texfont, title, &e, &ascent, &descent);
       sw = e.width;
-      sh = ascent + descent;
+      sh = ascent; /* + descent; */
 
       /* Scale the text to match the pixel size of the photo */
-      scale *= w / 300.0;
+      scale *= w / 150.0;
 
-      /* Move to below photo */
-      glTranslatef (0, -h - sh * (polaroid_p ? 2.2 : 0.5), 0);
-      glTranslatef (-sw*scale/2, sh*scale/2, z);
+# if defined(HAVE_COCOA)
+      scale /= 2;
+      if (MI_WIDTH(mi) > 2560) scale /= 2;  /* Retina displays */
+# endif
+
+# if defined(HAVE_MOBILE)
+      scale /= 2;
+# endif
+
+      /* Clip characters off the left end of the string until it fits. */
+      if (clip_p || polaroid_p)
+        while (sw * scale > tw && strlen (title) > 10)
+          {
+            title++;
+            texture_string_metrics (ss->texfont, title, &e, &ascent, &descent);
+            sw = e.width;
+          }
+
+      if (th <= 0)  /* Non-polaroid */
+        th = -sh * 1.2;
+
+      glTranslatef (-w, -h1, 0);
+      glTranslatef ((tw - sw*scale) / 2, (th - sh*scale) / 2, 0);
+
       glScalef (scale, scale, 1);
 
       if (wire || !polaroid_p)
@@ -662,14 +694,16 @@ draw_image (ModeInfo *mi, int i, GLfloat t, GLfloat s, GLfloat z)
         }
       else
         {
-          glColor3f (0, 0, 0);
+          glColor3f (0.5, 0.5, 0.5);
         }
 
       if (!wire)
         {
           glEnable (GL_TEXTURE_2D);
           glEnable (GL_BLEND);
+          glDisable (GL_DEPTH_TEST);
           print_texture_string (ss->texfont, title);
+          glEnable (GL_DEPTH_TEST);
         }
       else
         {
@@ -680,6 +714,7 @@ draw_image (ModeInfo *mi, int i, GLfloat t, GLfloat s, GLfloat z)
           glVertex3f (0,  sh, 0);
           glEnd();
         }
+
     }
 
   glPopMatrix();

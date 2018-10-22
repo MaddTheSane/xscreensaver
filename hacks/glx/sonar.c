@@ -1,4 +1,4 @@
-/* sonar, Copyright (c) 1998-2015 Jamie Zawinski and Stephen Martin
+/* sonar, Copyright (c) 1998-2018 Jamie Zawinski and Stephen Martin
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -76,7 +76,7 @@
 			THREAD_DEFAULTS_XLOCK
 
 
-# define refresh_sonar 0
+# define release_sonar 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
@@ -353,6 +353,8 @@ draw_text (ModeInfo *mi, const char *string, GLfloat r, GLfloat th,
   char *string2 = strdup (string);
   char *token = string2;
   char *line;
+
+  if (MI_WIDTH(mi) > 2560) font_scale /= 2;  /* Retina displays */
 
   if (size <= 0)   /* if size not specified, draw in yellow with alpha */
     {
@@ -784,8 +786,15 @@ reshape_sonar (ModeInfo *mi, int width, int height)
 {
   sonar_configuration *sp = &sps[MI_SCREEN(mi)];
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -816,20 +825,12 @@ sonar_handle_event (ModeInfo *mi, XEvent *event)
   return False;
 }
 
-
 ENTRYPOINT void 
 init_sonar (ModeInfo *mi)
 {
   sonar_configuration *sp;
 
-  if (!sps) {
-    sps = (sonar_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (sonar_configuration));
-    if (!sps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, sps);
   sp = &sps[MI_SCREEN(mi)];
   sp->glx_context = init_GL(mi);
 
@@ -1224,7 +1225,7 @@ draw_sonar (ModeInfo *mi)
 }
 
 ENTRYPOINT void
-release_sonar (ModeInfo *mi)
+free_sonar (ModeInfo *mi)
 {
 #if 0
   sonar_configuration *sp = &sps[MI_SCREEN(mi)];

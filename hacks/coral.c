@@ -289,6 +289,7 @@ coral_free (Display *dpy, Window window, void *closure)
 }
 
 static const char *coral_defaults[] = {
+  ".lowrez:	true",
   ".background:	black",
   ".foreground:	white",
   "*fpsSolid:	true",
@@ -296,7 +297,7 @@ static const char *coral_defaults[] = {
   "*seeds:	20", /* too many for 640x480, too few for 1280x1024 */
   "*delay:	5",
   "*delay2:	20000",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation: True",
 #endif
   0

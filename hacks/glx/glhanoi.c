@@ -28,7 +28,7 @@
 				 "*showFPS:   False\n" \
 				 "*wireframe: False\n"
 				 
-# define refresh_glhanoi 0
+# define release_glhanoi 0
 
 /* polygon resolution of poles and disks */
 #define NSLICE 32
@@ -235,8 +235,8 @@ ENTRYPOINT ModeSpecOpt glhanoi_opts = { countof(opts), opts, countof(vars), vars
 #ifdef USE_MODULES
 
 ModStruct glhanoi_description = {
-	"glhanoi", "init_glhanoi", "draw_glhanoi", "release_glhanoi",
-	"draw_glhanoi", "init_glhanoi", NULL, &glhanoi_opts,
+	"glhanoi", "init_glhanoi", "draw_glhanoi", NULL,
+	"draw_glhanoi", "init_glhanoi", "free_glhanoi", &glhanoi_opts,
 	1000, 1, 2, 1, 4, 1.0, "",
 	"Towers of Hanoi", 0, NULL
 };
@@ -345,7 +345,7 @@ static void moveSetup(glhcfg *glhanoi, Disk * disk)
 	int dst = glhanoi->dst;
 	GLfloat theta;
 	GLfloat sintheta, costheta;
-	double absx, dh;
+	double dh;
 	double dx, dz; /* total x and z distances from src to dst */
 	Pole *poleSrc, *poleDst;
 
@@ -385,7 +385,7 @@ static void moveSetup(glhcfg *glhanoi, Disk * disk)
 	/* horizontal distance to travel? */
 	/* was: absx = sqrt(disk->xmax - disk->xmin); */
 	dh = distance(poleSrc->position, poleDst->position);
-	absx = sqrt(dh);
+	/* absx = sqrt(dh); */
 	ymax = glhanoi->poleHeight + dh;
 	if(glhanoi->state == FINISHED) {
 		ymax += dh * (double)(glhanoi->numberOfDisks - disk->id);
@@ -888,7 +888,6 @@ static int drawTube(GLdouble bottomRadius, GLdouble topRadius,
 	GLint lastSlice = nSlice - 1;
 	GLfloat radius;
 	GLfloat innerRadius;
-	GLfloat maxRadius;
 
 	if(bottomThickness > bottomRadius) {
 		bottomThickness = bottomRadius;
@@ -902,11 +901,11 @@ static int drawTube(GLdouble bottomRadius, GLdouble topRadius,
 	if(topThickness < 0.0) {
 		topThickness = 0.0;
 	}
-	if(topRadius >= bottomRadius) {
+/*	if(topRadius >= bottomRadius) {
 		maxRadius = topRadius;
 	} else {
 		maxRadius = bottomRadius;
-	}
+	} */
 
 	/* bottom */
 	y = 0.0;
@@ -1846,11 +1845,23 @@ static int drawTrails(glhcfg *glhanoi) {
  */
 ENTRYPOINT void reshape_glhanoi(ModeInfo * mi, int width, int height)
 {
-	glViewport(0, 0, (GLint) width, (GLint) height);
+	glhcfg *glhanoi = &glhanoi_cfg[MI_SCREEN(mi)];
+    double h = (GLfloat) height / (GLfloat) width;  
+    int y = 0;
+
+    if (width > height * 5) {   /* tiny window: show middle */
+      height = width * 9/16;
+      y = -height/2;
+      h = height / (GLfloat) width;
+    }
+
+	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(glhanoi->glx_context));
+
+	glViewport(0, y, (GLint) width, (GLint) height);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(30.0, (GLdouble) width / (GLdouble) height, 1.0,
+	gluPerspective(30.0, 1/h, 1.0,
 				   2 * MAX_CAMERA_RADIUS);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -1862,11 +1873,7 @@ ENTRYPOINT void reshape_glhanoi(ModeInfo * mi, int width, int height)
 ENTRYPOINT void init_glhanoi(ModeInfo * mi)
 {
 	glhcfg *glhanoi;
-	if(!glhanoi_cfg) {
-		glhanoi_cfg =
-			(glhcfg *) calloc(MI_NUM_SCREENS(mi), sizeof(glhcfg));
-		checkAllocAndExit(!!glhanoi_cfg, "configuration");
-	}
+	MI_INIT(mi, glhanoi_cfg);
 
 	glhanoi = &glhanoi_cfg[MI_SCREEN(mi)];
 	glhanoi->glx_context = init_GL(mi);
@@ -1968,6 +1975,15 @@ ENTRYPOINT void draw_glhanoi(ModeInfo * mi)
 	update_glhanoi(glhanoi);
 	updateView(glhanoi);
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180)
+        glScalef (1/h, 1/h, 1/h);
+    }
+# endif
+
 	if(!glhanoi->wire && glhanoi->texture) {
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -1993,6 +2009,8 @@ ENTRYPOINT void draw_glhanoi(ModeInfo * mi)
 ENTRYPOINT Bool glhanoi_handle_event(ModeInfo * mi, XEvent * event)
 {
 	glhcfg *glhanoi = &glhanoi_cfg[MI_SCREEN(mi)];
+
+    /* #### this is all wrong on iOS -- should be using gltrackball. */
 
 	if(event->xany.type == ButtonPress && event->xbutton.button == Button1) {
 		glhanoi->button_down_p = True;
@@ -2040,31 +2058,27 @@ ENTRYPOINT Bool glhanoi_handle_event(ModeInfo * mi, XEvent * event)
 	return False;
 }
 
-ENTRYPOINT void release_glhanoi(ModeInfo * mi)
+ENTRYPOINT void free_glhanoi(ModeInfo * mi)
 {
-	if(glhanoi_cfg != NULL) {
-		int screen;
-		for(screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			int i;
-			int j;
-			glhcfg *glh = &glhanoi_cfg[screen];
-			glDeleteLists(glh->floorList, 1);
-			glDeleteLists(glh->baseList, 1);
-			glDeleteLists(glh->poleList, 1);
-                        glDeleteLists(glh->textureNames[0], 2);
-			for(j = 0; j < glh->numberOfDisks; ++j) {
-				glDeleteLists(glh->disk[j].displayList, 1);
-			}
-			free(glh->disk);
-			for(i = 0; i < glh->numberOfPoles; i++) {
-				if(glh->pole[i].data != NULL) {
-					free(glh->pole[i].data);
-				}
+	int i;
+	int j;
+	glhcfg *glh = &glhanoi_cfg[MI_SCREEN(mi)];
+	if (glh->glx_context) {
+		glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(glh->glx_context));
+		glDeleteLists(glh->floorList, 1);
+		glDeleteLists(glh->baseList, 1);
+		glDeleteLists(glh->poleList, 1);
+                glDeleteLists(glh->textureNames[0], 2);
+		for(j = 0; j < glh->numberOfDisks; ++j) {
+			glDeleteLists(glh->disk[j].displayList, 1);
+		}
+		free(glh->disk);
+		for(i = 0; i < glh->numberOfPoles; i++) {
+			if(glh->pole[i].data != NULL) {
+				free(glh->pole[i].data);
 			}
 		}
 	}
-	free(glhanoi_cfg);
-	glhanoi_cfg = NULL;
 }
 
 XSCREENSAVER_MODULE ("GLHanoi", glhanoi)

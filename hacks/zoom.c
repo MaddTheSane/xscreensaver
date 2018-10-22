@@ -25,8 +25,8 @@
 #define MINX 0.0
 #define MINY 0.0
 /* This should be *way* slower than the spotlight hack was */
-#define X_PERIOD 45000.0
-#define Y_PERIOD 36000.0
+#define X_PERIOD (45000.0 * 3)
+#define Y_PERIOD (36000.0 * 3)
 
 struct state {
   Display *dpy;
@@ -106,6 +106,12 @@ zoom_init (Display *dpy, Window window)
   st->pixspacey = get_integer_resource(st->dpy, "pixspacey", "Integer");
   if (st->pixspacey < 0)
     st->pixspacey = 0;
+
+  if (st->sizex < 50 || st->sizey < 50) {  /* tiny window */
+    st->pixwidth = 10;
+    st->pixheight = 10;
+  }
+
   st->lenses = get_boolean_resource(st->dpy, "lenses", "Boolean");
   st->lensoffsetx = get_integer_resource(st->dpy, "lensoffsetx", "Integer");
   st->lensoffsetx = MAX(0, MIN(st->pixwidth, st->lensoffsetx));
@@ -247,6 +253,7 @@ static const char *zoom_defaults[] = {
   "*dontClearRoot: True",
   ".foreground: white",
   ".background: #111111",
+  ".lowrez: true",
   "*fpsSolid:	true",
 #ifdef __sgi /* really, HAVE_READ_DISPLAY_EXTENSION */
   "*visualID: Best",
@@ -254,13 +261,13 @@ static const char *zoom_defaults[] = {
   "*lenses:      true",
   "*delay:       10000",
   "*duration:    120",
-  "*pixwidth:    10",
-  "*pixheight:   10",
+  "*pixwidth:    40",
+  "*pixheight:   40",
   "*pixspacex:   2",
   "*pixspacey:   2",
   "*lensoffsetx: 5",
   "*lensoffsety: 5",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation: True",
   "*rotateImages:   True",
 #endif

@@ -34,8 +34,10 @@ static const char sccsid[] = "@(#)grav.c	5.00 2000/11/01 xlockmore";
 					"*ncolors: 64 \n" \
 					"*fpsSolid: true \n" \
 					"*ignoreRotation: True \n" \
+				    "*lowrez: True \n" \
 
 #define BRIGHT_COLORS
+# define release_grav 0
 # define grav_handle_event 0
 # include "xlockmore.h"		/* in xscreensaver distribution */
 #else /* STANDALONE */
@@ -73,8 +75,8 @@ ENTRYPOINT ModeSpecOpt grav_opts =
 
 #ifdef USE_MODULES
 ModStruct   grav_description =
-{"grav", "init_grav", "draw_grav", "release_grav",
- "refresh_grav", "init_grav", (char *) NULL, &grav_opts,
+{"grav", "init_grav", "draw_grav", (char *) NULL,
+ "refresh_grav", "init_grav", "free_grav", &grav_opts,
  10000, -12, 1, 1, 64, 1.0, "",
  "Shows orbiting planets", 0, NULL};
 
@@ -139,12 +141,9 @@ static gravstruct *gravs = (gravstruct *) NULL;
 static void
 init_planet(ModeInfo * mi, planetstruct * planet)
 {
-	Display    *display = MI_DISPLAY(mi);
-	Window      window = MI_WINDOW(mi);
-	GC          gc = MI_GC(mi);
 	gravstruct *gp = &gravs[MI_SCREEN(mi)];
 
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
     jwxyz_XSetAntiAliasing (MI_DISPLAY(mi), MI_GC(mi), False);
 # endif
 
@@ -170,9 +169,6 @@ init_planet(ModeInfo * mi, planetstruct * planet)
 	VEL(X) = FLOATRAND(-VR, VR);
 	VEL(Y) = FLOATRAND(-VR, VR);
 	VEL(Z) = FLOATRAND(-VR, VR);
-
-	/* Draw planets */
-	Planet(planet->xi, planet->yi);
 }
 
 static void
@@ -238,16 +234,10 @@ draw_planet(ModeInfo * mi, planetstruct * planet)
 ENTRYPOINT void
 init_grav(ModeInfo * mi)
 {
-	Display    *display = MI_DISPLAY(mi);
-	GC          gc = MI_GC(mi);
 	unsigned char ball;
 	gravstruct *gp;
 
-	if (gravs == NULL) {
-		if ((gravs = (gravstruct *) calloc(MI_NUM_SCREENS(mi),
-					       sizeof (gravstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, gravs);
 	gp = &gravs[MI_SCREEN(mi)];
 
 	gp->width = MI_WIDTH(mi);
@@ -277,11 +267,6 @@ init_grav(ModeInfo * mi)
 		gp->starcolor = MI_WHITE_PIXEL(mi);
 	for (ball = 0; ball < (unsigned char) gp->nplanets; ball++)
 		init_planet(mi, &gp->planets[ball]);
-
-	/* Draw centrepoint */
-	XDrawArc(display, MI_WINDOW(mi), gc,
-		 gp->width / 2 - gp->sr / 2, gp->height / 2 - gp->sr / 2, gp->sr, gp->sr,
-		 0, 23040);
 }
 
 ENTRYPOINT void
@@ -298,6 +283,20 @@ draw_grav(ModeInfo * mi)
 	gp = &gravs[MI_SCREEN(mi)];
 	if (gp->planets == NULL)
 		return;
+
+	if (!MI_IS_DRAWN(mi)) {
+		for (ball = 0; ball < (unsigned char) gp->nplanets; ball++) {
+			planetstruct *planet = &gp->planets[ball];
+
+			/* Draw planets */
+			Planet(planet->xi, planet->yi);
+		}
+
+		/* Draw centrepoint */
+		XDrawArc(display, MI_WINDOW(mi), gc,
+			 gp->width / 2 - gp->sr / 2, gp->height / 2 - gp->sr / 2, gp->sr, gp->sr,
+			 0, 23040);
+	}
 
 	MI_IS_DRAWN(mi) = True;
 	/* Mask centrepoint */
@@ -337,27 +336,20 @@ reshape_grav(ModeInfo * mi, int width, int height)
 }
 
 ENTRYPOINT void
-release_grav(ModeInfo * mi)
+free_grav(ModeInfo * mi)
 {
-	if (gravs != NULL) {
-		int         screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			gravstruct *gp = &gravs[screen];
-
-			if (gp->planets)
-				(void) free((void *) gp->planets);
-		}
-		(void) free((void *) gravs);
-		gravs = (gravstruct *) NULL;
-	}
+	gravstruct *gp = &gravs[MI_SCREEN(mi)];
+	if (gp->planets)
+		(void) free((void *) gp->planets);
 }
 
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_grav(ModeInfo * mi)
 {
 	MI_CLEARWINDOW(mi);
 }
+#endif
 
 XSCREENSAVER_MODULE ("Grav", grav)
 

@@ -1,4 +1,4 @@
-/* noof, Copyright (c) 2004 Bill Torzewski <billt@worksitez.com>
+/* noof, Copyright (c) 2004-2018 Bill Torzewski <billt@worksitez.com>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -17,17 +17,17 @@
 			"*showFPS:      False       \n" \
 			"*fpsSolid:     True        \n" \
 			"*doubleBuffer: False       \n" \
+			"*suppressRotationAnimation: True\n" \
 
-# define refresh_noof 0
+# define free_noof 0
 # define release_noof 0
 # define noof_handle_event 0
 #include "xlockmore.h"
+#include "pow2.h"
 
 #ifdef USE_GL /* whole file */
 
 #define N_SHAPES 7
-
-static int dbuf_p = 1;  /* always */
 
 ENTRYPOINT ModeSpecOpt noof_opts = {0, NULL, 0, NULL, NULL};
 
@@ -51,6 +51,8 @@ typedef struct {
   float ht, wd;
 
   int tko;
+
+  GLuint screenshot_texture, tex_w, tex_h;
 
 } noof_configuration;
 
@@ -378,6 +380,34 @@ draw_noof (ModeInfo *mi)
   if (!bp->glx_context)
     return;
   glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(bp->glx_context));
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  /* In the olden days, one could just render directly into the front buffer,
+     or fail to clear the back buffer and assume that one's bits were still
+     there. Not so on modern devices, particularly mobile.  So to achieve
+     the effect of frame N+1 accumulating atop frame N, we must save and
+     restore a screenshot of frame N.
+   */
+  if (bp->screenshot_texture)
+    {
+      GLfloat tw = MI_WIDTH(mi)  / (GLfloat) bp->tex_w;
+      GLfloat th = MI_HEIGHT(mi) / (GLfloat) bp->tex_h;
+      glDisable (GL_BLEND);
+      glEnable (GL_TEXTURE_2D);
+      glBindTexture (GL_TEXTURE_2D, bp->screenshot_texture);
+      glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glBegin (GL_QUADS);
+      glTexCoord2f (0,  0);  glVertex3f (0, 0, 0);
+      glTexCoord2f (tw, 0);  glVertex3f (bp->wd, 0, 0);
+      glTexCoord2f (tw, th); glVertex3f (bp->wd, bp->ht, 0);
+      glTexCoord2f (0,  th); glVertex3f (0, bp->ht, 0);
+      glEnd();
+      glDisable (GL_TEXTURE_2D);
+      glClear (GL_DEPTH_BUFFER_BIT);
+    }
+
   mi->polygon_count = 0;
 
   /**
@@ -403,11 +433,21 @@ draw_noof (ModeInfo *mi)
       mi->polygon_count += drawleaf(bp, i);
   }
 
+  if (bp->screenshot_texture)	/* Store a screenshot into the texture. */
+    {
+      glDisable (GL_BLEND);
+      glEnable (GL_TEXTURE_2D);
+      glBindTexture (GL_TEXTURE_2D, bp->screenshot_texture);
+      glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+                           MI_WIDTH(mi), MI_HEIGHT(mi));
+      check_gl_error("screenshot texture");
+      glDisable (GL_TEXTURE_2D);
+    }
+
   if (mi->fps_p) do_fps (mi);
   glFinish();
 
-  if (dbuf_p)
-    glXSwapBuffers(MI_DISPLAY(mi), MI_WINDOW(mi));
+  glXSwapBuffers(MI_DISPLAY(mi), MI_WINDOW(mi));
 }
 
 
@@ -415,6 +455,7 @@ ENTRYPOINT void
 reshape_noof(ModeInfo *mi, int w, int h)
 {
   noof_configuration *bp = &bps[MI_SCREEN(mi)];
+  char *s;
   glViewport(0, 0, w, h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -434,7 +475,21 @@ reshape_noof(ModeInfo *mi, int w, int h)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  if (!bp->screenshot_texture)
+    glGenTextures (1, &bp->screenshot_texture);
+
+  glEnable (GL_TEXTURE_2D);
+  glBindTexture (GL_TEXTURE_2D, bp->screenshot_texture);
+
+  bp->tex_w = to_pow2 (MI_WIDTH(mi));
+  bp->tex_h = to_pow2 (MI_HEIGHT(mi));
+  s = calloc (4, bp->tex_w * bp->tex_h);  /* init with black */
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, bp->tex_w, bp->tex_h, 0,
+                GL_RGBA, GL_UNSIGNED_BYTE, s);
+  check_gl_error ("texture generation");
+  free (s);
+  glDisable (GL_TEXTURE_2D);
+  glClear (GL_COLOR_BUFFER_BIT);
 }
 
 ENTRYPOINT void 
@@ -443,25 +498,18 @@ init_noof (ModeInfo *mi)
   int i;
   noof_configuration *bp;
 
-  if (!bps) {
-    bps = (noof_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (noof_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
   bp->glx_context = init_GL(mi);
 
-  glDrawBuffer(dbuf_p ? GL_BACK : GL_FRONT);
   glEnable(GL_LINE_SMOOTH);
   glShadeModel(GL_FLAT);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   for (i = 0; i < N_SHAPES; i++)
     initshapes(bp, i);
+
   reshape_noof (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 }
 

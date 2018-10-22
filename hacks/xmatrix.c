@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1999-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1999-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -55,33 +55,18 @@
 
 #include "screenhack.h"
 #include "textclient.h"
-#include "xpm-pixmap.h"
+#include "ximage-loader.h"
 #include <stdio.h>
 #include <sys/wait.h>
 
-#ifdef HAVE_COCOA
-# define HAVE_XPM
-#else
-# define DO_XBM     /* only do mono bitmaps under real X11 */
-#endif
-
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # include <X11/Intrinsic.h>
 #endif
 
-#if defined(HAVE_GDK_PIXBUF) || defined(HAVE_XPM)
-# include "images/matrix1.xpm"
-# include "images/matrix2.xpm"
-# include "images/matrix1b.xpm"
-# include "images/matrix2b.xpm"
-#endif
-
-#ifdef DO_XBM
-# include "images/matrix1.xbm"
-# include "images/matrix2.xbm"
-# include "images/matrix1b.xbm"
-# include "images/matrix2b.xbm"
-#endif /* DO_XBM */
+#include "images/gen/matrix1_png.h"
+#include "images/gen/matrix2_png.h"
+#include "images/gen/matrix1b_png.h"
+#include "images/gen/matrix2b_png.h"
 
 #define CHAR_COLS 16
 #define CHAR_ROWS 13
@@ -234,39 +219,25 @@ typedef struct {
 static void
 load_images_1 (Display *dpy, m_state *state, int which)
 {
-#if defined(HAVE_GDK_PIXBUF) || defined(HAVE_XPM)
-  if (!get_boolean_resource (dpy, "mono", "Boolean") &&
-      state->xgwa.depth > 1)
+  const unsigned char *png = 0;
+  unsigned long size = 0;
+  if (which == 1)
     {
-      char **bits =
-        (which == 1 ? (state->small_p ? matrix1b_xpm : matrix1_xpm) :
-         (state->small_p ? matrix2b_xpm : matrix2_xpm));
-
-      state->images[which] =
-        xpm_data_to_pixmap (state->dpy, state->window, bits,
-                            &state->image_width, &state->image_height, 0);
+      if (state->small_p)
+        png = matrix1b_png, size = sizeof(matrix1b_png);
+      else
+        png = matrix1_png, size = sizeof(matrix1_png);
     }
   else
-#endif /* !HAVE_XPM && !HAVE_GDK_PIXBUF */
     {
-#ifdef DO_XBM
-      unsigned long fg, bg;
-      state->image_width  = (state->small_p ? matrix1b_width :matrix1_width);
-      state->image_height = (state->small_p ? matrix1b_height:matrix1_height);
-      fg = get_pixel_resource(state->dpy, state->xgwa.colormap,
-                              "foreground", "Foreground");
-      bg = get_pixel_resource(state->dpy, state->xgwa.colormap,
-                              "background", "Background");
-      state->images[which] =
-        XCreatePixmapFromBitmapData (state->dpy, state->window, (char *)
-                (which == 1 ? (state->small_p ? matrix1b_bits :matrix1_bits) :
-                              (state->small_p ? matrix2b_bits :matrix2_bits)),
-                                     state->image_width, state->image_height,
-                                     bg, fg, state->xgwa.depth);
-#else  /* !DO_XBM */
-      abort();
-#endif /* !DO_XBM */
+      if (state->small_p)
+        png = matrix2b_png, size = sizeof(matrix2b_png);
+      else
+        png = matrix2_png, size = sizeof(matrix2_png);
     }
+  state->images[which] =
+    image_data_to_pixmap (state->dpy, state->window, png, size,
+                          &state->image_width, &state->image_height, 0);
 }
 
 
@@ -461,24 +432,21 @@ static void
 init_trace (m_state *state)
 {
   char *s = get_string_resource (state->dpy, "tracePhone", "TracePhone");
-  char *s2, *s3;
-  int i;
+  const char *s2;
+  signed char *s3;
   if (!s)
     goto FAIL;
 
   state->tracing = (signed char *) malloc (strlen (s) + 1);
-  s3 = (char *) state->tracing;
+  s3 = state->tracing;
 
   for (s2 = s; *s2; s2++)
     if (*s2 >= '0' && *s2 <= '9')
-      *s3++ = *s2;
+      *s3++ = -*s2;
   *s3 = 0;
 
-  if (s3 == (char *) state->tracing)
+  if (s3 == state->tracing)
     goto FAIL;
-
-  for (i = 0; i < strlen((char *) state->tracing); i++)
-    state->tracing[i] = -state->tracing[i];
 
   state->glyph_map = decimal_encoding;
   state->nglyphs = countof(decimal_encoding);
@@ -1334,6 +1302,33 @@ hack_text (m_state *state)
       state->typing_delay = state->typing_char_delay;
       if (state->typing_cursor_p)
         set_cursor (state, True);
+
+# ifdef USE_IPHONE
+  /* Stupid iPhone X bezel.
+     #### This is the worst of all possible ways to do this!  But how else?
+   */
+  if (state->xgwa.width == 2436 || state->xgwa.height == 2436)
+    switch (state->mode) 
+      {
+      case TRACE_TEXT_A:
+      case TRACE_TEXT_B:
+      case KNOCK:
+      case NMAP:
+        {
+          int off = 5 * (state->small_p ? 2 : 1);
+          if (state->xgwa.width > state->xgwa.height)
+            {
+              state->typing_left_margin += off;
+              state->cursor_x += off;
+            }
+          else
+            {
+              state->cursor_y += off;
+            }
+        }
+      default: break;
+      }
+# endif
     }
   else
     {
@@ -1813,6 +1808,7 @@ xmatrix_free (Display *dpy, Window window, void *closure)
 static const char *xmatrix_defaults [] = {
   ".background:		   black",
   ".foreground:		   #00AA00",
+  ".lowrez:		   true",  /* Small font is unreadable at 5120x2880 */
   "*fpsSolid:		   true",
   "*matrixFont:		   large",
   "*delay:		   10000",

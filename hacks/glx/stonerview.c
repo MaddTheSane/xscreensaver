@@ -24,7 +24,7 @@
 			"*showFPS:      False       \n" \
 			"*wireframe:    False       \n"
 
-# define refresh_stonerview 0
+# define release_stonerview 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
@@ -81,14 +81,7 @@ init_stonerview (ModeInfo *mi)
 {
   stonerview_configuration *bp;
 
-  if (!bps) {
-    bps = (stonerview_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (stonerview_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -114,6 +107,15 @@ draw_stonerview (ModeInfo *mi)
   glRotatef( current_device_rotation(), 0, 0, 1);
   gltrackball_rotate (bp->trackball);
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (h, h, h);
+  }
+# endif
+
   stonerview_win_draw(bp->st);
   if (! bp->button_down_p)
     stonerview_move_increment(bp->st);
@@ -127,19 +129,11 @@ draw_stonerview (ModeInfo *mi)
 }
 
 ENTRYPOINT void
-release_stonerview (ModeInfo *mi)
+free_stonerview (ModeInfo *mi)
 {
-  if (bps) {
-    int screen;
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-      stonerview_configuration *bp = &bps[screen];
-      if (bp->st)
-        stonerview_win_release (bp->st);
-    }
-    free (bps);
-    bps = 0;
-  }
-  FreeAllGL(mi);
+  stonerview_configuration *bp = &bps[MI_SCREEN(mi)];
+  if (bp->st)
+    stonerview_win_release (bp->st);
 }
 
 ENTRYPOINT Bool

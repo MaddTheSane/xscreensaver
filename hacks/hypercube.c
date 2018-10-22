@@ -244,7 +244,7 @@ hypercube_draw (Display *dpy, Window window, void *closure)
   struct hyper_state *hs = (struct hyper_state *) closure;
   int this_delay = hs->hs_delay;
 
-#ifdef HAVE_COCOA	/* Don't second-guess Quartz's double-buffering */
+#ifdef HAVE_JWXYZ	/* Don't second-guess Quartz's double-buffering */
   XClearWindow (dpy, window);
 #endif
 
@@ -254,7 +254,6 @@ hypercube_draw (Display *dpy, Window window, void *closure)
       char moved[POINT_COUNT];
       int redraw;
       int stop;
-      int delay;
 
       icon = hs->hs_icon;
       resize = hs->hs_resize;
@@ -473,7 +472,6 @@ hypercube_draw (Display *dpy, Window window, void *closure)
 
     skip3:
       /* stop = hs->hs_stop; */
-      delay = hs->hs_delay;
       if (stop && this_delay < 10000)
 	this_delay = 10000;
     }

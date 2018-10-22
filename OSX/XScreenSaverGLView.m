@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2006-2015 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2006-2017 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -17,6 +17,8 @@
 
 #import "XScreenSaverGLView.h"
 #import "XScreenSaverConfigSheet.h"
+#import "jwxyz-cocoa.h"
+#import "jwxyzI.h"
 #import "screenhackI.h"
 #import "xlockmoreI.h"
 
@@ -39,48 +41,55 @@ extern void check_gl_error (const char *type);
 @implementation XScreenSaverGLView
 
 
-- (NSOpenGLContext *) oglContext
-{
-  return ogl_ctx;
-}
-
-
-#ifdef USE_IPHONE
 /* With GL programs, drawing at full resolution isn't a problem.
  */
 - (CGFloat) hackedContentScaleFactor
 {
-  NSSize ssize = [[[UIScreen mainScreen] currentMode] size];
-  NSSize bsize = [self bounds].size;
-
-  // Ratio of screen size in pixels to view size in points.
-  GLfloat s = ((ssize.width > ssize.height ? ssize.width : ssize.height) /
-               (bsize.width > bsize.height ? bsize.width : bsize.height));
-  return s;
+# ifdef USE_IPHONE
+  return [self contentScaleFactor];
+# else
+  return self.window.backingScaleFactor;
+# endif
 }
-#endif // USE_IPHONE
+
+# ifdef USE_IPHONE
+
+- (BOOL)ignoreRotation
+{
+  return FALSE;		// Allow xwindow and the glViewport to change shape
+}
+
+- (BOOL) suppressRotationAnimation
+{
+  return _suppressRotationAnimation;  // per-hack setting, default FALSE
+}
+
+- (BOOL) rotateTouches
+{
+  return TRUE;		// We need the XY axes swapped in our events
+}
 
 
-#ifdef USE_IPHONE
 - (void) swapBuffers
 {
+#  ifdef JWXYZ_GL
+  GLint gl_renderbuffer = xwindow->gl_renderbuffer;
+#  endif // JWXYZ_GL
   glBindRenderbufferOES (GL_RENDERBUFFER_OES, gl_renderbuffer);
   [ogl_ctx presentRenderbuffer:GL_RENDERBUFFER_OES];
 }
 #endif // USE_IPHONE
 
 
-#ifdef USE_BACKBUFFER
-
 - (void) animateOneFrame
 {
-# ifdef USE_IPHONE
+# if defined USE_IPHONE && defined JWXYZ_QUARTZ
   UIGraphicsPushContext (backbuffer);
 # endif
 
   [self render_x11];
 
-# ifdef USE_IPHONE
+# if defined USE_IPHONE && defined JWXYZ_QUARTZ
   UIGraphicsPopContext();
 # endif
 }
@@ -92,6 +101,42 @@ extern void check_gl_error (const char *type);
 }
 
 
+/* GL screenhacks set their own viewport and matrices. */
+- (void) setViewport
+{
+}
+
+
+#ifdef USE_IPHONE
+
+/* Keep the GL scene oriented into a portrait-mode View, regardless of
+   what the physical device orientation is.
+ */
+- (void) reshape_x11
+{
+  [super reshape_x11];
+
+  glMatrixMode(GL_PROJECTION);
+  glRotatef (-current_device_rotation(), 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+}
+
+- (void) render_x11
+{
+  BOOL was_initted_p = initted_p;
+  [super render_x11];
+
+  if (! was_initted_p && xdpy)
+    _suppressRotationAnimation =
+      get_boolean_resource (xdpy,
+                            "suppressRotationAnimation",
+                            "SuppressRotationAnimation");
+}
+
+#endif // USE_IPHONE
+
+
+
 /* The backbuffer isn't actually used for GL programs, but it needs to
    be there for X11 calls to not error out.  However, nothing done with
    X11 calls will ever show up!  It all gets written into the backbuffer
@@ -100,10 +145,9 @@ extern void check_gl_error (const char *type);
  */
 - (void) createBackbuffer:(CGSize)new_size
 {
+#ifdef JWXYZ_QUARTZ
   NSAssert (! backbuffer_texture,
 			@"backbuffer_texture shouldn't be used for GL hacks");
-
-  backbuffer_size = new_size;
 
   if (! backbuffer) {
     CGColorSpaceRef cs = CGColorSpaceCreateDeviceRGB();
@@ -115,6 +159,7 @@ extern void check_gl_error (const char *type);
                                          kCGImageAlphaNoneSkipLast));
     CGColorSpaceRelease (cs);
   }
+#endif // JWXYZ_QUARTZ
 }
 
 
@@ -125,21 +170,8 @@ extern void check_gl_error (const char *type);
 
 
 /* Likewise. GL screenhacks control display with glXSwapBuffers(). */
-- (void) flushBackbufer
+- (void) flushBackbuffer
 {
-}
-
-
-# endif // USE_BACKBUFFER
-
-
-/* When changing the device orientation, leave the X11 Window and glViewport
-   in portrait configuration.  OpenGL hacks examine current_device_rotation()
-   within the scene as needed.
- */
-- (BOOL)reshapeRotatedWindow
-{
-  return NO;
 }
 
 
@@ -159,13 +191,13 @@ extern void check_gl_error (const char *type);
   Bool ms_p = [prefsReader getBooleanResource:"multiSample"];
 
   /* Sometimes, turning on multisampling kills performance.  At one point,
-   I thought the answer was, "only run multisampling on one screen, and
-   leave it turned off on other screens".  That's what this code does,
-   but it turns out, that solution is insufficient.  I can't really tell
-   what causes poor performance with multisampling, but it's not
-   predictable.  Without changing the code, some times a given saver will
-   perform fine with multisampling on, and other times it will perform
-   very badly.  Without multisampling, they always perform fine.
+     I thought the answer was, "only run multisampling on one screen, and
+     leave it turned off on other screens".  That's what this code does,
+     but it turns out, that solution is insufficient.  I can't really tell
+     what causes poor performance with multisampling, but it's not
+     predictable.  Without changing the code, some times a given saver will
+     perform fine with multisampling on, and other times it will perform
+     very badly.  Without multisampling, they always perform fine.
    */
   //  if (ms_p && [[view window] screen] != [[NSScreen screens] objectAtIndex:0])
   //    ms_p = 0;
@@ -177,18 +209,23 @@ extern void check_gl_error (const char *type);
     // attrs[i++] = NSOpenGLPFANoRecovery;
   }
 
+  attrs[i++] = NSOpenGLPFAWindow;
+# ifdef JWXYZ_GL
+  attrs[i++] = NSOpenGLPFAPixelBuffer;
+# endif
+
   attrs[i] = 0;
 
-  NSOpenGLPixelFormat *pixfmt = [[NSOpenGLPixelFormat alloc]
+  NSOpenGLPixelFormat *result = [[NSOpenGLPixelFormat alloc]
                                  initWithAttributes:attrs];
 
-  if (ms_p && !pixfmt) {   // Retry without multisampling.
+  if (ms_p && !result) {   // Retry without multisampling.
     i -= 2;
     attrs[i] = 0;
-    pixfmt = [[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
+    result = [[NSOpenGLPixelFormat alloc] initWithAttributes:attrs];
   }
 
-  return [pixfmt autorelease];
+  return [result autorelease];
 }
 
 #else // !USE_IPHONE
@@ -198,9 +235,9 @@ extern void check_gl_error (const char *type);
   Bool dbuf_p = [prefsReader getBooleanResource:"doubleBuffer"];
 
   /* There seems to be no way to actually turn off double-buffering in
-   EAGLContext (e.g., no way to draw to the front buffer directly)
-   but if we turn on "retained backing" for non-buffering apps like
-   "pipes", at least the back buffer isn't auto-cleared on them.
+     EAGLContext (e.g., no way to draw to the front buffer directly)
+     but if we turn on "retained backing" for non-buffering apps like
+     "pipes", at least the back buffer isn't auto-cleared on them.
    */
 
   return [NSDictionary dictionaryWithObjectsAndKeys:
@@ -223,6 +260,36 @@ extern void check_gl_error (const char *type);
                             w, h);
   glFramebufferRenderbufferOES (GL_FRAMEBUFFER_OES,  GL_DEPTH_ATTACHMENT_OES,
                                 GL_RENDERBUFFER_OES, gl_depthbuffer);
+}
+
+- (NSString *)getCAGravity
+{
+  return kCAGravityCenter;
+}
+
+- (void) startAnimation
+{
+  [super startAnimation];
+  if (ogl_ctx) /* Almost always true. */
+    _glesState = jwzgles_make_state ();
+}
+
+- (void) stopAnimation
+{
+  [super stopAnimation];
+#ifdef USE_IPHONE
+  if (_glesState) {
+    [EAGLContext setCurrentContext:ogl_ctx];
+    jwzgles_make_current (_glesState);
+    jwzgles_free_state ();
+  }
+#endif
+}
+
+- (void) prepareContext
+{
+  [super prepareContext];
+  jwzgles_make_current (_glesState);
 }
 
 #endif // !USE_IPHONE
@@ -270,10 +337,6 @@ init_GL (ModeInfo *mi)
 
   // OpenGL initialization is in [XScreenSaverView startAnimation].
 
-# ifdef USE_IPHONE
-  jwzgles_reset ();
-# endif // USE_IPHONE
-
   // I don't know why this is necessary, but it beats randomly having some
   // textures be upside down.
   //
@@ -298,6 +361,11 @@ init_GL (ModeInfo *mi)
 void
 glXSwapBuffers (Display *dpy, Window window)
 {
+  // This all is very much like what's in -[XScreenSaverView flushBackbuffer].
+#ifdef JWXYZ_GL
+  jwxyz_bind_drawable (window, window);
+#endif // JWXYZ_GL
+
   XScreenSaverGLView *view = (XScreenSaverGLView *) jwxyz_window_view (window);
   NSAssert1 ([view isKindOfClass:[XScreenSaverGLView class]],
              @"wrong view class: %@", view);

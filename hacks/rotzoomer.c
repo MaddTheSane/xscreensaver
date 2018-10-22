@@ -1,5 +1,5 @@
 /* rotzoomer - creates a collage of rotated and scaled portions of the screen
- * Copyright (C) 2001 Claudio Matsuoka <claudio@helllabs.org>
+ * Copyright (C) 2001-2016 Claudio Matsuoka <claudio@helllabs.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -10,7 +10,7 @@
  * implied warranty.
  */
 
-/* (circle-mode by jwz, 4-Jun-2014; not finished yet.) */
+/* Circle-mode by jwz, 2014, 2016. */
 
 /*
  * Options:
@@ -28,10 +28,7 @@
 
 #include <math.h>
 #include "screenhack.h"
-
-#ifdef HAVE_XSHM_EXTENSION
 #include "xshm.h"
-#endif
 
 struct zoom_area {
   int w, h;		/* rectangle width and height */
@@ -67,11 +64,9 @@ struct state {
   time_t start_time;
 
   async_load_state *img_loader;
+  Pixmap pm;
 
-#ifdef HAVE_XSHM_EXTENSION
-  Bool use_shm;
   XShmSegmentInfo shm_info;
-#endif
 };
 
 
@@ -88,8 +83,10 @@ rotzoom (struct state *st, struct zoom_area *za)
 
   for (y = za->y; y <= y2; y++) {
     for (x = za->x; x <= x2; x++) {
-      c = zoom * cos (M_PI * za->a1 / 8192);
-      s = zoom * sin (M_PI * za->a1 / 8192);
+      Bool copyp = True;
+      double a = M_PI * za->a1 / 8192;
+      c = zoom * cos (a);
+      s = zoom * sin (a);
       if (st->circle) {
         int cx = za->x + za->w / 2;
         int cy = za->y + za->h / 2;
@@ -97,34 +94,34 @@ rotzoom (struct state *st, struct zoom_area *za)
         int dy = y - cy;
         int d2 = (dx*dx) + (dy*dy);
 
-        ox = x;
-        oy = y;
-
         if (d2 > w2) {
-          ox = x;
-          oy = y;
+          copyp = False;
         } else {
           double r = sqrt ((double) d2);
           double th = atan ((double)dy / (double) (dx == 0 ? 1 : dx));
-          th += M_PI * (za->a1 / 300.0);
-          ox = 10 + cx + (int) (r * cos(th));
-          oy = 10 + cy + (int) (r * sin(th));
+          copyp = 1;
+          if (dx < 0) th += M_PI;
+          th += M_PI * (za->a1 / 600.0);
+          ox = cx + (int) (r * cos(th));
+          oy = cy + (int) (r * sin(th));
         }
       } else {
         ox = (x * c + y * s) >> 13;
         oy = (-x * s + y * c) >> 13;
       }
 
-      while (ox < 0)
-        ox += st->width;
-      while (oy < 0)
-        oy += st->height;
-      while (ox >= st->width)
-        ox -= st->width;
-      while (oy >= st->height)
-        oy -= st->height;
+      if (copyp) {
+        while (ox < 0)
+          ox += st->width;
+        while (oy < 0)
+          oy += st->height;
+        while (ox >= st->width)
+          ox -= st->width;
+        while (oy >= st->height)
+          oy -= st->height;
 
-      XPutPixel (st->buffer_map, x, y, XGetPixel (st->orig_map, ox, oy));
+        XPutPixel (st->buffer_map, x, y, XGetPixel (st->orig_map, ox, oy));
+      }
     }
   }
 
@@ -136,6 +133,25 @@ rotzoom (struct state *st, struct zoom_area *za)
 
   za->ox = ox;			/* Save state for next iteration */
   za->oy = oy;
+
+  if (st->circle && za->n <= 1)
+    {
+      /* Done rotating the circle: copy the bits from the working set back
+         into the origin, so that subsequent rotations pick up these changes.
+       */
+      int cx = za->x + za->w / 2;
+      int cy = za->y + za->h / 2;
+      int w2 = (za->w/2) * (za->w/2);
+      for (y = za->y; y < za->y + za->h; y++)
+        for (x = za->x; x < za->x + za->w; x++)
+          {
+            int dx = x - cx;
+            int dy = y - cy;
+            int d2 = (dx*dx) + (dy*dy);
+            if (d2 <= w2)
+              XPutPixel (st->orig_map, x, y, XGetPixel (st->buffer_map, x, y));
+          }
+    }
 
   za->count++;
 }
@@ -202,28 +218,27 @@ reset_zoom (struct state *st, struct zoom_area *za)
       za->w = st->height / 3;
     za->h = za->w;
 
-    za->ww = st->width - za->w;
+    za->ww = st->width  - za->w;
     za->hh = st->height - za->h;
 
     za->x = (za->ww ? random() % za->ww : 0);
     za->y = (za->hh ? random() % za->hh : 0);
-
     za->dx = 0;
     za->dy = 0;
-    za->inc1 = ((2 * (random() & 1)) - 1) * (random () % 30);
+    za->a1 = 0;
+    za->a2 = 0;
+    za->count = 0;
 
-    if (st->anim) {
-      za->n = 50 + random() % 1000;
-      za->a1 = 0;
-      za->a2 = 0;
-    } else {
-      za->n = 5 + random() % 10;
-      za->a1 = random ();
-      za->a2 = random ();
+    /* #### If we go clockwise, it doesn't start rotating from 0.
+       So only go counter-clockwise for now. Sigh. */
+    za->inc1 = (random () % 30);
+    za->inc2 = 0;
+    za->n = 50 + random() % 100;
+
+    if (!st->anim) {
+      za->count = random() % (za->n / 2);
+      za->a1 = random();
     }
-
-    za->inc1 = ((2 * (random() & 1)) - 1) * (random () % 30);
-    za->inc2 = ((2 * (random() & 1)) - 1) * (random () % 30);
 
   } else {
     za->w = 50 + random() % 300;
@@ -269,7 +284,7 @@ create_zoom (struct state *st)
 {
   struct zoom_area *za;
 
-  za = malloc (sizeof (struct zoom_area));
+  za = calloc (1, sizeof (struct zoom_area));
   reset_zoom (st, za);
 
   return za;
@@ -310,13 +325,40 @@ update_position (struct zoom_area *za)
 static void
 DisplayImage (struct state *st, int x, int y, int w, int h)
 {
-#ifdef HAVE_XSHM_EXTENSION
-  if (st->use_shm)
-    XShmPutImage (st->dpy, st->window, st->gc, st->buffer_map, x, y, x, y,
-                  w, h, False);
+  put_xshm_image (st->dpy, st->window, st->gc, st->buffer_map, x, y, x, y,
+                  w, h, &st->shm_info);
+}
+
+
+static void
+set_mode(struct state *st)
+{
+  char *s = get_string_resource (st->dpy, "mode", "Mode");
+  if (!s || !*s || !strcasecmp (s, "random"))
+    {
+      switch (random() % 4) {
+      case 0: s = "stationary"; break;
+      case 1: s = "move"; break;
+      case 2: s = "sweep"; break;
+      case 3: s = "circle"; break;
+      default: abort();
+      }
+    }
+
+  st->move = False;
+  st->sweep = False;
+  st->circle = False;
+
+  if (!strcasecmp (s, "stationary"))
+    ;
+  else if (!strcasecmp (s, "move"))
+    st->move = True;
+  else if (!strcasecmp (s, "sweep"))
+    st->sweep = True;
+  else if (!strcasecmp (s, "circle"))
+    st->circle = True;
   else
-#endif /* HAVE_XSHM_EXTENSION */
-    XPutImage(st->dpy, st->window, st->gc, st->buffer_map, x, y, x, y, w, h);
+    fprintf (stderr, "%s: bogus mode: \"%s\"\n", progname, s);
 }
 
 
@@ -324,6 +366,8 @@ static void
 init_hack (struct state *st)
 {
   int i;
+
+  set_mode (st);
 
   st->start_time = time ((time_t *) 0);
   st->zoom_box = calloc (st->num_zoom, sizeof (struct zoom_area *));
@@ -350,8 +394,10 @@ rotzoomer_draw (Display *disp, Window win, void *closure)
     {
       st->img_loader = load_image_async_simple (st->img_loader, 0, 0, 0, 0, 0);
       if (! st->img_loader) {  /* just finished */
-	st->orig_map = XGetImage (st->dpy, st->window, 0, 0, 
-                                  st->width, st->height, ~0L, ZPixmap);
+        if (! st->pm) abort();
+	st->orig_map = XGetImage (st->dpy, st->pm,
+                                  0, 0, st->width, st->height,
+                                  ~0L, ZPixmap);
         init_hack (st);
       }
       return st->delay;
@@ -361,8 +407,14 @@ rotzoomer_draw (Display *disp, Window win, void *closure)
       st->start_time + st->duration < time ((time_t *) 0)) {
     XWindowAttributes xgwa;
     XGetWindowAttributes(st->dpy, st->window, &xgwa);
+    /* On MacOS X11, XGetImage on a Window often gets an inexplicable BadMatch,
+       possibly due to the window manager having occluded something?  It seems
+       nondeterministic. Loading the image into a pixmap instead fixes it. */
+    if (st->pm) XFreePixmap (st->dpy, st->pm);
+    st->pm = XCreatePixmap (st->dpy, st->window,
+                            xgwa.width, xgwa.height, xgwa.depth);
     st->img_loader = load_image_async_simple (0, xgwa.screen, st->window,
-                                              st->window, 0, 0);
+                                              st->pm, 0, 0);
     st->start_time = time ((time_t *) 0);
     return st->delay;
   }
@@ -418,28 +470,14 @@ setup_X (struct state *st)
   if (use_subwindow_mode_p (xgwa.screen, st->window))	/* see grabscreen.c */
     gcflags |= GCSubwindowMode;
   st->gc = XCreateGC (st->dpy, st->window, gcflags, &gcv);
+  if (st->pm) XFreePixmap (st->dpy, st->pm);
+  st->pm = XCreatePixmap (st->dpy, st->window,
+                          xgwa.width, xgwa.height, xgwa.depth);
   st->img_loader = load_image_async_simple (0, xgwa.screen, st->window,
-                                            st->window, 0, 0);
+                                            st->pm, 0, 0);
 
-  st->buffer_map = 0;
-
-#ifdef HAVE_XSHM_EXTENSION
-  if (st->use_shm) {
-    st->buffer_map = create_xshm_image(st->dpy, xgwa.visual, depth,
-                                       ZPixmap, 0, &st->shm_info, st->width, st->height);
-    if (!st->buffer_map) {
-      st->use_shm = False;
-      fprintf(stderr, "create_xshm_image failed\n");
-    }
-  }
-#endif /* HAVE_XSHM_EXTENSION */
-
-  if (!st->buffer_map) {
-    st->buffer_map = XCreateImage(st->dpy, xgwa.visual,
-                                  depth, ZPixmap, 0, 0, st->width, st->height, 8, 0);
-    st->buffer_map->data = (char *)calloc (st->buffer_map->height,
-                                           st->buffer_map->bytes_per_line);
-  }
+  st->buffer_map = create_xshm_image(st->dpy, xgwa.visual, depth,
+                                     ZPixmap, &st->shm_info, st->width, st->height);
 }
 
 
@@ -447,25 +485,11 @@ static void *
 rotzoomer_init (Display *dpy, Window window)
 {
   struct state *st = (struct state *) calloc (1, sizeof(*st));
-  char *s;
   st->dpy = dpy;
   st->window = window;
-#ifdef HAVE_XSHM_EXTENSION
-  st->use_shm = get_boolean_resource (st->dpy, "useSHM", "Boolean");
-#endif
   st->num_zoom = get_integer_resource (st->dpy, "numboxes", "Integer");
 
-  s = get_string_resource (dpy, "mode", "Mode");
-  if (!s || !*s || !strcasecmp (s, "stationary"))
-    ;
-  else if (!strcasecmp (s, "move"))
-    st->move = True;
-  else if (!strcasecmp (s, "sweep"))
-    st->sweep = True;
-  else if (!strcasecmp (s, "circle"))
-    st->circle = True;
-  else
-    fprintf (stderr, "%s: bogus mode: \"%s\"\n", progname, s);
+  set_mode(st);
 
   st->anim = get_boolean_resource (st->dpy, "anim", "Boolean");
   st->delay = get_integer_resource (st->dpy, "delay", "Integer");
@@ -515,6 +539,7 @@ static void
 rotzoomer_free (Display *dpy, Window window, void *closure)
 {
   struct state *st = (struct state *) closure;
+  if (st->pm) XFreePixmap (dpy, st->pm);
   free (st);
 }
 
@@ -529,11 +554,11 @@ static const char *rotzoomer_defaults[] = {
   "*useSHM: False",
 #endif
   "*anim: True",
-  "*mode: stationary",
+  "*mode: random",
   "*numboxes: 2",
   "*delay: 10000",
   "*duration: 120",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation: True",
   "*rotateImages:   True",
 #endif

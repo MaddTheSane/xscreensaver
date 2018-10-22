@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1992-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1992-2017 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -555,10 +555,12 @@ run_screenhack_table (Display *dpy,
 
   void *closure = init_cb (dpy, window, ft->setup_arg);
   fps_state *fpst = fps_init (dpy, window);
+  unsigned long delay = 0;
 
 #ifdef DEBUG_PAIR
   void *closure2 = 0;
   fps_state *fpst2 = 0;
+  unsigned long delay2 = 0;
   if (window2) closure2 = init_cb (dpy, window2, ft->setup_arg);
   if (window2) fpst2 = fps_init (dpy, window2);
 #endif
@@ -570,17 +572,6 @@ run_screenhack_table (Display *dpy,
 
   while (1)
     {
-      unsigned long delay = ft->draw_cb (dpy, window, closure);
-#ifdef DEBUG_PAIR
-      unsigned long delay2 = 0;
-      if (window2) delay2 = ft->draw_cb (dpy, window2, closure2);
-#endif
-
-      if (fpst) fps_cb (dpy, window, fpst, closure);
-#ifdef DEBUG_PAIR
-      if (fpst2) fps_cb (dpy, window, fpst2, closure);
-#endif
-
       if (! usleep_and_process_events (dpy, ft,
                                        window, fpst, closure, delay
 #ifdef DEBUG_PAIR
@@ -591,6 +582,17 @@ run_screenhack_table (Display *dpy,
 #endif
                                        ))
         break;
+
+      delay = ft->draw_cb (dpy, window, closure);
+#ifdef DEBUG_PAIR
+      delay2 = 0;
+      if (window2) delay2 = ft->draw_cb (dpy, window2, closure2);
+#endif
+
+      if (fpst) fps_cb (dpy, window, fpst, closure);
+#ifdef DEBUG_PAIR
+      if (fpst2) fps_cb (dpy, window2, fpst2, closure2);
+#endif
     }
 
 #ifdef HAVE_RECORD_ANIM
@@ -783,7 +785,7 @@ main (int argc, char **argv)
                      !strcmp(argv[1], "--help"));
       fprintf (stderr, "%s\n", version);
       for (s = progclass; *s; s++) fprintf(stderr, " ");
-      fprintf (stderr, "  http://www.jwz.org/xscreensaver/\n\n");
+      fprintf (stderr, "  https://www.jwz.org/xscreensaver/\n\n");
 
       if (!help_p)
 	fprintf(stderr, "Unrecognised option: %s\n", argv[1]);

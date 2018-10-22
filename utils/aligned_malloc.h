@@ -18,22 +18,9 @@ implied warranty.
 
 #include <stdlib.h>
 
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#if _POSIX_VERSION >= 200112L || _XOPEN_VERSION >= 600
-
-# define aligned_malloc posix_memalign
-# define aligned_free   free
-
-#else /* old POSIX */
-
  /* This can't simply be named posix_memalign, since the real thing uses
     free(), but this one can't. */
  int aligned_malloc(void **ptr, unsigned alignment, size_t size);
  void aligned_free(void *);
-
-#endif /* old POSIX */
 
 #endif /* __ALIGNED_MALLOC_H__ */

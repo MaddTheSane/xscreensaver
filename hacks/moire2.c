@@ -323,13 +323,14 @@ moire2_free (Display *dpy, Window window, void *closure)
 }
 
 static const char *moire2_defaults [] = {
+  ".lowrez:		true",
   ".background:		black",
   ".foreground:		white",
   "*delay:		50000",
   "*thickness:		0",
   "*colors:		150",
   "*colorShift:		5",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation:     True",
 #endif
 

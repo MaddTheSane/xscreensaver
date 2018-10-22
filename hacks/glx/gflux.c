@@ -43,10 +43,11 @@
 #define DEFAULTS                        "*delay:		20000\n" \
 										"*showFPS:      False\n" \
                                         "*mode:         grab\n"  \
-                                        "*useSHM:       True \n" 
+                                        "*useSHM:       True \n" \
+										"*suppressRotationAnimation: True\n" \
 
-
-# define refresh_gflux 0
+# define free_gflux 0
+# define release_gflux 0
 # include "xlockmore.h"				/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 # include "xlock.h"					/* from the xlockmore distribution */
@@ -168,7 +169,7 @@ ENTRYPOINT ModeSpecOpt gflux_opts = {countof(opts), opts, countof(vars), vars, d
 
 #ifdef USE_MODULES
 ModStruct   gflux_description =
-{"gflux", "init_gflux", "draw_gflux", "release_gflux",
+{"gflux", "init_gflux", "draw_gflux", NULL,
  "draw_gflux", "init_gflux", NULL, &gflux_opts,
  1000, 1, 2, 1, 4, 1.0, "",
  "GFlux: an OpenGL gflux", 0, NULL};
@@ -283,23 +284,26 @@ ENTRYPOINT void draw_gflux(ModeInfo * mi)
 }
 
 
-/* reset the projection matrix */
-static void resetProjection(void) 
+/* Standard reshape function */
+ENTRYPOINT void
+reshape_gflux(ModeInfo *mi, int width, int height)
 {
+    glViewport( 0, 0, width, height );
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glFrustum(-_zoom,_zoom,-0.8*_zoom,0.8*_zoom,2,6);
     glTranslatef(0.0,0.0,-4.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-}
 
-/* Standard reshape function */
-ENTRYPOINT void
-reshape_gflux(ModeInfo *mi, int width, int height)
-{
-    glViewport( 0, 0, width, height );
-    resetProjection();
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180)
+        glScalef (1/h, 1/h, 1/h);
+    }
+# endif
 }
 
 
@@ -355,11 +359,7 @@ ENTRYPOINT void init_gflux(ModeInfo * mi)
     int screen = MI_SCREEN(mi);
     gfluxstruct *gp;
 
-    if (gfluxes == NULL) {
-        if ((gfluxes = (gfluxstruct *) 
-                 calloc(MI_NUM_SCREENS(mi), sizeof (gfluxstruct))) == NULL)
-            return;
-    }
+    MI_INIT(mi, gfluxes);
     gp = &gfluxes[screen];
 
     gp->trackball = gltrackball_init (True);
@@ -392,16 +392,6 @@ ENTRYPOINT void init_gflux(ModeInfo * mi)
     } else {
         MI_CLEARWINDOW(mi);
     }
-}
-
-/* cleanup code */
-ENTRYPOINT void release_gflux(ModeInfo * mi)
-{
-    if (gfluxes != NULL) {
-      free((void *) gfluxes);
-      gfluxes = NULL;
-    }
-    FreeAllGL(mi);
 }
 
 

@@ -41,8 +41,8 @@ struct glb_config glb_config =
 # define DEFAULTS	"*delay:	10000   \n"	\
 			"*showFPS:      False   \n"
 
-# define refresh_bubble3d 0
-# define bubble3d_handle_event 0
+# define release_bubble3d 0
+# define bubble3d_handle_event xlockmore_no_events
 #include "xlockmore.h"
 #else
 #include "xlock.h"
@@ -53,7 +53,7 @@ struct glb_config glb_config =
 
 
 #define DEF_TRANSPARENT "True"
-#define DEF_COLOR "random"
+#define DEF_BUBBLECOLOR "random"
 
 static Bool transparent_p;
 static char *bubble_color_str;
@@ -64,12 +64,12 @@ static char *bubble_color_str;
 static XrmOptionDescRec opts[] = {
   { "-transparent",  ".transparent",   XrmoptionNoArg, "True" },
   { "+transparent",  ".transparent",   XrmoptionNoArg, "False" },
-  { "-color",    ".bubble3d.bubblecolor", XrmoptionSepArg, 0 },
+  { "-color",        ".bubblecolor",   XrmoptionSepArg, 0 },
 };
 
 static argtype vars[] = {
   {&transparent_p,   "transparent", "Transparent", DEF_TRANSPARENT, t_Bool},
-  {&bubble_color_str,        "bubblecolor", "BubbleColor", DEF_COLOR, t_String},
+  {&bubble_color_str,        "bubblecolor", "BubbleColor", DEF_BUBBLECOLOR, t_String},
 };
 
 ENTRYPOINT ModeSpecOpt bubble3d_opts = {countof(opts), opts, countof(vars), vars, NULL};
@@ -79,10 +79,10 @@ ModStruct   bubbles3d_description =
 {"bubbles3d",
  "init_bubble3d",
  "draw_bubble3d",
- "release_bubble3d",
+ NULL,
  "change_bubble3d",
  "init_bubble3d",
- NULL,
+ "free_bubble3d",
  &bubble3d_opts,
  1000, 1, 2, 1, 64, 1.0, "",
  "Richard Jones's GL bubbles",
@@ -138,15 +138,21 @@ init(struct context *c)
 }
 
 ENTRYPOINT void
-reshape_bubble3d(ModeInfo *mi, int w, int h)
+reshape_bubble3d(ModeInfo *mi, int width, int height)
 {
-	glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45, (GLdouble) w / (GLdouble) h, 3, 8);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glTranslatef(0, 0, -5);
+  double h = (GLfloat) height / (GLfloat) width;  
+
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    h = height / (GLfloat) width;
+  }
+  glViewport(0, 0, width, height);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(45, 1/h, 3, 8);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glTranslatef(0, 0, -5);
 }
 
 static void
@@ -163,12 +169,7 @@ init_bubble3d(ModeInfo * mi)
 	int         screen = MI_SCREEN(mi);
 	struct context *c;
 
-	if (contexts == 0) {
-		contexts = (struct context *) calloc(sizeof (struct context), MI_NUM_SCREENS(mi));
-
-		if (contexts == 0)
-			return;
-	}
+	MI_INIT (mi, contexts);
 	c = &contexts[screen];
 	c->glx_context = init_GL(mi);
 	init_colors(mi);
@@ -198,7 +199,17 @@ draw_bubble3d(ModeInfo * mi)
 
         glb_config.polygon_count = 0;
         glPushMatrix();
-        glRotatef(current_device_rotation(), 0, 0, 1);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+        {
+          GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+          int o = (int) current_device_rotation();
+          if (o != 0 && o != 180 && o != -180)
+            glScalef (1/h, 1/h, 1/h);
+          glRotatef(o, 0, 0, 1);
+        }
+# endif
+
 	do_display(c);
         glPopMatrix();
         mi->polygon_count = glb_config.polygon_count;
@@ -217,19 +228,11 @@ change_bubble3d(ModeInfo * mi)
 #endif /* !STANDALONE */
 
 ENTRYPOINT void
-release_bubble3d(ModeInfo * mi)
+free_bubble3d(ModeInfo * mi)
 {
-  if (contexts) {
-    int screen;
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-      struct context *c = &contexts[screen];
-      if (c->draw_context)
-        glb_draw_end(c->draw_context);
-    }
-    free (contexts);
-    contexts = 0;
-  }
-  FreeAllGL(mi);
+  struct context *c = &contexts[MI_SCREEN(mi)];
+  if (c->draw_context)
+    glb_draw_end(c->draw_context);
 }
 
 XSCREENSAVER_MODULE ("Bubble3D", bubble3d)

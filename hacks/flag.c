@@ -47,15 +47,17 @@ static const char sccsid[] = "@(#)flag.c	4.02 97/04/01 xlockmore";
 					"*font:		" DEF_FONT	"\n"	\
 					"*text:					\n" \
 					"*fpsSolid:		true    \n" \
+				    "*lowrez:       true    \n" \
 
 # define BRIGHT_COLORS
 # define UNIFORM_COLORS
+# define release_flag 0
 # define reshape_flag 0
 # define flag_handle_event 0
 # include "xlockmore.h"				/* from the xscreensaver distribution */
 
-#include "xpm-pixmap.h"
-#include "images/bob.xbm"
+#include "ximage-loader.h"
+#include "images/gen/bob_png.h"
 
 #else  /* !STANDALONE */
 # include "xlock.h"					/* from the xlockmore distribution */
@@ -194,7 +196,7 @@ make_flag_bits(ModeInfo *mi)
   char *bitmap_name = get_string_resource (dpy, "bitmap", "Bitmap");
   char *text = get_string_resource (dpy, "text", "Text");
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
   bitmap_name = 0;  /* #### always use default */
 #endif
 
@@ -222,8 +224,8 @@ make_flag_bits(ModeInfo *mi)
       int width = 0;
       int height = 0;
 
-      bitmap = xpm_file_to_pixmap (dpy, MI_WINDOW (mi), bitmap_name,
-                                   &width, &height, 0);
+      bitmap = file_to_pixmap (dpy, MI_WINDOW (mi), bitmap_name,
+                               &width, &height, 0);
 	  if (bitmap)
 		{
 		  fp->image = XGetImage(dpy, bitmap, 0, 0, width, height, ~0L,
@@ -319,13 +321,7 @@ make_flag_bits(ModeInfo *mi)
 	  text2 = strdup(text);
 
 	  if (!fn) fn = def_fn;
-      font = XLoadQueryFont (dpy, fn);
-      if (! font)
-		{
-		  fprintf(stderr, "%s: unable to load font %s; using %s\n",
-				  progname, fn, def_fn);
-		  font = XLoadQueryFont (dpy, def_fn);
-		}
+      font = load_font_retry (dpy, fn);
 
 	  memset(&overall, 0, sizeof(overall));
 	  token = text;
@@ -386,13 +382,26 @@ make_flag_bits(ModeInfo *mi)
 
   if (! fp->image)
 	{
-      char *bits = (char *) malloc (sizeof(bob_bits));
-      memcpy (bits, bob_bits, sizeof(bob_bits));
+      XImage *im = image_data_to_ximage (dpy, MI_VISUAL(mi),
+                                       bob_png, sizeof(bob_png));
+      int x, y;
+
 	  fp->image = XCreateImage (dpy, MI_VISUAL(mi), 1, XYBitmap, 0,
-								bits, bob_width, bob_height,
-								8, 0);
-	  fp->image->byte_order = LSBFirst;
-	  fp->image->bitmap_bit_order = LSBFirst;
+								0, im->width, im->height, 8, 0);
+      fp->image->data = malloc (fp->image->bytes_per_line * fp->image->height);
+
+      /* Convert deep image to 1 bit */
+      for (y = 0; y < im->height; y++)
+        {
+          for (x = 0; x < im->width; x++)
+            {
+              unsigned long p = XGetPixel (im, x, im->height-y-1);
+              if (! (p & 0xFF000000)) p = ~0;  /* alpha -> white */
+              p = (p >> 16) & 0xFF;            /* red */
+              XPutPixel (fp->image, x, y, p > 0x7F ? 0 : 1);
+            }
+        }
+      XDestroyImage (im);
 	}
 
   if (bitmap_name)
@@ -432,11 +441,7 @@ init_flag(ModeInfo * mi)
 	int         size = MI_SIZE(mi);
 	flagstruct *fp;
 
-	if (flags == NULL) {
-		if ((flags = (flagstruct *) calloc(MI_NUM_SCREENS(mi),
-					       sizeof (flagstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, flags);
 	fp = &flags[MI_SCREEN(mi)];
 
 	make_flag_bits(mi);
@@ -460,7 +465,7 @@ init_flag(ModeInfo * mi)
 
 	if (!fp->initialized) {
       fp->dbufp = True;
-# ifdef HAVE_COCOA		/* Don't second-guess Quartz's double-buffering */
+# ifdef HAVE_JWXYZ		/* Don't second-guess Quartz's double-buffering */
       fp->dbufp = False;
 #endif
 		fp->initialized = True;
@@ -500,9 +505,6 @@ init_flag(ModeInfo * mi)
 	XClearWindow(display, MI_WINDOW(mi));
 }
 
-ENTRYPOINT void release_flag(ModeInfo * mi);
-
-
 ENTRYPOINT void
 draw_flag(ModeInfo * mi)
 {
@@ -535,34 +537,29 @@ draw_flag(ModeInfo * mi)
 	fp->sidx %= (ANGLES * MI_NPIXELS(mi));
 	fp->timer++;
 	if ((MI_CYCLES(mi) > 0) && (fp->timer >= MI_CYCLES(mi)))
-      {
-        release_flag(mi);
 		init_flag(mi);
-      }
 }
 
 ENTRYPOINT void
-release_flag(ModeInfo * mi)
+free_flag(ModeInfo * mi)
 {
-	if (flags != NULL) {
-		int         screen;
+	int         screen = MI_SCREEN(mi);
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-		  {
-			if (flags[screen].cache && flags[screen].dbufp)
-				XFreePixmap(MI_DISPLAY(mi), flags[screen].cache);
-			if (flags[screen].image)
-			  XDestroyImage(flags[screen].image);
-		  }
-		(void) free((void *) flags);
-		flags = NULL;
-	}
+	if (flags == NULL)
+		return;
+
+	if (flags[screen].cache && flags[screen].dbufp)
+		XFreePixmap(MI_DISPLAY(mi), flags[screen].cache);
+	if (flags[screen].image)
+	  XDestroyImage(flags[screen].image);
 }
 
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_flag(ModeInfo * mi)
 {
 	/* Do nothing, it will refresh by itself */
 }
+#endif
 
 XSCREENSAVER_MODULE ("Flag", flag)

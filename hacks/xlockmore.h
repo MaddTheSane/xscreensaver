@@ -1,5 +1,5 @@
 /* xlockmore.h --- xscreensaver compatibility layer for xlockmore modules.
- * xscreensaver, Copyright (c) 1997-2012 Jamie Zawinski <jwz@jwz.org>
+ * xscreensaver, Copyright (c) 1997-2017 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -35,8 +35,9 @@ ERROR!  Sorry, xlockmore.h requires ANSI C (gcc, for example.)
  */
 #define MI_DISPLAY(MI)		((MI)->dpy)
 #define MI_WINDOW(MI)		((MI)->window)
-#define MI_NUM_SCREENS(MI)	((MI)->num_screens)
+#define MI_NUM_SCREENS(MI)	XLOCKMORE_NUM_SCREENS
 #define MI_SCREEN(MI)		((MI)->screen_number)
+#define MI_SCREENPTR(MI)	((MI)->xgwa.screen)
 #define MI_WIN_WHITE_PIXEL(MI)	((MI)->white)
 #define MI_WIN_BLACK_PIXEL(MI)	((MI)->black)
 #define MI_NPIXELS(MI)		((MI)->npixels)
@@ -87,7 +88,53 @@ ERROR!  Sorry, xlockmore.h requires ANSI C (gcc, for example.)
 #define MI_IS_DEBUG(MI)		(False)
 #define MI_IS_MOUSE(MI)		(False)
 
-#define MI_CLEARWINDOW(mi) XClearWindow(MI_DISPLAY(mi), MI_WINDOW(mi))
+/* Under xlockmore, MI_CLEARWINDOW runs immediately, and for animated clears
+   it delays execution while the animation runs. This doesn't work on
+   XScreenSaver, which has mandatory double-buffering on macOS/iOS/Android.
+
+   Tricky: As a result, MI_CLEARWINDOW doesn't clear the window until after
+   init_##() or draw_##() finishes.
+ */
+#ifdef USE_GL
+# define MI_CLEARWINDOW(mi) XClearWindow(MI_DISPLAY(mi), MI_WINDOW(mi))
+#else
+# define MI_CLEARWINDOW(mi) ((mi)->needs_clear = True)
+#endif
+
+/* MI_INIT and MI_ABORT are XScreenSaver extensions. These exist primarily for
+   the sake of ports to macOS, iOS, and Android, all of which need to restart
+   individual screenhacks repeatedly in the same process. This requires
+   reusing MI_SCREEN() numbers; previously many xlockmore API hacks did not
+   support this the way they were supposed to.
+ */
+
+/* MI_INIT implements the following pattern, as seen in various forms at the
+   beginning of init_##():
+
+   if(!state_array) {
+     state_array = (state_t *)calloc(MI_NUM_SCREENS(mi), sizeof(state_t));
+     if(!state_array) {
+       fprintf(stderr, "%s: out of memory\n", progname);
+       return;
+     }
+   }
+   hack_free_state(mi);
+   memset(&state_array[MI_SCREEN(mi)], 0, sizeof(*state_array));
+
+   MI_INIT also assumes ownership of the state_array over to xlockmore.c,
+   which frees it after all screens (or "screens") are closed.
+ */
+
+#define MI_INIT(mi, state_array) \
+  xlockmore_mi_init ((mi), sizeof(*(state_array)), (void **)&(state_array))
+
+/* Use MI_ABORT if an init_## or draw_## hook needs to shut everything down.
+   This replaces explicit calls to release_## hooks when things go wrong from
+   inside an xlockmore API screenhack.
+
+   At some point this may do something other than just abort().
+ */
+#define MI_ABORT(mi)		abort();
 
 #define FreeAllGL(dpy)		/* */
 
@@ -115,7 +162,7 @@ ERROR!  Sorry, xlockmore.h requires ANSI C (gcc, for example.)
    In a Cocoa or Android world, we only define the prefixed symbol;
    the un-prefixed symbol does not exist.
  */
-#if defined(HAVE_COCOA) || defined(HAVE_ANDROID)
+#ifdef HAVE_MOBILE
 # define XSCREENSAVER_LINK(NAME)
 #else
 # define XSCREENSAVER_LINK(NAME) \
@@ -133,6 +180,17 @@ ERROR!  Sorry, xlockmore.h requires ANSI C (gcc, for example.)
 # else
 #  define XLOCKMORE_FPS xlockmore_do_fps
 # endif
+
+# ifdef HAVE_JWXYZ
+#  ifdef USE_GL
+#   define XLOCKMORE_VISUAL GL_VISUAL
+#  else
+#   define XLOCKMORE_VISUAL DEFAULT_VISUAL
+#  endif
+# else /* !HAVE_JWXYZ */
+#  define XLOCKMORE_VISUAL \
+     xlockmore_pick_gl_visual, xlockmore_validate_gl_visual
+# endif /* !HAVE_JWXYZ */
 
 #ifdef WRITABLE_COLORS
 # undef WRITABLE_COLORS
@@ -176,11 +234,10 @@ ERROR!  Sorry, xlockmore.h requires ANSI C (gcc, for example.)
 	   init_    ## PREFIX,						\
 	   draw_    ## PREFIX,						\
 	   reshape_ ## PREFIX,						\
-	   refresh_ ## PREFIX,						\
 	   release_ ## PREFIX,						\
+	   free_    ## PREFIX,						\
 	   PREFIX   ## _handle_event,					\
-	   & PREFIX ## _opts,						\
-	   0								\
+	   & PREFIX ## _opts						\
   };									\
 									\
   struct xscreensaver_function_table					\
@@ -189,9 +246,8 @@ ERROR!  Sorry, xlockmore.h requires ANSI C (gcc, for example.)
 	   xlockmore_setup,						\
 	   & NAME ## _xlockmore_function_table,				\
 	   0, 0, 0, 0, 0,						\
-           XLOCKMORE_FPS,						\
-           xlockmore_pick_gl_visual,					\
-	   xlockmore_validate_gl_visual };				\
+	   XLOCKMORE_FPS,						\
+	   XLOCKMORE_VISUAL };						\
 									\
   XSCREENSAVER_LINK (NAME ## _xscreensaver_function_table)
 

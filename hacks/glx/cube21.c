@@ -45,7 +45,8 @@
                    "*showFPS:       False         \n" \
                    "*wireframe:     False         \n"
 
-# define refresh_cube21 0
+# define free_cube21 0
+# define release_cube21 0
 #include "xlockmore.h"
 
 #include "gltrackball.h"
@@ -128,7 +129,7 @@ ENTRYPOINT ModeSpecOpt cube21_opts = {countof(opts), opts, countof(vars), vars, 
 
 #ifdef USE_MODULES
 ModStruct   cube21_description =
-{ "cube21", "init_cube21", "draw_cube21", "release_cube21",
+{ "cube21", "init_cube21", "draw_cube21", NULL,
   "draw_cube21", "change_cube21", NULL, &cube21_opts,
   25000, 1, 1, 1, 1.0, 4, "",
   "Shows randomly shuffling Cube 21", 0, NULL
@@ -515,10 +516,20 @@ static Bool draw_main(ModeInfo *mi, cube21_conf *cp)
     glTranslatef(0, 0, zpos);
   glScalef(size, size, size);
 
-  gltrackball_rotate (cp->trackball);
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glRotatef(cp->xrot, 1.0, 0.0, 0.0);
   glRotatef(cp->yrot, 0.0, 1.0, 0.0);
+
+  gltrackball_rotate (cp->trackball);
+
   if(cp->wire) glColor3f(0.7, 0.7, 0.7);
   switch(cp->state) {
     case CUBE21_PAUSE1:
@@ -753,8 +764,8 @@ static void init_gl(ModeInfo *mi)
       0, GL_LUMINANCE, GL_UNSIGNED_BYTE, cp->texture);
 #endif  
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 #ifdef MIPMAP
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -835,9 +846,18 @@ static void init_cp(cube21_conf *cp)
 ENTRYPOINT void reshape_cube21(ModeInfo *mi, int width, int height) 
 {
   cube21_conf *cp = &cube21[MI_SCREEN(mi)];
+  int y = 0;
   if(!height) height = 1;
   cp->ratio = (GLfloat)width/(GLfloat)height;
-  glViewport(0, 0, (GLint) width, (GLint) height);
+
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width;
+    y = -height/2;
+    cp->ratio = width / (GLfloat) height;
+    cp->posarg = 0;
+  }
+
+  glViewport(0, y, (GLint) width, (GLint) height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(30.0, cp->ratio, 1.0, 100.0);
@@ -859,29 +879,10 @@ cube21_handle_event (ModeInfo *mi, XEvent *event)
 }
 
 
-ENTRYPOINT void release_cube21(ModeInfo *mi) 
-{
-  if (cube21 != NULL) {
-    int screen;
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-      cube21_conf *cp = &cube21[screen];
-      if (cp->glx_context) {
-        cp->glx_context = NULL;
-      }
-    }
-    free((void *)cube21);
-    cube21 = NULL;
-  }
-  FreeAllGL(mi);
-}
-
 ENTRYPOINT void init_cube21(ModeInfo *mi) 
 {
   cube21_conf *cp;
-  if(!cube21) {
-    cube21 = (cube21_conf *)calloc(MI_NUM_SCREENS(mi), sizeof(cube21_conf));
-    if(!cube21) return;
-  }
+  MI_INIT(mi, cube21);
   cp = &cube21[MI_SCREEN(mi)];
 
   cp->trackball = gltrackball_init (False);
@@ -890,6 +891,10 @@ ENTRYPOINT void init_cube21(ModeInfo *mi)
     init_posc(cp);
     make_texture(cp);
   }
+
+#ifdef HAVE_MOBILE
+  size *= 2;
+#endif
 
   if ((cp->glx_context = init_GL(mi)) != NULL) {
     init_gl(mi);
@@ -912,7 +917,7 @@ ENTRYPOINT void draw_cube21(ModeInfo * mi)
   mi->polygon_count = 0;
   glXMakeCurrent(display, window, *(cp->glx_context));
   if (!draw_main(mi, cp)) {
-    release_cube21(mi);
+    MI_ABORT(mi);
     return;
   }
   if (MI_IS_FPS(mi)) do_fps (mi);

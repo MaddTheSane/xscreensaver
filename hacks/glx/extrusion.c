@@ -31,7 +31,7 @@
 					"*showFPS:	 False	\n" \
 					"*wireframe: False   \n"
 
-# define refresh_extrusion 0
+# define free_extrusion 0
 # define release_extrusion 0
 # include "xlockmore.h"				/* from the xscreensaver distribution */
 #else /* !STANDALONE */
@@ -51,7 +51,7 @@
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include "rotator.h"
 #include "gltrackball.h"
 #include "extrusion.h"
@@ -116,7 +116,7 @@ ENTRYPOINT ModeSpecOpt extrusion_opts = {countof(opts), opts, countof(vars), var
 
 #ifdef USE_MODULES
 ModStruct   extrusion_description =
-{"extrusion", "init_extrusion", "draw_extrusion", "release_extrusion",
+{"extrusion", "init_extrusion", "draw_extrusion", NULL,
  "draw_extrusion", "init_extrusion", NULL, &extrusion_opts,
  1000, 1, 2, 1, 4, 1.0, "",
  "OpenGL extrusion", 0, NULL};
@@ -218,11 +218,16 @@ static void Create_Texture(ModeInfo *mi, const char *filename)
   int format;
 
   if ( !strncmp(filename, "BUILTIN", 7))
-    image = Generate_Image(&width, &height, &format);
+    {
+    BUILTIN:
+      image = Generate_Image(&width, &height, &format);
+    }
   else
     {
-      XImage *ximage = xpm_file_to_ximage (MI_DISPLAY (mi), MI_VISUAL (mi),
-                                           MI_COLORMAP (mi), filename);
+      XImage *ximage = file_to_ximage (MI_DISPLAY (mi), MI_VISUAL (mi),
+                                       filename);
+      if (!ximage)
+        goto BUILTIN;
       image  = (GLubyte *) ximage->data;
       width  = ximage->width;
       height = ximage->height;
@@ -378,8 +383,15 @@ ENTRYPOINT void
 reshape_extrusion (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -525,11 +537,7 @@ init_extrusion (ModeInfo * mi)
 
   if (MI_IS_WIREFRAME(mi)) do_light = 0;
 
-  if (Extrusion == NULL) {
-	if ((Extrusion = (extrusionstruct *)
-         calloc(MI_NUM_SCREENS(mi), sizeof (extrusionstruct))) == NULL)
-	  return;
-  }
+  MI_INIT(mi, Extrusion);
   gp = &Extrusion[screen];
 
   gp->window = MI_WINDOW(mi);

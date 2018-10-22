@@ -320,7 +320,7 @@ FuzzyFlakesInit(Flake *flake)
    flake->DB.b = flake->DB.ba = flake->DB.bb = 0;
    flake->DB.dbuf = get_boolean_resource(flake->dpy, "doubleBuffer", "Boolean");
 
-# ifdef HAVE_COCOA	/* Don't second-guess Quartz's double-buffering */
+# ifdef HAVE_JWXYZ	/* Don't second-guess Quartz's double-buffering */
    flake->DB.dbuf = False;
 # endif
 
@@ -348,6 +348,13 @@ FuzzyFlakesInit(Flake *flake)
    flake->Delay = get_integer_resource(flake->dpy, "delay", "Integer");
    if (flake->RandomColors == True)
       flake->RandomColors = get_boolean_resource(flake->dpy, "randomColors", "Boolean");
+
+   if (xgwa.width > 2560) {  /* Retina displays */
+     flake->Thickness *= 2;
+     flake->BorderThickness *= 2;
+     flake->Radius *= 2;
+     flake->FallingSpeed *= 2;
+   }
 
    if (flake->Delay < 0)
       flake->Delay = 0;

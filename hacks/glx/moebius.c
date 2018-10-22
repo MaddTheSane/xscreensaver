@@ -79,16 +79,18 @@ static const char sccsid[] = "@(#)moebius.c	5.01 2001/03/01 xlockmore";
 
 #ifdef STANDALONE
 # define MODE_moebius
-# define refresh_moebius 0
+# define free_moebius 0
+# define release_moebius 0
 # define DEFAULTS			"*delay:		20000   \n"			\
-							"*showFPS:      False   \n"
+							"*showFPS:      False   \n"			\
+							"*suppressRotationAnimation: True\n" \
 
 # include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 # include "xlock.h"		/* from the xlockmore distribution */
 #endif /* !STANDALONE */
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
 #else
 # include <X11/Xlib.h>
@@ -106,8 +108,8 @@ static const char sccsid[] = "@(#)moebius.c	5.01 2001/03/01 xlockmore";
 #if 0
 #include "e_textures.h"
 #else
-#include "xpm-ximage.h"
-#include "../images/wood.xpm"
+#include "ximage-loader.h"
+#include "images/gen/wood_png.h"
 #endif
 #endif /* 0 */
 
@@ -147,7 +149,7 @@ ENTRYPOINT ModeSpecOpt moebius_opts =
 
 #ifdef USE_MODULES
 ModStruct   moebius_description =
-{"moebius", "init_moebius", "draw_moebius", "release_moebius",
+{"moebius", "init_moebius", "draw_moebius", (char *) NULL,
  "draw_moebius", "change_moebius", (char *) NULL, &moebius_opts,
  1000, 1, 1, 1, 4, 1.0, "",
  "Shows Moebius Strip II, an Escher-like GL scene with ants", 0, NULL};
@@ -562,8 +564,14 @@ ENTRYPOINT void
 reshape_moebius (ModeInfo * mi, int width, int height)
 {
 	moebiusstruct *mp = &moebius[MI_SCREEN(mi)];
+    int y = 0;
 
-	glViewport(0, 0, mp->WindW = (GLint) width, mp->WindH = (GLint) height);
+    if (width > height * 5) {   /* tiny window: show middle */
+      height = width;
+      y = -height/2;
+    }
+
+	glViewport(0, y, mp->WindW = (GLint) width, mp->WindH = (GLint) height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 5.0, 15.0);
@@ -625,10 +633,8 @@ pinit(ModeInfo *mi)
     check_gl_error("mipmapping");
 #else
     {
-      XImage *img = xpm_to_ximage (mi->dpy,
-                                   mi->xgwa.visual,
-                                   mi->xgwa.colormap,
-                                   wood_texture);
+      XImage *img = image_data_to_ximage (mi->dpy, mi->xgwa.visual,
+                                          wood_png, sizeof(wood_png));
 	  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                     img->width, img->height, 0,
                     GL_RGBA,
@@ -652,17 +658,6 @@ pinit(ModeInfo *mi)
 }
 
 
-
-ENTRYPOINT void
-release_moebius (ModeInfo * mi)
-{
-	if (moebius != NULL) {
-		(void) free((void *) moebius);
-		moebius = (moebiusstruct *) NULL;
-	}
-	FreeAllGL(mi);
-}
-
 ENTRYPOINT Bool
 moebius_handle_event (ModeInfo *mi, XEvent *event)
 {
@@ -682,11 +677,7 @@ init_moebius (ModeInfo * mi)
 {
 	moebiusstruct *mp;
 
-	if (moebius == NULL) {
-		if ((moebius = (moebiusstruct *) calloc(MI_NUM_SCREENS(mi),
-					    sizeof (moebiusstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, moebius);
 	mp = &moebius[MI_SCREEN(mi)];
 	mp->step = NRAND(90);
 	mp->ant_position = NRAND(90);
@@ -730,6 +721,7 @@ draw_moebius (ModeInfo * mi)
 
 	glPushMatrix();
 
+
 	glTranslatef(0.0, 0.0, -10.0);
 
     gltrackball_rotate (mp->trackball);
@@ -739,6 +731,18 @@ draw_moebius (ModeInfo * mi)
 	} else {
 		glScalef(Scale4Iconic * mp->WindH / mp->WindW, Scale4Iconic, Scale4Iconic);
 	}
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180) {
+        glScalef (1/h, h, 1);  /* #### not quite right */
+        h = 1.7;
+        glScalef (h, h, h);
+      }
+    }
+# endif
 
     {
       double x, y, z;
@@ -750,7 +754,7 @@ draw_moebius (ModeInfo * mi)
 
 	/* moebius */
 	if (!draw_moebius_strip(mi)) {
-		release_moebius(mi);
+		MI_ABORT(mi);
 		return;
 	}
 

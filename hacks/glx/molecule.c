@@ -1,4 +1,4 @@
-/* molecule, Copyright (c) 2001-2014 Jamie Zawinski <jwz@jwz.org>
+/* molecule, Copyright (c) 2001-2016 Jamie Zawinski <jwz@jwz.org>
  * Draws molecules, based on coordinates from PDB (Protein Data Base) files.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -31,8 +31,9 @@
 	"*titleFont:  -*-helvetica-medium-r-normal-*-*-180-*-*-*-*-*-*\n" \
 			"*noLabelThreshold:    150    \n" \
 			"*wireframeThreshold:  150    \n" \
+			"*suppressRotationAnimation: True\n" \
 
-# define refresh_molecule 0
+# define free_molecule 0
 # define release_molecule 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -91,7 +92,7 @@ static const char * const builtin_pdb_data[] = {
 };
 
 
-#ifndef USE_IPHONE
+#ifndef HAVE_MOBILE
 # define LOAD_FILES
 #endif
 
@@ -479,9 +480,12 @@ draw_bounding_box (ModeInfo *mi)
 
   glColor3f (c2[0], c2[1], c2[2]);
   glBegin(GL_LINES);
-  if (x1 > 0) x1 = 0; if (x2 < 0) x2 = 0;
-  if (y1 > 0) y1 = 0; if (y2 < 0) y2 = 0;
-  if (z1 > 0) z1 = 0; if (z2 < 0) z2 = 0;
+  if (x1 > 0) x1 = 0;
+  if (x2 < 0) x2 = 0;
+  if (y1 > 0) y1 = 0;
+  if (y2 < 0) y2 = 0;
+  if (z1 > 0) z1 = 0;
+  if (z2 < 0) z2 = 0;
   glVertex3f(x1, 0,  0);  glVertex3f(x2, 0,  0); 
   glVertex3f(0 , y1, 0);  glVertex3f(0,  y2, 0); 
   glVertex3f(0,  0,  z1); glVertex3f(0,  0,  z2); 
@@ -1183,8 +1187,15 @@ ENTRYPOINT void
 reshape_molecule (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -1195,6 +1206,14 @@ reshape_molecule (ModeInfo *mi, int width, int height)
   gluLookAt( 0.0, 0.0, 30.0,
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -1276,14 +1295,7 @@ init_molecule (ModeInfo *mi)
   molecule_configuration *mc;
   int wire;
 
-  if (!mcs) {
-    mcs = (molecule_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (molecule_configuration));
-    if (!mcs) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, mcs);
 
   mc = &mcs[MI_SCREEN(mi)];
 
@@ -1419,11 +1431,13 @@ draw_labels (ModeInfo *mi)
       {
         XCharStruct e;
         int w, h;
+        GLfloat s;
+
         texture_string_metrics (mc->atom_font, a->label, &e, 0, 0);
         w = e.width;
         h = e.ascent + e.descent;
 
-        GLfloat s = 1.0 / h;		/* Scale to unit */
+        s = 1.0 / h;			/* Scale to unit */
         s *= mc->overall_scale;		/* Scale to size of atom */
         s *= 0.8;			/* Shrink a bit */
         glScalef (s, s, 1);

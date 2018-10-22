@@ -1,4 +1,4 @@
-/* bouncingcow, Copyright (c) 2003-2014 Jamie Zawinski <jwz@jwz.org>
+/* bouncingcow, Copyright (c) 2003-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -16,7 +16,7 @@
 			"*showFPS:      False       \n" \
 			"*wireframe:    False       \n" \
 
-# define refresh_cow 0
+# define free_cow 0
 # define release_cow 0
 #define DEF_SPEED       "1.0"
 #define DEF_TEXTURE     "(none)"
@@ -32,7 +32,7 @@
 #include "xlockmore.h"
 #include "rotator.h"
 #include "gltrackball.h"
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include <ctype.h>
 
 #ifdef USE_GL /* whole file */
@@ -156,8 +156,15 @@ ENTRYPOINT void
 reshape_cow (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -195,7 +202,6 @@ load_texture (ModeInfo *mi, const char *filename)
 {
   Display *dpy = mi->dpy;
   Visual *visual = mi->xgwa.visual;
-  Colormap cmap = mi->xgwa.colormap;
   char buf[1024];
   XImage *image;
 
@@ -210,15 +216,13 @@ load_texture (ModeInfo *mi, const char *filename)
       return False;
     }
 
-  image = xpm_file_to_ximage (dpy, visual, cmap, filename);
+  image = file_to_ximage (dpy, visual, filename);
+  if (!image) return False;
 
   clear_gl_error();
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                 image->width, image->height, 0,
-                GL_RGBA,
-                /* GL_UNSIGNED_BYTE, */
-                GL_UNSIGNED_INT_8_8_8_8_REV,
-                image->data);
+                GL_RGBA, GL_UNSIGNED_BYTE, image->data);
   sprintf (buf, "texture: %.100s (%dx%d)",
            filename, image->width, image->height);
   check_gl_error(buf);
@@ -238,14 +242,7 @@ init_cow (ModeInfo *mi)
   int i;
   Bool tex_p = False;
 
-  if (!bps) {
-    bps = (cow_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (cow_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -308,15 +305,15 @@ init_cow (ModeInfo *mi)
               glTexGeni (GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
               glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
               glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+              glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+              glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
               glEnable(GL_TEXTURE_GEN_S);
               glEnable(GL_TEXTURE_GEN_T);
               glEnable(GL_TEXTURE_2D);
 
-              /* approximately line it up with ../images/earth.xpm */
+              /* approximately line it up with ../images/earth.png */
               glMatrixMode (GL_TEXTURE);
               glLoadIdentity();
               glTranslatef (0.45, 0.58, 0);
@@ -471,7 +468,16 @@ draw_cow (ModeInfo *mi)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPushMatrix ();
-  glRotatef(current_device_rotation(), 0, 0, 1);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+    glRotatef(o, 0, 0, 1);
+  }
+# endif
 
   glScalef (0.5, 0.5, 0.5);
 

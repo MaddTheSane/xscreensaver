@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1992-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1992-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -25,10 +25,12 @@
  */
 
 #include "screenhack.h"
-#include "xpm-pixmap.h"
+#include "pow2.h"
+#include "ximage-loader.h"
 #include <stdio.h>
+#include <time.h>
 
-#include "images/som.xbm"
+#include "images/gen/som_png.h"
 
 /* Implementing this using XCopyArea doesn't work with color images on OSX.
    This means that the Cocoa implementation of XCopyArea in jwxyz.m is 
@@ -40,7 +42,7 @@
    So, on OSX, we implement the blitter by hand.  It is correct, but
    orders of magnitude slower.
  */
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # define USE_XCOPYAREA
 #endif
 
@@ -219,17 +221,13 @@ blitspin_draw (Display *dpy, Window window, void *closure)
 
 
 static int 
-to_pow2(struct state *st, int n, Bool up)
+blitspin_to_pow2(int n, Bool up)
 {
-  int powers_of_2[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024,
-			2048, 4096, 8192, 16384, 32768, 65536 };
-  int i = 0;
-  if (n > 65536) st->size = 65536;
-  while (n >= powers_of_2[i]) i++;
-  if (n == powers_of_2[i-1])
+  int pow2 = to_pow2 (n);
+  if (n == pow2)
     return n;
   else
-    return powers_of_2[up ? i : i-1];
+    return up ? pow2 : pow2 >> 1;
 }
 
 static void *
@@ -267,13 +265,25 @@ blitspin_init (Display *d_arg, Window w_arg)
   if (!strcasecmp (bitmap_name, "(builtin)") ||
       !strcasecmp (bitmap_name, "builtin"))
     {
-      st->width = som_width;
-      st->height = som_height;
-      st->bitmap = XCreatePixmapFromBitmapData (st->dpy, st->window,
-                                                (char *) som_bits,
-                                                st->width, st->height, 
-                                                st->fg, st->bg, 
-                                                st->xgwa.depth);
+      Pixmap mask = 0;
+      Pixmap pixmap = image_data_to_pixmap (st->dpy, st->window,
+                                            som_png, sizeof(som_png),
+                                            &st->width, &st->height, &mask);
+      XGCValues gcv;
+      GC gc;
+      gcv.foreground = st->bg;
+      gc = XCreateGC (st->dpy, st->window, GCForeground, &gcv);
+      st->bitmap = XCreatePixmap (st->dpy, st->window, 
+                                  st->xgwa.width, st->xgwa.height,
+                                  st->xgwa.depth);
+      XFillRectangle (st->dpy, st->bitmap, gc, 0, 0, st->width, st->height);
+      XSetClipMask (st->dpy, gc, mask);
+      XCopyArea (st->dpy, pixmap, st->bitmap, gc, 0, 0, st->width, st->height,
+                 0, 0);
+      XFreeGC (st->dpy, gc);
+      XFreePixmap (st->dpy, pixmap);
+      XFreePixmap (st->dpy, mask);
+
       st->scale_up = True; /* definitely. */
       st->loaded_p = True;
       blitspin_init_2 (st);
@@ -293,7 +303,7 @@ blitspin_init (Display *d_arg, Window w_arg)
     }
   else
     {
-      st->bitmap = xpm_file_to_pixmap (st->dpy, st->window, bitmap_name,
+      st->bitmap = file_to_pixmap (st->dpy, st->window, bitmap_name,
                                    &st->width, &st->height, 0);
       st->scale_up = True; /* probably? */
       blitspin_init_2 (st);
@@ -310,11 +320,12 @@ blitspin_init_2 (struct state *st)
 
   /* make it square */
   st->size = (st->width < st->height) ? st->height : st->width;
-  st->size = to_pow2(st, st->size, st->scale_up); /* round up to power of 2 */
+  /* round up to power of 2 */
+  st->size = blitspin_to_pow2(st->size, st->scale_up);
   {						/* don't exceed screen size */
     int s = XScreenNumberOfScreen(st->xgwa.screen);
-    int w = to_pow2(st, XDisplayWidth(st->dpy, s), False);
-    int h = to_pow2(st, XDisplayHeight(st->dpy, s), False);
+    int w = blitspin_to_pow2(XDisplayWidth(st->dpy, s), False);
+    int h = blitspin_to_pow2(XDisplayHeight(st->dpy, s), False);
     if (st->size > w) st->size = w;
     if (st->size > h) st->size = h;
   }
@@ -422,7 +433,7 @@ static const char *blitspin_defaults [] = {
   "*duration:	120",
   "*bitmap:	(default)",
   "*geometry:	1080x1080",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation: True",
 #endif
   0

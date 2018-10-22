@@ -19,13 +19,14 @@
 			    "*showFPS: False   \n" \
                             "*useSHM:  True    \n"
 
-# define refresh_antspotlight 0
+# define free_antspotlight 0
+# define release_antspotlight 0
 #include "xlockmore.h"
 #else
 #include "xlock.h"
 #endif
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
 #else
 # include <X11/Xlib.h>
@@ -49,7 +50,7 @@ ENTRYPOINT ModeSpecOpt antspotlight_opts = {
 #ifdef USE_MODULES
 ModStruct   antspotlight_description = {
   "antspotlight", "init_antspotlight", "draw_antspotlight", 
-  "release_antspotlight", "draw_antspotlight", "change_antspotlight", 
+  (char *) NULL, "draw_antspotlight", "change_antspotlight",
   (char *) NULL, &antspotlight_opts, 1000, 1, 1, 1, 4, 1.0, "",
   "draws an ant scoping the screen", 0, NULL
 };
@@ -551,8 +552,16 @@ static void draw_antspotlight_strip(ModeInfo *mi)
 ENTRYPOINT void reshape_antspotlight(ModeInfo * mi, int width, int height)
 {
   double h = (GLfloat) height / (GLfloat) width;  
+  int y = 0;
   int size = 2;
-  glViewport(0, 0, width, height);
+
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport(0, y, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
@@ -615,18 +624,6 @@ static void pinit(void)
   glShadeModel(GL_SMOOTH);
 /*   glShadeModel(GL_FLAT); */
   glEnable(GL_DEPTH_TEST);
-}
-
-/* cleanup routine */
-ENTRYPOINT void release_antspotlight(ModeInfo * mi)
-{
-
-  if(antspotlight) {
-    free((void *) antspotlight);
-    antspotlight = (antspotlightstruct *) NULL;
-  }
-
-  FreeAllGL(mi);
 }
 
 #define MAX_MAGNIFICATION 10
@@ -708,11 +705,7 @@ ENTRYPOINT void init_antspotlight(ModeInfo *mi)
 
   antspotlightstruct *mp;
   
-  if(!antspotlight) {
-    if((antspotlight = (antspotlightstruct *) 
-	calloc(MI_NUM_SCREENS(mi), sizeof (antspotlightstruct))) == NULL)
-      return;
-  }
+  MI_INIT(mi, antspotlight);
   mp = &antspotlight[MI_SCREEN(mi)];
   mp->rot = make_rotator (rot_speed, rot_speed, rot_speed, 1, 0, True);
   mp->trackball = gltrackball_init (False);

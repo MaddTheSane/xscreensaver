@@ -17,7 +17,7 @@
 
 #include "screenhack.h"
 #include <stdio.h>
-#include "xpm-pixmap.h"
+#include "ximage-loader.h"
 
 #define ALIVE   1
 #define CHANGED 2
@@ -530,9 +530,9 @@ static const char *boxfit_defaults [] = {
   "*borderSize:		   1",
   "*grab:		   False",
   "*peek:		   False",
-  "*grabDesktopImages:     False",   /* HAVE_COCOA */
-  "*chooseRandomImages:    True",    /* HAVE_COCOA */
-#ifdef USE_IPHONE
+  "*grabDesktopImages:     False",   /* HAVE_JWXYZ */
+  "*chooseRandomImages:    True",    /* HAVE_JWXYZ */
+#ifdef HAVE_MOBILE
   "*ignoreRotation:	   True",
   "*rotateImages:          True",
 #endif

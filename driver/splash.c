@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1991-2014 Jamie Zawinski <jwz@netscape.com>
+/* xscreensaver, Copyright (c) 1991-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -17,6 +17,7 @@
 
 #include "xscreensaver.h"
 #include "resources.h"
+#include "font-retry.h"
 
 #undef MAX
 #define MAX(a,b) ((a)>(b)?(a):(b))
@@ -103,6 +104,19 @@ static void do_prefs (saver_screen_info *ssi);
 static void do_help (saver_screen_info *ssi);
 
 
+XFontStruct *
+splash_load_font (Display *dpy, char *name, char *class)
+{
+  char *s = get_string_resource (dpy, name, class);
+  XFontStruct *f;
+  if (!s || !*s)
+    s = "-*-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*";
+  f = load_font_retry (dpy, s);
+  if (!f) abort();
+  return f;
+}
+
+
 struct splash_dialog_data {
 
   saver_screen_info *prompt_screen;
@@ -165,11 +179,10 @@ make_splash_dialog (saver_info *si)
   splash_dialog_data *sp;
   saver_screen_info *ssi;
   Colormap cmap;
-  char *f;
 
-  Bool whine = senescent_p ();
+  Bool whyne = senesculent_p ();
 
-  if (whine)
+  if (whyne)
     {
       /* If locking is not enabled, make sure they see the message. */
       if (!p->lock_p)
@@ -220,7 +233,7 @@ make_splash_dialog (saver_info *si)
 
 
 
-  if (whine)
+  if (whyne)
     {
       sp->body3_label = strdup("WARNING: This version is very old!");
       sp->body4_label = strdup("Please upgrade!");
@@ -246,20 +259,12 @@ make_splash_dialog (saver_info *si)
     sp->heading_label = s;
   }
 
-  f = get_string_resource (si->dpy, "splash.headingFont", "Dialog.Font");
-  sp->heading_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!sp->heading_font) sp->heading_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
-
-  f = get_string_resource(si->dpy, "splash.bodyFont", "Dialog.Font");
-  sp->body_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!sp->body_font) sp->body_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
-
-  f = get_string_resource(si->dpy, "splash.buttonFont", "Dialog.Font");
-  sp->button_font = XLoadQueryFont (si->dpy, (f ? f : "fixed"));
-  if (!sp->button_font) sp->button_font = XLoadQueryFont (si->dpy, "fixed");
-  if (f) free (f);
+  sp->heading_font =
+    splash_load_font (si->dpy, "splash.headingFont", "Dialog.Font");
+  sp->body_font =
+    splash_load_font (si->dpy, "splash.bodyFont", "Dialog.Font");
+  sp->button_font =
+    splash_load_font (si->dpy, "splash.buttonFont", "Dialog.Font");
 
   sp->foreground = get_pixel_resource (si->dpy, cmap,
                                        "splash.foreground",
@@ -424,21 +429,6 @@ make_splash_dialog (saver_info *si)
 
   {
     int sx = 0, sy = 0, w, h;
-    int mouse_x = 0, mouse_y = 0;
-
-    {
-      Window pointer_root, pointer_child;
-      int root_x, root_y, win_x, win_y;
-      unsigned int mask;
-      if (XQueryPointer (si->dpy,
-                         RootWindowOfScreen (ssi->screen),
-                         &pointer_root, &pointer_child,
-                         &root_x, &root_y, &win_x, &win_y, &mask))
-        {
-          mouse_x = root_x;
-          mouse_y = root_y;
-        }
-    }
 
     x = ssi->x;
     y = ssi->y;
@@ -493,14 +483,13 @@ draw_splash_window (saver_info *si)
   splash_dialog_data *sp = si->sp_data;
   XGCValues gcv;
   GC gc1, gc2;
-  int hspacing, vspacing, height;
+  int vspacing, height;
   int x1, x2, x3, y1, y2;
   int sw;
 
 #ifdef PREFS_BUTTON
+  int hspacing;
   int nbuttons = 3;
-#else  /* !PREFS_BUTTON */
-  int nbuttons = 2;
 #endif /* !PREFS_BUTTON */
 
   height = (sp->heading_font->ascent + sp->heading_font->descent +
@@ -580,9 +569,11 @@ draw_splash_window (saver_info *si)
 	       (sp->button_font->ascent + sp->button_font->descent))
 	      / 2)
 	+ sp->button_font->ascent);
+#ifdef PREFS_BUTTON
   hspacing = ((sp->width - x1 - (sp->shadow_width * 2) -
 	       sp->internal_border - (sp->button_width * nbuttons))
 	      / 2);
+#endif
 
   x2 = x1 + ((sp->button_width - string_width(sp->button_font, sp->demo_label))
 	     / 2);

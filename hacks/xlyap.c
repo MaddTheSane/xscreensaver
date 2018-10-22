@@ -43,13 +43,14 @@
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # include <X11/cursorfont.h> 
 #endif
 
 static const char *xlyap_defaults [] = {
   ".background:         black",
   ".foreground:         white",
+  ".lowrez:             true",
   "*fpsSolid:		true",
   "*randomize:          true",
   "*builtin:            -1",
@@ -78,7 +79,7 @@ static const char *xlyap_defaults [] = {
   "*delay:              10000",
   "*linger:             5",
   "*colors:             200",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation:     True",
 #endif
   0
@@ -161,7 +162,7 @@ typedef struct {
 #endif
 
 typedef struct {
-# ifndef HAVE_COCOA
+# ifndef HAVE_JWXYZ
   Cursor band_cursor;
 # endif
   double p_min, p_max, q_min, q_max;
@@ -827,7 +828,7 @@ Getkey(struct state *st, XKeyEvent *event)
   unsigned char key;
   int i;
   if (XLookupString(event, (char *)&key, sizeof(key), (KeySym *)0,
-                    (XComposeStatus *) 0) > 0)
+                    (XComposeStatus *) 0) > 0) {
 
     if (st->reset_countdown)
       st->reset_countdown = st->linger;
@@ -956,6 +957,7 @@ Getkey(struct state *st, XKeyEvent *event)
     case 'H': print_help(st); return True;
     default:  return False;
     }
+  }
 
   return False;
 }

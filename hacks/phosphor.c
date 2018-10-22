@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1999-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1999-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -17,12 +17,13 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # include <X11/Intrinsic.h>
 #endif
 
 #include "screenhack.h"
 #include "textclient.h"
+#include "ximage-loader.h"
 #include "utf8wc.h"
 
 #define FUZZY_BORDER
@@ -43,7 +44,7 @@
 #define BUILTIN_FONT
 
 #ifdef BUILTIN_FONT
-# include "images/6x10font.xbm"
+# include "images/gen/6x10font_png.h"
 #endif /* BUILTIN_FONT */
 
 typedef struct {
@@ -70,6 +71,7 @@ typedef struct {
   const char *program;
   int grid_width, grid_height;
   int char_width, char_height;
+  int xmargin, ymargin;
   int saved_x, saved_y;
   int scale;
   int ticks;
@@ -78,7 +80,7 @@ typedef struct {
   int escstate;
   int csiparam[NPAR];
   int curparam;
-  int unicruds; char unicrud[7];
+  int unicruds; unsigned char unicrud[7];
 
   p_char **chars;
   p_cell *cells;
@@ -148,6 +150,9 @@ static unsigned short scale_color_channel (unsigned short ch1, unsigned short ch
   return (ch1 * 100 + ch2 * 156) >> 8;
 }
 
+#define FONT6x10_WIDTH (256*7)
+#define FONT6x10_HEIGHT 10
+
 static void *
 phosphor_init (Display *dpy, Window window)
 {
@@ -171,23 +176,13 @@ phosphor_init (Display *dpy, Window window)
     {
 #ifndef BUILTIN_FONT
       fprintf (stderr, "%s: no builtin font\n", progname);
-      state->font = XLoadQueryFont (dpy, "fixed");
+      state->font = load_font_retry (dpy, "fixed");
 #endif /* !BUILTIN_FONT */
     }
   else
     {
-      state->font = XLoadQueryFont (dpy, fontname);
-
-      if (!state->font)
-        {
-          fprintf(stderr, "couldn't load font \"%s\"\n", fontname);
-          state->font = XLoadQueryFont (dpy, "fixed");
-        }
-      if (!state->font)
-        {
-          fprintf(stderr, "couldn't load font \"fixed\"");
-          exit(1);
-        }
+      state->font = load_font_retry (dpy, fontname);
+      if (!state->font) abort();
     }
 
   font = state->font;
@@ -195,14 +190,15 @@ phosphor_init (Display *dpy, Window window)
   state->ticks = STATE_MAX + get_integer_resource (dpy, "ticks", "Integer");
   state->escstate = 0;
 
+  if (state->xgwa.width > 2560) state->scale *= 2;  /* Retina displays */
 
   state->cursor_blink = get_integer_resource (dpy, "cursor", "Time");
 
 # ifdef BUILTIN_FONT
   if (! font)
     {
-      state->char_width  = (font6x10_width / 256) - 1;
-      state->char_height = font6x10_height;
+      state->char_width  = (FONT6x10_WIDTH / 256) - 1;
+      state->char_height = FONT6x10_HEIGHT;
     }
   else
 # endif /* BUILTIN_FONT */
@@ -211,8 +207,20 @@ phosphor_init (Display *dpy, Window window)
       state->char_height = font->max_bounds.ascent + font->max_bounds.descent;
     }
 
-  state->grid_width = state->xgwa.width / (state->char_width * state->scale);
-  state->grid_height = state->xgwa.height /(state->char_height * state->scale);
+# ifdef USE_IPHONE
+  /* Stupid iPhone X bezel.
+     #### This is the worst of all possible ways to do this!  But how else?
+   */
+  if (state->xgwa.width == 2436 || state->xgwa.height == 2436) {
+    state->xmargin = 96;
+    state->ymargin = state->xmargin;
+  }
+# endif
+
+  state->grid_width = ((state->xgwa.width - state->xmargin * 2) /
+                       (state->char_width * state->scale));
+  state->grid_height = ((state->xgwa.height - state->ymargin * 2) /
+                        (state->char_height * state->scale));
   state->cells = (p_cell *) calloc (sizeof(p_cell),
                                     state->grid_width * state->grid_height);
   state->chars = (p_char **) calloc (sizeof(p_char *), 256);
@@ -220,7 +228,7 @@ phosphor_init (Display *dpy, Window window)
   state->gcs = (GC *) calloc (sizeof(GC), state->ticks + 1);
 
   {
-    int ncolors = MAX (0, state->ticks - 3);
+    int ncolors = MAX (1, state->ticks - 3);
     XColor *colors = (XColor *) calloc (ncolors, sizeof(XColor));
     int h1, h2;
     double s1, s2, v1, v2;
@@ -324,8 +332,8 @@ phosphor_init (Display *dpy, Window window)
 
   state->tc = textclient_open (dpy);
   textclient_reshape (state->tc,
-                      state->xgwa.width,
-                      state->xgwa.height,
+                      state->xgwa.width  - state->xmargin * 2,
+                      state->xgwa.height - state->ymargin * 2,
                       state->grid_width  - 1,
                       state->grid_height - 1,
                       0);
@@ -346,8 +354,17 @@ resize_grid (p_state *state)
 
   XGetWindowAttributes (state->dpy, state->window, &state->xgwa);
 
-  state->grid_width = state->xgwa.width   /(state->char_width  * state->scale);
-  state->grid_height = state->xgwa.height /(state->char_height * state->scale);
+  /* Would like to ensure here that
+     state->char_height * state->scale <= state->xgwa.height
+     but changing scale requires regenerating the bitmaps. */
+
+  state->grid_width  = ((state->xgwa.width - state->xmargin * 2) /
+                        (state->char_width  * state->scale));
+  state->grid_height = ((state->xgwa.height - state->ymargin * 2) /
+                        (state->char_height * state->scale));
+
+  if (state->grid_width  < 2) state->grid_width  = 2;
+  if (state->grid_height < 2) state->grid_height = 2;
 
   if (ow == state->grid_width &&
       oh == state->grid_height)
@@ -393,11 +410,54 @@ capture_font_bits (p_state *state)
     {
       safe_width = state->char_width + 1;
       height = state->char_height;
-      p2 = XCreatePixmapFromBitmapData (state->dpy, state->window,
-                                        (char *) font6x10_bits,
-                                        font6x10_width,
-                                        font6x10_height,
-                                        1, 0, 1);
+
+      int pix_w, pix_h;
+      XWindowAttributes xgwa;
+      Pixmap m = 0;
+      Pixmap p = image_data_to_pixmap (state->dpy, state->window,
+                                       _6x10font_png, sizeof(_6x10font_png),
+                                       &pix_w, &pix_h, &m);
+      XImage *im = XGetImage (state->dpy, p, 0, 0, pix_w, pix_h, ~0L, ZPixmap);
+      XImage *mm = XGetImage (state->dpy, m, 0, 0, pix_w, pix_h, 1, XYPixmap);
+      XImage *im2;
+      int x, y;
+      XGCValues gcv;
+      GC gc;
+      unsigned long black =
+        BlackPixelOfScreen (DefaultScreenOfDisplay (state->dpy));
+
+      XFreePixmap (state->dpy, p);
+      XFreePixmap (state->dpy, m);
+      if (pix_w != 256*7) abort();
+      if (pix_h != 10) abort();
+      if (pix_w != FONT6x10_WIDTH) abort();
+      if (pix_h != FONT6x10_HEIGHT) abort();
+
+      XGetWindowAttributes (state->dpy, state->window, &xgwa);
+      im2 = XCreateImage (state->dpy, xgwa.visual, 1, XYBitmap, 0, 0,
+                          pix_w, pix_h, 8, 0);
+      im2->data = malloc (im2->bytes_per_line * im2->height);
+
+      /* Convert deep image to 1 bit */
+      for (y = 0; y < pix_h; y++)
+        for (x = 0; x < pix_w; x++)
+          XPutPixel (im2, x, y,
+                     (XGetPixel (mm, x, y)
+                      ? (XGetPixel (im, x, y) == black)
+                      : 0));
+
+      XDestroyImage (im);
+      XDestroyImage (mm);
+      im = 0;
+
+      p2 = XCreatePixmap (state->dpy, state->window, 
+                          im2->width, im2->height, im2->depth);
+      gcv.foreground = 1;
+      gcv.background = 0;
+      gc = XCreateGC (state->dpy, p2, GCForeground|GCBackground, &gcv);
+      XPutImage (state->dpy, p2, gc, im2, 0, 0, 0, 0, im2->width, im2->height);
+      XFreeGC (state->dpy, gc);
+      XDestroyImage (im2);
     }
   else
 # endif /* BUILTIN_FONT */
@@ -426,7 +486,7 @@ capture_font_bits (p_state *state)
                            GCCapStyle | GCLineWidth),
                           &state->gcv);
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
   jwxyz_XSetAntiAliasing (state->dpy, state->gc0, False);
   jwxyz_XSetAntiAliasing (state->dpy, state->gc1, False);
 #endif
@@ -452,7 +512,7 @@ capture_font_bits (p_state *state)
   if (p2)
     {
       XCopyPlane (state->dpy, p2, p, state->gc1,
-                  0, 0, font6x10_width, font6x10_height, 
+                  0, 0, FONT6x10_WIDTH, FONT6x10_HEIGHT, 
                   0, 0, 1);
       XFreePixmap (state->dpy, p2);
     }
@@ -729,6 +789,56 @@ scroll (p_state *state)
 }
 
 
+static int
+process_unicrud (p_state *state, int c)
+{
+  if ((c & 0xE0) == 0xC0) {        /* 110xxxxx: 11 bits, 2 bytes */
+    state->unicruds = 1;
+    state->unicrud[0] = c;
+    state->escstate = 102;
+  } else if ((c & 0xF0) == 0xE0) { /* 1110xxxx: 16 bits, 3 bytes */
+    state->unicruds = 1;
+    state->unicrud[0] = c;
+    state->escstate = 103;
+  } else if ((c & 0xF8) == 0xF0) { /* 11110xxx: 21 bits, 4 bytes */
+    state->unicruds = 1;
+    state->unicrud[0] = c;
+    state->escstate = 104;
+  } else if ((c & 0xFC) == 0xF8) { /* 111110xx: 26 bits, 5 bytes */
+    state->unicruds = 1;
+    state->unicrud[0] = c;
+    state->escstate = 105;
+  } else if ((c & 0xFE) == 0xFC) { /* 1111110x: 31 bits, 6 bytes */
+    state->unicruds = 1;
+    state->unicrud[0] = c;
+    state->escstate = 106;
+  } else if (state->unicruds == 0) {
+    return c;
+  } else {
+    int total = state->escstate - 100;  /* see what I did there */
+    if (state->unicruds < total) {
+      /* Buffer more bytes of the UTF-8 sequence */
+      state->unicrud[state->unicruds++] = c;
+    }
+
+    if (state->unicruds >= total) {
+      /* Done! Convert it to Latin1 and print that. */
+      char *s;
+      state->unicrud[state->unicruds] = 0;
+      s = utf8_to_latin1 ((const char *) state->unicrud, False);
+      state->unicruds = 0;
+      state->escstate = 0;
+      if (s) {
+        c = (unsigned char) s[0];
+        free (s);
+        return c;
+      }
+    }
+  }
+  return 0;
+}
+
+
 static void
 print_char (p_state *state, int c)
 {
@@ -831,36 +941,10 @@ print_char (p_state *state, int c)
 	      break;
 	    default:
 
-              /* states 102-106 are for UTF-8 decoding */
-
-              if ((c & 0xE0) == 0xC0) {        /* 110xxxxx: 11 bits, 2 bytes */
-                state->unicruds = 1;
-                state->unicrud[0] = c;
-                state->escstate = 102;
+            PRINT: /* Come from states 102-106 */
+              c = process_unicrud (state, c);
+              if (! c)
                 break;
-              } else if ((c & 0xF0) == 0xE0) { /* 1110xxxx: 16 bits, 3 bytes */
-                state->unicruds = 1;
-                state->unicrud[0] = c;
-                state->escstate = 103;
-                break;
-              } else if ((c & 0xF8) == 0xF0) { /* 11110xxx: 21 bits, 4 bytes */
-                state->unicruds = 1;
-                state->unicrud[0] = c;
-                state->escstate = 104;
-                break;
-              } else if ((c & 0xFC) == 0xF8) { /* 111110xx: 26 bits, 5 bytes */
-                state->unicruds = 1;
-                state->unicrud[0] = c;
-                state->escstate = 105;
-                break;
-              } else if ((c & 0xFE) == 0xFC) { /* 1111110x: 31 bits, 6 bytes */
-                state->unicruds = 1;
-                state->unicrud[0] = c;
-                state->escstate = 106;
-                break;
-              }
-
-            PRINT:
 
               /* If the cursor is in column 39 and we print a character, then
                  that character shows up in column 39, and the cursor is no
@@ -1137,35 +1221,12 @@ print_char (p_state *state, int c)
 	  state->escstate = 0;
 	  break;
 
-        case 102:
+        case 102:	/* states 102-106 are for UTF-8 decoding */
         case 103:
         case 104:
         case 105:
         case 106:
-          {
-            int total = state->escstate - 100;  /* see what I did there */
-            if (state->unicruds < total) {
-              /* Buffer more bytes of the UTF-8 sequence */
-              state->unicrud[state->unicruds++] = c;
-            }
-
-            if (state->unicruds >= total) {
-              /* Done! Convert it to Latin1 and print that. */
-              char *s;
-              state->unicrud[state->unicruds] = 0;
-              s = utf8_to_latin1 ((const char *) state->unicrud, False);
-              state->unicruds = 0;
-              state->escstate = 0;
-              if (s) {
-                c = (unsigned char) s[0];
-                free (s);
-                goto PRINT;
-              } else {
-                c = 0;
-              }
-            }
-          }
-          break;
+          goto PRINT;
 
         default:
           abort();
@@ -1196,7 +1257,8 @@ print_char (p_state *state, int c)
 	}
       else
 	{
-          /* #### This should do UTF-8 decoding */
+          c = process_unicrud (state, c);
+          if (!c) return;
 
 	  cell->state = FLARE;
 	  cell->p_char = state->chars[c];
@@ -1236,10 +1298,10 @@ update_display (p_state *state, Bool changed_only)
         if (changed_only && !cell->changed)
           continue;
 
-        width = state->char_width * state->scale;
+        width  = state->char_width  * state->scale;
         height = state->char_height * state->scale;
-        tx = x * width;
-        ty = y * height;
+        tx = x * width  + state->xmargin;
+        ty = y * height + state->ymargin;
 
         if (cell->state == BLANK || cell->p_char->blank_p)
           {
@@ -1305,7 +1367,9 @@ phosphor_reshape (Display *dpy, Window window, void *closure,
 
   if (! changed_p) return;
 
-  textclient_reshape (state->tc, w, h,
+  textclient_reshape (state->tc,
+                      w - state->xmargin * 2,
+                      h - state->ymargin * 2,
                       state->grid_width  - 1,
                       state->grid_height - 1,
                       0);
@@ -1341,6 +1405,7 @@ phosphor_free (Display *dpy, Window window, void *closure)
 
 
 static const char *phosphor_defaults [] = {
+/*  ".lowrez:                true",*/
   ".background:		   Black",
   ".foreground:		   #00FF00",
   "*fpsSolid:		   true",

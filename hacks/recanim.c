@@ -1,4 +1,4 @@
-/* recanim, Copyright (c) 2014-2015 Jamie Zawinski <jwz@jwz.org>
+/* recanim, Copyright (c) 2014-2018 Jamie Zawinski <jwz@jwz.org>
  * Record animation frames of the running screenhack.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -15,12 +15,12 @@
 #endif /* HAVE_CONFIG_H */
 
 #ifdef USE_GL
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
 #  include "jwxyz.h"
-# else /* !HAVE_COCOA -- real Xlib */
+# else /* !HAVE_JWXYZ -- real Xlib */
 #  include <GL/glx.h>
 #  include <GL/glu.h>
-# endif /* !HAVE_COCOA */
+# endif /* !HAVE_JWXYZ */
 # ifdef HAVE_JWZGLES
 #  include "jwzgles.h"
 # endif /* HAVE_JWZGLES */
@@ -40,6 +40,9 @@
 #include "screenhackI.h"
 #include "recanim.h"
 
+#undef gettimeofday  /* wrapped by recanim.h */
+#undef time
+
 struct record_anim_state {
   Screen *screen;
   Window window;
@@ -57,6 +60,62 @@ struct record_anim_state {
   GC gc;
 # endif /* !USE_GL */
 };
+
+
+static double
+double_time (void)
+{
+  struct timeval now;
+# ifdef GETTIMEOFDAY_TWO_ARGS
+  struct timezone tzp;
+  gettimeofday(&now, &tzp);
+# else
+  gettimeofday(&now);
+# endif
+
+  return (now.tv_sec + ((double) now.tv_usec * 0.000001));
+}
+
+
+/* Some of the hacks set their timing based on the real-world wall clock,
+   so to make the animations record at a sensible speed, we need to slow
+   down that clock by discounting the time taken up by snapshotting and
+   saving the frame.
+ */
+static double recanim_time_warp = 0;
+
+void
+screenhack_record_anim_gettimeofday (struct timeval *tv
+# ifdef GETTIMEOFDAY_TWO_ARGS
+                                     , struct timezone *tz
+# endif
+                                     )
+{
+  gettimeofday (tv
+# ifdef GETTIMEOFDAY_TWO_ARGS
+                , tz
+# endif
+                );
+  tv->tv_sec  -= (time_t) recanim_time_warp;
+  tv->tv_usec -= 1000000 * (recanim_time_warp - (time_t) recanim_time_warp);
+}
+
+time_t
+screenhack_record_anim_time (time_t *o)
+{
+  struct timeval tv;
+# ifdef GETTIMEOFDAY_TWO_ARGS
+  struct timezone tz;
+# endif
+  screenhack_record_anim_gettimeofday (&tv
+# ifdef GETTIMEOFDAY_TWO_ARGS
+                                       , &tz
+# endif
+                                       );
+  if (o) *o = tv.tv_sec;
+  return tv.tv_sec;
+}
+
 
 record_anim_state *
 screenhack_record_anim_init (Screen *screen, Window window, int target_frames)
@@ -119,9 +178,9 @@ screenhack_record_anim_init (Screen *screen, Window window, int target_frames)
 # endif /* !USE_GL */
 
 
-# ifndef HAVE_COCOA
+# ifndef HAVE_JWXYZ
   XFetchName (dpy, st->window, &st->title);
-# endif /* !HAVE_COCOA */
+# endif /* !HAVE_JWXYZ */
 
   return st;
 }
@@ -147,6 +206,7 @@ void
 screenhack_record_anim (record_anim_state *st)
 {
   int bytes_per_line = st->xgwa.width * 3;
+  double start_time = double_time();
 
 # ifndef USE_GL
 
@@ -246,7 +306,7 @@ screenhack_record_anim (record_anim_state *st)
 #  error GDK_PIXBUF is required
 # endif /* !HAVE_GDK_PIXBUF */
 
-# ifndef HAVE_COCOA
+# ifndef HAVE_JWXYZ
   {  /* Put percent done in window title */
     int pct = 100 * (st->frame_count + 1) / st->target_frames;
     if (pct != st->pct && st->title)
@@ -260,10 +320,12 @@ screenhack_record_anim (record_anim_state *st)
         st->pct = pct;
       }
   }
-# endif /* !HAVE_COCOA */
+# endif /* !HAVE_JWXYZ */
 
   if (++st->frame_count >= st->target_frames)
     screenhack_record_anim_free (st);
+
+  recanim_time_warp += double_time() - start_time;
 }
 
 
@@ -307,13 +369,15 @@ screenhack_record_anim_free (record_anim_state *st)
 
   sprintf (cmd,
            "ffmpeg"
+           " -hide_banner"
+           " -v 16"
            " -framerate 30"	/* rate of input: must be before -i */
            " -i '%s-%%06d.%s'"
            " -r 30",		/* rate of output: must be after -i */
            progname, type);
   if (soundtrack)
     sprintf (cmd + strlen(cmd),
-             " -i '%s' -map 0:v:0 -map 1:a:0 -acodec libfaac",
+             " -i '%s' -map 0:v:0 -map 1:a:0 -acodec aac",
              soundtrack);
   sprintf (cmd + strlen(cmd),
            " -c:v libx264"
@@ -321,7 +385,8 @@ screenhack_record_anim_free (record_anim_state *st)
            " -crf 18"
            " -pix_fmt yuv420p"
            " '%s'"
-           " 2>&-",
+           " </dev/null"
+           /*" 2>&-"*/,
            fn);
   fprintf (stderr, "%s: exec: %s\n", progname, cmd);
   system (cmd);

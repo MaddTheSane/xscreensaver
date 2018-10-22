@@ -897,7 +897,7 @@ saver_exit (saver_info *si, int status, const char *dump_core_reason)
 
       if (bugp)
 	fprintf(real_stderr,
-		"%s: see http://www.jwz.org/xscreensaver/bugs.html\n"
+		"%s: see https://www.jwz.org/xscreensaver/bugs.html\n"
 		"\t\t\tfor bug reporting information.\n\n",
 		blurb());
 
@@ -944,6 +944,9 @@ store_saver_id (saver_screen_info *ssi)
   struct passwd *p = getpwuid (getuid ());
   const char *name, *host;
   char *id;
+# if defined(HAVE_UNAME)
+  struct utsname uts;
+# endif /* UNAME */
 
   /* First store the name and class on the window.
    */
@@ -976,7 +979,6 @@ store_saver_id (saver_screen_info *ssi)
 
 # if defined(HAVE_UNAME)
   {
-    struct utsname uts;
     if (uname (&uts) < 0)
       host = "???";
     else
@@ -1008,7 +1010,7 @@ store_saver_status (saver_info *si)
 
   status = (PROP32 *) calloc (size, sizeof(PROP32));
 
-  status[0] = (PROP32) (si->screen_blanked_p
+  status[0] = (PROP32) (si->screen_blanked_p || si->locked_p
                         ? (si->locked_p ? XA_LOCK : XA_BLANK)
                         : 0);
   status[1] = (PROP32) si->blank_time;

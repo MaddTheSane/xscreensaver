@@ -39,10 +39,11 @@ static const char sccsid[] = "@(#)polyominoes.c 5.01 2000/12/18 xlockmore";
 					"*ncolors: 64 \n" \
 					"*fpsSolid: true \n" \
 
+# define release_polyominoes 0
+# define reshape_polyominoes 0
 # define polyominoes_handle_event 0
 # define SMOOTH_COLORS
 # include "xlockmore.h"		/* in xscreensaver distribution */
-# include "erase.h"
 #else /* STANDALONE */
 # include "xlock.h"		/* in xlockmore distribution */
 #endif /* STANDALONE */
@@ -81,9 +82,9 @@ ENTRYPOINT ModeSpecOpt polyominoes_opts =
 
 #ifdef USE_MODULES
 ModStruct   polyominoes_description = {
-  "polyominoes", "init_polyominoes", "draw_polyominoes", "release_polyominoes",
-  "refresh_polyominoes", "init_polyominoes", (char *) NULL, &polyominoes_opts,
-  6000, 1, 8192, 1, 64, 1.0, "",
+  "polyominoes", "init_polyominoes", "draw_polyominoes", (char *) NULL,
+  "refresh_polyominoes", "init_polyominoes", "free_polyominoes",
+  &polyominoes_opts, 6000, 1, 8192, 1, 64, 1.0, "",
   "Shows attempts to place polyominoes into a rectangle", 0, NULL
 };
 
@@ -176,10 +177,6 @@ typedef struct _polyominoesstruct{
   int *reason_to_not_attach;
 
   int counter;
-
-#ifdef STANDALONE
-  eraser_state *eraser;
-#endif
 } polyominoesstruct;
 
 #define ARRAY(x,y)         (sp->array[(x)*sp->height+(y)])
@@ -513,7 +510,7 @@ static int
 score_point(polyominoesstruct *sp, int x, int y, int min_score_so_far)
 {
   int poly_no, point_no, transform_index, i, attachable;
-  point_type attach_point, target_point;
+  point_type attach_point = { 0, 0 }, target_point = { 0, 0 };
   int score = 0;
 
   if (x>=1 && x<sp->width-1 && y>=1 && y<sp->height-1 &&
@@ -586,7 +583,7 @@ static
 void detach(polyominoesstruct *sp, int *poly_no, int *point_no, int *transform_index, point_type *attach_point, int rot180)
 {
   int i;
-  point_type target_point;
+  point_type target_point = { 0, 0 };
 
   if (sp->nr_attached == 0) return;
   sp->nr_attached--;
@@ -614,7 +611,7 @@ void detach(polyominoesstruct *sp, int *poly_no, int *point_no, int *transform_i
 static
 int attach(polyominoesstruct *sp, int poly_no, int point_no, int transform_index, point_type attach_point, int rot180,
            int *reason_to_not_attach) {
-  point_type target_point;
+  point_type target_point = { 0, 0 };
   int i;
   int attachable = 1, worst_reason_not_to_attach = 1000000000;
 
@@ -1052,8 +1049,9 @@ static void free_bitmaps(polyominoesstruct *sp)
 
 #define deallocate(p,t) if ((p)!=NULL) {free(p); p=(t*)NULL;}
 
-static void free_polyominoes(polyominoesstruct *sp)
+ENTRYPOINT void free_polyominoes(ModeInfo * mi)
 {
+  polyominoesstruct *sp = &polyominoeses[MI_SCREEN(mi)];
   int n;
 
   for (n=0;n<sp->nr_polyominoes;n++) {
@@ -1072,7 +1070,7 @@ static void free_polyominoes(polyominoesstruct *sp)
 }
 
 #define set_allocate(p,type,size) p = (type *) malloc(size);		\
-                             if ((p)==NULL) {free_polyominoes(sp);return 0;}
+                             if ((p)==NULL) {free_polyominoes(mi);return 0;}
 
 #define copy_polyomino(dst,src,new_rand)				\
   (dst).len=(src).len;							\
@@ -1546,7 +1544,7 @@ into a rectangle whose size is 20x3, 15x4, 12x5 or 10x6.
 */
 
 static
-int set_pentomino_puzzle(polyominoesstruct *sp)
+int set_pentomino_puzzle(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_poly[12], perm_point[5], perm_transform[8], i, p;
 
@@ -1593,7 +1591,7 @@ into a rectangle.
 */
 
 static
-int set_one_sided_pentomino_puzzle(polyominoesstruct *sp)
+int set_one_sided_pentomino_puzzle(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_poly[18], perm_point[5], perm_transform[8], i, p;
 
@@ -1637,7 +1635,7 @@ into a rectangle.
 */
 
 static
-int set_one_sided_hexomino_puzzle(polyominoesstruct *sp)
+int set_one_sided_hexomino_puzzle(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_poly[60], perm_point[6], perm_transform[8], i, p;
 
@@ -1697,7 +1695,7 @@ pentominoes into a rectangle.
 */
 
 static
-int set_tetr_pentomino_puzzle(polyominoesstruct *sp)
+int set_tetr_pentomino_puzzle(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_poly[17], perm_point[5], perm_transform[8], i, p;
 
@@ -1737,7 +1735,7 @@ hexominoes into a rectangle whose size is 18x15.
 */
 
 static
-int set_pent_hexomino_puzzle(polyominoesstruct *sp)
+int set_pent_hexomino_puzzle(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_poly[47], perm_point[6], perm_transform[8], i, p;
 
@@ -1799,7 +1797,7 @@ static struct {int len; point_type point[5];
    8, {0, 1, 2, 3, 4, 5, 6, 7}, 3};
 
 static
-int set_pentomino_puzzle1(polyominoesstruct *sp)
+int set_pentomino_puzzle1(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[5], perm_transform[8], i, p;
 
@@ -1831,7 +1829,7 @@ static struct {int len; point_type point[6];
    8, {0, 1, 2, 3, 4, 5, 6, 7}, 4};
 
 static
-int set_hexomino_puzzle1(polyominoesstruct *sp)
+int set_hexomino_puzzle1(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[6], perm_transform[8], i, p;
 
@@ -1865,7 +1863,7 @@ static struct {int len; point_type point[7];
    8, {0, 1, 2, 3, 4, 5, 6, 7}, 4};
 
 static
-int set_heptomino_puzzle1(polyominoesstruct *sp)
+int set_heptomino_puzzle1(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[7], perm_transform[8], i, p;
 
@@ -1899,7 +1897,7 @@ by Solomon W. Golomb   Princeton University Press 1994
 
 */
 static
-int set_heptomino_puzzle2(polyominoesstruct *sp)
+int set_heptomino_puzzle2(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[7], perm_transform[8], i, p;
 
@@ -1934,7 +1932,7 @@ static struct {int len; point_type point[11];
    8, {0, 1, 2, 3, 4, 5, 6, 7}, 6};
 
 static
-int set_elevenomino_puzzle1(polyominoesstruct *sp)
+int set_elevenomino_puzzle1(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[11], perm_transform[8], i, p;
 
@@ -1974,7 +1972,7 @@ static struct {int len; point_type point[10];
    8, {0, 1, 2, 3, 4, 5, 6, 7}, 5};
 
 static
-int set_dekomino_puzzle1(polyominoesstruct *sp)
+int set_dekomino_puzzle1(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[10], perm_transform[8], i, p;
 
@@ -2009,7 +2007,7 @@ static struct {int len; point_type point[10];
    8, {0, 1, 2, 3, 4, 5, 6, 7}, 5};
 
 static
-int set_octomino_puzzle1(polyominoesstruct *sp)
+int set_octomino_puzzle1(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[8], perm_transform[8], i, p;
 
@@ -2036,7 +2034,7 @@ int set_octomino_puzzle1(polyominoesstruct *sp)
 */
 
 static
-int set_pentomino_puzzle2(polyominoesstruct *sp)
+int set_pentomino_puzzle2(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[5], perm_transform[8], i, p;
 
@@ -2064,7 +2062,7 @@ int set_pentomino_puzzle2(polyominoesstruct *sp)
 */
 
 static
-int set_elevenomino_puzzle2(polyominoesstruct *sp)
+int set_elevenomino_puzzle2(ModeInfo * mi, polyominoesstruct *sp)
 {
   int perm_point[11], perm_transform[8], i, p;
 
@@ -2087,7 +2085,7 @@ int set_elevenomino_puzzle2(polyominoesstruct *sp)
 The main functions.
 **************************************************/
 
-#define allocate(p,type,size) p = (type *) malloc(size); if ((p)==NULL) {free_polyominoes(sp); return;}
+#define allocate(p,type,size) p = (type *) malloc(size); if ((p)==NULL) {free_polyominoes(mi); return;}
 
 ENTRYPOINT void
 init_polyominoes (ModeInfo * mi)
@@ -2097,15 +2095,8 @@ init_polyominoes (ModeInfo * mi)
   int box1, box2;
   int *perm;
 
-  if (polyominoeses == NULL) {
-    if ((polyominoeses
-         = (polyominoesstruct *) calloc(MI_NUM_SCREENS(mi),sizeof (polyominoesstruct))) 
-        == NULL)
-      return;
-  }
+  MI_INIT (mi, polyominoeses);
   sp = &polyominoeses[MI_SCREEN(mi)];
-
-  free_polyominoes(sp);
 
   sp->rot180 = 0;
   sp->counter = 0;
@@ -2120,65 +2111,71 @@ init_polyominoes (ModeInfo * mi)
   if (sp->identical) {
     switch (NRAND(9)) {
       case 0:
-        if (!set_pentomino_puzzle1(sp))
+        if (!set_pentomino_puzzle1(mi, sp))
           return;
         break;
       case 1:
-        if (!set_hexomino_puzzle1(sp))
+        if (!set_hexomino_puzzle1(mi, sp))
           return;
         break;
       case 2:
-        if (!set_heptomino_puzzle1(sp))
+        if (!set_heptomino_puzzle1(mi, sp))
           return;
         break;
       case 3:
-        if (!set_heptomino_puzzle2(sp))
+        if (!set_heptomino_puzzle2(mi, sp))
           return;
         break;
       case 4:
-        if (!set_elevenomino_puzzle1(sp))
+        if (!set_elevenomino_puzzle1(mi, sp))
           return;
         break;
       case 5:
-        if (!set_dekomino_puzzle1(sp))
+        if (!set_dekomino_puzzle1(mi, sp))
           return;
         break;
       case 6:
-        if (!set_octomino_puzzle1(sp))
+        if (!set_octomino_puzzle1(mi, sp))
           return;
         break;
       case 7:
-        if (!set_pentomino_puzzle2(sp))
+        if (!set_pentomino_puzzle2(mi, sp))
           return;
         break;
       case 8:
-        if (!set_elevenomino_puzzle2(sp))
+        if (!set_elevenomino_puzzle2(mi, sp))
           return;
         break;
     }
   } else {
     switch (NRAND(5)) {
       case 0:
-        if (!set_pentomino_puzzle(sp))
+        if (!set_pentomino_puzzle(mi, sp))
           return;
         break;
       case 1:
-        if (!set_one_sided_pentomino_puzzle(sp))
+        if (!set_one_sided_pentomino_puzzle(mi, sp))
           return;
         break;
       case 2:
-        if (!set_one_sided_hexomino_puzzle(sp))
+        if (!set_one_sided_hexomino_puzzle(mi, sp))
           return;
         break;
       case 3:
-        if (!set_pent_hexomino_puzzle(sp))
+        if (!set_pent_hexomino_puzzle(mi, sp))
           return;
         break;
       case 4:
-        if (!set_tetr_pentomino_puzzle(sp))
+        if (!set_tetr_pentomino_puzzle(mi, sp))
           return;
         break;
     }
+  }
+
+  if (MI_HEIGHT(mi) > MI_WIDTH(mi)) {  /* rotate if portrait */
+    int swap = sp->height;
+    sp->height = sp->width;
+    sp->width = swap;
   }
 
   allocate(sp->attach_list,int,sp->nr_polyominoes*sizeof(int));
@@ -2201,6 +2198,13 @@ init_polyominoes (ModeInfo * mi)
     sp->box = box1;
   else
     sp->box = box2;
+
+  if (MI_WIDTH(mi) > MI_HEIGHT(mi) * 5 ||  /* weird window aspect ratio */
+      MI_HEIGHT(mi) > MI_WIDTH(mi)* 5) {
+    sp->box *= (MI_WIDTH(mi) > MI_HEIGHT(mi)
+                ? MI_WIDTH(mi) / (double) MI_HEIGHT(mi)
+                : MI_HEIGHT(mi) / (double) MI_WIDTH(mi));
+  }
 
   if (sp->box >= 12) {
     sp->box = (sp->box/12)*12;
@@ -2247,10 +2251,8 @@ init_polyominoes (ModeInfo * mi)
 
   sp->wait = 0;
 
-#ifndef STANDALONE
   /* Clear the background. */
   MI_CLEARWINDOW(mi);
-#endif
   
 }
 
@@ -2266,27 +2268,14 @@ draw_polyominoes (ModeInfo * mi)
     return;
   sp = &polyominoeses[MI_SCREEN(mi)];
 
-#ifdef STANDALONE
-    if (sp->eraser) {
-      sp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), sp->eraser);
-      return;
-    }
-#endif
-
   if (MI_CYCLES(mi) != 0) {
     if (++sp->counter > MI_CYCLES(mi)) {
-#ifdef STANDALONE
-      sp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), sp->eraser);
-#endif /* STANDALONE */
       init_polyominoes(mi);
       return;
     }
   }
 
   if (sp->box == 0) {
-#ifdef STANDALONE
-    sp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), sp->eraser);
-#endif /* STANDALONE */
     init_polyominoes(mi);
     return;
   }
@@ -2366,31 +2355,13 @@ draw_polyominoes (ModeInfo * mi)
     sp->wait = 0;
 }
 
-ENTRYPOINT void
-reshape_polyominoes(ModeInfo * mi, int width, int height)
-{
-  XClearWindow (MI_DISPLAY (mi), MI_WINDOW(mi));
-  init_polyominoes (mi);
-}
-
-ENTRYPOINT void
-release_polyominoes(ModeInfo * mi)
-{
-  int screen;
-  
-  if (polyominoeses != NULL) {
-    for (screen=0;screen<MI_NUM_SCREENS(mi); screen++)
-      free_polyominoes(&polyominoeses[screen]);
-    (void) free((void *) polyominoeses);
-    polyominoeses = (polyominoesstruct *) NULL;
-  }
-}
-
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_polyominoes (ModeInfo * mi)
 {
   MI_CLEARWINDOW(mi);
 }
+#endif
 
 XSCREENSAVER_MODULE ("Polyominoes", polyominoes)
 

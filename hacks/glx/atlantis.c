@@ -112,7 +112,8 @@ static const char sccsid[] = "@(#)atlantis.c	5.08 2003/04/09 xlockmore";
 			 "*cycles:       100 \n" \
 			 "*size:        6000 \n" \
 			 "*wireframe:  False \n"
-# define atlantis_handle_event 0
+# define release_atlantis 0
+# define atlantis_handle_event xlockmore_no_events
 # include "xlockmore.h"		/* from the xscreensaver distribution */
 #else  /* !STANDALONE */
 # include "xlock.h"		/* from the xlockmore distribution */
@@ -155,8 +156,8 @@ ENTRYPOINT ModeSpecOpt atlantis_opts =
 
 #ifdef USE_MODULES
 ModStruct   atlantis_description =
-{"atlantis", "init_atlantis", "draw_atlantis", "release_atlantis",
- "refresh_atlantis", "change_atlantis", NULL, &atlantis_opts,
+{"atlantis", "init_atlantis", "draw_atlantis", NULL,
+ "refresh_atlantis", "change_atlantis", "free_atlantis", &atlantis_opts,
  1000, NUM_SHARKS, SHARKSPEED, SHARKSIZE, 64, 1.0, "",
  "Shows moving sharks/whales/dolphin", 0, NULL};
 
@@ -164,19 +165,18 @@ ModStruct   atlantis_description =
 
 static atlantisstruct *atlantis = NULL;
 
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 
-#include "../images/sea-texture.xpm"
+#include "images/gen/sea-texture_png.h"
 
 
 static void
 parse_image_data(ModeInfo *mi)
 {
   atlantisstruct *ap = &atlantis[MI_SCREEN(mi)];
-  ap->texture = xpm_to_ximage (mi->dpy,
-			       mi->xgwa.visual,
-			       mi->xgwa.colormap,
-			       sea_texture);
+  ap->texture = image_data_to_ximage (mi->dpy, mi->xgwa.visual,
+                                      sea_texture_png,
+                                      sizeof(sea_texture_png));
 }
 
 static void
@@ -321,14 +321,22 @@ Init(ModeInfo *mi)
 ENTRYPOINT void
 reshape_atlantis(ModeInfo * mi, int width, int height)
 {
-	atlantisstruct *ap = &atlantis[MI_SCREEN(mi)];
+  double h = (GLfloat) height / (GLfloat) width;  
+  atlantisstruct *ap = &atlantis[MI_SCREEN(mi)];
+  int y = 0;
 
-	glViewport(0, 0, ap->WinW = (GLint) width, ap->WinH = (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(400.0, (GLdouble) width / (GLdouble) height, 1.0, 2000000.0);
-	glMatrixMode(GL_MODELVIEW);
+  glViewport(0, y, ap->WinW = (GLint) width, ap->WinH = (GLint) height);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(400.0, 1/h, 1.0, 2000000.0);
+  glMatrixMode(GL_MODELVIEW);
 }
 
 
@@ -354,7 +362,7 @@ clear_tank (atlantisstruct * ap)
         glPushMatrix();
         {
           glLoadIdentity();
-          glRotatef(current_device_rotation(), 0, 0, 1);
+          /* glRotatef(current_device_rotation(), 0, 0, 1); */
 
 # ifndef HAVE_JWZGLES
           glShadeModel (GL_SMOOTH);
@@ -367,6 +375,9 @@ clear_tank (atlantisstruct * ap)
           glVertex3f ( 1,  1, 1); glVertex3f (-1,  1, 1);
           glEnd();
           glEnable (GL_LIGHTING);
+
+          /* Need to reset this because jwzgles conflates color and material */
+          glColor3f (0.0, 0.1, 0.2);
         }
         glPopMatrix();
       }
@@ -448,11 +459,7 @@ init_atlantis(ModeInfo * mi)
 	Display    *display = MI_DISPLAY(mi);
 	Window      window = MI_WINDOW(mi);
 
-	if (atlantis == NULL) {
-		if ((atlantis = (atlantisstruct *) calloc(MI_NUM_SCREENS(mi),
-					   sizeof (atlantisstruct))) == NULL)
-			return;
-	}
+	MI_INIT(mi, atlantis);
 	ap = &atlantis[screen];
 	ap->num_sharks = MI_COUNT(mi);
 	if (ap->sharks == NULL) {
@@ -531,37 +538,27 @@ draw_atlantis(ModeInfo * mi)
 /*
  *-----------------------------------------------------------------------------
  *    The display is being taken away from us.  Free up malloc'ed 
- *      memory and X resources that we've alloc'ed.  Only called
- *      once, we must zap everything for every screen.
+ *      memory and X resources that we've alloc'ed.
  *-----------------------------------------------------------------------------
  */
 
 ENTRYPOINT void
-release_atlantis(ModeInfo * mi)
+free_atlantis(ModeInfo * mi)
 {
 #if 0
-	int         screen;
+	atlantisstruct *ap = &atlantis[screen];
 
-	if (atlantis != NULL) {
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			atlantisstruct *ap = &atlantis[screen];
-
-			if (ap->sharks)
-				(void) free((void *) ap->sharks);
-		}
-		(void) free((void *) atlantis);
-		atlantis = NULL;
-	}
-	FreeAllGL(mi);
+	if (ap->sharks)
+		(void) free((void *) ap->sharks);
 #endif
 }
 
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_atlantis(ModeInfo * mi)
 {
 }
 
-#ifndef STANDALONE
 ENTRYPOINT void
 change_atlantis(ModeInfo * mi)
 {

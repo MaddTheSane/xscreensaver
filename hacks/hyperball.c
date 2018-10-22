@@ -227,7 +227,7 @@ hyperball_draw (Display *dpy, Window window, void *closure)
   if (icon || !(hs->roted | resize))
     goto skip1;
 
-#ifdef HAVE_COCOA	/* Don't second-guess Quartz's double-buffering */
+#ifdef HAVE_JWXYZ	/* Don't second-guess Quartz's double-buffering */
   XClearWindow (dpy, window);
 #endif
 
@@ -337,9 +337,7 @@ hyperball_draw (Display *dpy, Window window, void *closure)
         int q_y;
         GC erase_gc;
         GC draw_gc;
-        int old_sum;
         int new_sum;
-        int old_dep;
         int new_dep;
 
         ip = li_ptr->li_ip;
@@ -362,11 +360,8 @@ hyperball_draw (Display *dpy, Window window, void *closure)
         else
           {
             GC *row;
-
-            old_sum = sp->old_dep + sq->old_dep;
             new_sum = sp->new_dep + sq->new_dep;
             row = &hs->hs_color_gcs[col][0];
-            old_dep = old_sum >> 6;
             new_dep = new_sum >> 6;
             erase_gc = hs->black_gc;
             draw_gc = row[new_dep];
@@ -498,7 +493,7 @@ hyperball_event (Display *dpy, Window win, void *closure, XEvent *event)
         }
       break;
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
     case UnmapNotify:
       hs->hs_icon = 1;
       hs->hs_redraw = 0;

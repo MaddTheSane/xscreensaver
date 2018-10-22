@@ -47,7 +47,7 @@ static const char sccsid[] = "@(#)sballs.c	5.02 2001/03/10 xlockmore";
  			"*showFPS: 	False \n" \
  			"*wireframe:  	False \n" \
 
-# define refresh_sballs 0
+# define release_sballs 0
 #define MODE_sballs
 #include "xlockmore.h"		/* from the xscreensaver distribution */
 #include "gltrackball.h"
@@ -56,40 +56,23 @@ static const char sccsid[] = "@(#)sballs.c	5.02 2001/03/10 xlockmore";
 #include "visgl.h"
 #endif				/* !STANDALONE */
 
-#ifdef MODE_sballs
-
 #define MINSIZE 	32	/* minimal viewport size */
 #define FRAME           50      /* frame count interval */
 #define MAX_OBJ		8	/* number of 3D objects */
 
 #if defined( USE_XPM ) || defined( USE_XPMINC ) || defined( STANDALONE )
 /* USE_XPM & USE_XPMINC in xlock mode ; HAVE_XPM in xscreensaver mode */
-# include "xpm-ximage.h"
+# include "ximage-loader.h"
 # define I_HAVE_XPM
 
-# ifdef STANDALONE
-
-#  ifdef __GNUC__
-   __extension__ /* don't warn about "string length is greater than the length
-                    ISO C89 compilers are required to support" when including
-                    the following XPM file... */
-#  endif
-#  include "../images/sball.xpm"
-#  ifdef __GNUC__
-   __extension__
-#  endif
-#  include "../images/sball-bg.xpm"
-# else /* !STANDALONE */
-#  include "pixmaps/sball.xpm"
-#  include "pixmaps/sball-bg.xpm"
-# endif /* !STANDALONE */
-#endif /* HAVE_XPM */
+# include "images/gen/sball_png.h"
+# include "images/gen/sball-bg_png.h"
 
 /* Manage option vars */
 #define DEF_TEXTURE	"True"
 #define DEF_OBJECT	"0"
 static Bool do_texture;
-static int  object;
+static int  object, object_arg;
 static int  spheres;
 
 static XrmOptionDescRec opts[] = {
@@ -101,7 +84,7 @@ static XrmOptionDescRec opts[] = {
 
 static argtype vars[] = {
     {&do_texture,    "texture",    "Texture",    DEF_TEXTURE,    t_Bool},
-    {&object,        "object",     "Object",     DEF_OBJECT,     t_Int},
+    {&object_arg,    "object",     "Object",     DEF_OBJECT,     t_Int},
 
 };
 
@@ -117,8 +100,8 @@ ENTRYPOINT ModeSpecOpt sballs_opts =
 
 #ifdef USE_MODULES
 ModStruct sballs_description =
-    { "sballs", "init_sballs", "draw_sballs", "release_sballs",
-    "draw_sballs", "change_sballs", (char *) NULL, &sballs_opts,
+    { "sballs", "init_sballs", "draw_sballs", NULL,
+    "draw_sballs", "change_sballs", "free_sballs", &sballs_opts,
     /*
     delay,count,cycles,size,ncolors,sat
      */
@@ -370,10 +353,9 @@ static void inittextures(ModeInfo * mi)
 	glBindTexture(GL_TEXTURE_2D, sb->backid);
 #endif /* HAVE_GLBINDTEXTURE */
 
-        sb->btexture = xpm_to_ximage(MI_DISPLAY(mi),
-                                     MI_VISUAL(mi),
-                                     MI_COLORMAP(mi),
-                                     sball_bg);
+        sb->btexture = image_data_to_ximage(MI_DISPLAY(mi), MI_VISUAL(mi),
+                                            sball_bg_png,
+                                            sizeof(sball_bg_png));
 	if (!(sb->btexture)) {
 	    (void) fprintf(stderr, "Error reading the background texture.\n");
             glDeleteTextures(1, &sb->backid);
@@ -387,17 +369,19 @@ static void inittextures(ModeInfo * mi)
         clear_gl_error();
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
 		     sb->btexture->width, sb->btexture->height, 0,
-		     GL_RGBA,
-                     /* GL_UNSIGNED_BYTE, */
-                     GL_UNSIGNED_INT_8_8_8_8_REV,
-                     sb->btexture->data);
+		     GL_RGBA, GL_UNSIGNED_BYTE, sb->btexture->data);
         check_gl_error("texture");
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+/*
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        Let's pixellate it instead:
+*/
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
@@ -406,10 +390,8 @@ static void inittextures(ModeInfo * mi)
 	glBindTexture(GL_TEXTURE_2D, sb->faceid);
 #endif /* HAVE_GLBINDTEXTURE */
 
-        sb->ftexture = xpm_to_ximage(MI_DISPLAY(mi),
-                                     MI_VISUAL(mi),
-                                     MI_COLORMAP(mi),
-                                     sball);
+        sb->ftexture = image_data_to_ximage(MI_DISPLAY(mi), MI_VISUAL(mi),
+                                            sball_png, sizeof(sball_png));
 	if (!(sb->ftexture)) {
 	    (void) fprintf(stderr, "Error reading the face texture.\n");
             glDeleteTextures(1, &sb->faceid);
@@ -421,17 +403,19 @@ static void inittextures(ModeInfo * mi)
         clear_gl_error();
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
 		     sb->ftexture->width, sb->ftexture->height, 0,
-		     GL_RGBA,
-                     /* GL_UNSIGNED_BYTE, */
-                     GL_UNSIGNED_INT_8_8_8_8_REV,
-                     sb->ftexture->data);
+		     GL_RGBA, GL_UNSIGNED_BYTE, sb->ftexture->data);
         check_gl_error("texture");
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+/*
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        Let's pixellate it instead:
+*/
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
@@ -525,6 +509,12 @@ ENTRYPOINT void reshape_sballs(ModeInfo * mi, int width, int height)
         sb->WIDTH = (size > MI_WIDTH(mi)) ? MI_WIDTH(mi) : size;
         sb->HEIGHT = (size > MI_HEIGHT(mi)) ? MI_HEIGHT(mi) : size;
     }
+
+    if (width > height * 5) {   /* tiny window: show middle */
+      sb->WIDTH = width;
+      sb->HEIGHT = sb->WIDTH*0.75;
+    }
+
     glViewport((MI_WIDTH(mi) - sb->WIDTH) / 2, (MI_HEIGHT(mi) - sb->HEIGHT) / 2, sb->WIDTH, sb->HEIGHT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -564,7 +554,7 @@ static void Draw(ModeInfo * mi)
        glColor3f(0, 0, 0);
     }
     glBegin(GL_QUAD_STRIP);
-#ifndef USE_IPHONE
+#ifndef HAVE_MOBILE
     /* Letterbox the background image */
     glNormal3f(0, 0, 1); glTexCoord2f(0,0); glVertex3f(8, 4.1, -4);
     glNormal3f(0, 0, 1); glTexCoord2f(0,1); glVertex3f(8, -4.1, -4);
@@ -597,8 +587,8 @@ static void Draw(ModeInfo * mi)
     if (do_texture)
 #ifdef HAVE_GLBINDTEXTURE
        glBindTexture(GL_TEXTURE_2D, sb->faceid);
-#endif /* HAVE_GLBINDTEXTURE */
     else
+#endif /* HAVE_GLBINDTEXTURE */
        glEnable(GL_LIGHTING);
     for (sphere=0;sphere<spheres;sphere++)
     {
@@ -636,9 +626,9 @@ static void Init(ModeInfo * mi)
     sb->speed = MI_CYCLES(mi);
 
     /* initialise object number */
-    if ((object == 0) || (object > MAX_OBJ))
-      object = NRAND(MAX_OBJ-1)+1;
-    object--;
+    object = object_arg-1;
+    if (object < 0 || object >= MAX_OBJ)
+      object = NRAND(MAX_OBJ);
 
     /* initialise sphere number */
     spheres = MI_COUNT(mi);
@@ -695,11 +685,7 @@ ENTRYPOINT void init_sballs(ModeInfo * mi)
 {
     sballsstruct *sb;
 
-    if (sballs == NULL) {
-	if ((sballs = (sballsstruct *) calloc(MI_NUM_SCREENS(mi),
-					  sizeof(sballsstruct))) == NULL)
-	    return;
-    }
+    MI_INIT(mi, sballs);
     sb = &sballs[MI_SCREEN(mi)];
 
     sb->trackball = gltrackball_init (True);
@@ -754,33 +740,29 @@ ENTRYPOINT void draw_sballs(ModeInfo * mi)
 /*
  *-----------------------------------------------------------------------------
  *    The display is being taken away from us.  Free up malloc'ed
- *      memory and X resources that we've alloc'ed.  Only called
- *      once, we must zap everything for every screen.
+ *      memory and X resources that we've alloc'ed.
  *-----------------------------------------------------------------------------
  */
 
-ENTRYPOINT void release_sballs(ModeInfo * mi)
+ENTRYPOINT void free_sballs(ModeInfo * mi)
 {
-    int screen;
-
-    if (sballs != NULL) {
-	for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-	    sballsstruct *sb = &sballs[screen];
-	    if (sb->btexture)
-	    {
-		glDeleteTextures(1,&sb->backid);
-		XDestroyImage(sb->btexture);
-	    }
-	    if (sb->ftexture)
-	    {
-		glDeleteTextures(1,&sb->faceid);
-		XDestroyImage(sb->ftexture);
-	    }
+    sballsstruct *sb = &sballs[MI_SCREEN(mi)];
+    if (sb->glx_context)
+    {
+	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(sb->glx_context));
+	if (sb->btexture)
+	{
+	    glDeleteTextures(1,&sb->backid);
+	    XDestroyImage(sb->btexture);
+            sb->btexture = 0;
 	}
-	(void) free((void *) sballs);
-	sballs = (sballsstruct *) NULL;
+	if (sb->ftexture)
+	{
+	    glDeleteTextures(1,&sb->faceid);
+	    XDestroyImage(sb->ftexture);
+            sb->ftexture = 0;
+	}
     }
-    FreeAllGL(mi);
 }
 
 ENTRYPOINT Bool

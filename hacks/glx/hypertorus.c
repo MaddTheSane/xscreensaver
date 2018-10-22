@@ -87,24 +87,23 @@ static const char sccsid[] = "@(#)hypertorus.c  1.2 05/09/28 xlockmore";
 #ifdef STANDALONE
 # define DEFAULTS           "*delay:      25000 \n" \
                             "*showFPS:    False \n" \
+			    "*suppressRotationAnimation: True\n" \
 
-# define refresh_hypertorus 0
+# define free_hypertorus 0
+# define release_hypertorus 0
 # include "xlockmore.h"         /* from the xscreensaver distribution */
 #else  /* !STANDALONE */
 # include "xlock.h"             /* from the xlockmore distribution */
 #endif /* !STANDALONE */
 
 #ifdef USE_GL
-#ifndef HAVE_COCOA
-# include <X11/keysym.h>
-#endif
 
 #include "gltrackball.h"
 
 
 #ifdef USE_MODULES
 ModStruct   hypertorus_description =
-{"hypertorus", "init_hypertorus", "draw_hypertorus", "release_hypertorus",
+{"hypertorus", "init_hypertorus", "draw_hypertorus", NULL,
  "draw_hypertorus", "change_hypertorus", NULL, &hypertorus_opts,
  25000, 1, 1, 1, 1.0, 4, "",
  "Shows a hypertorus rotating in 4d", 0, NULL};
@@ -505,6 +504,17 @@ static int hypertorus(ModeInfo *mi, double umin, double umax, double vmin,
     }
   }
 
+#if 0 /* #### not working */
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
+#endif
+
   skew = num_spirals;
   ur = umax-umin;
   vr = vmax-vmin;
@@ -734,11 +744,19 @@ static void display_hypertorus(ModeInfo *mi)
 ENTRYPOINT void reshape_hypertorus(ModeInfo *mi, int width, int height)
 {
   hypertorusstruct *hp = &hyper[MI_SCREEN(mi)];
+  double h = (GLfloat) height / (GLfloat) width;  
+  int y = 0;
+
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
 
   hp->WindW = (GLint)width;
   hp->WindH = (GLint)height;
-  glViewport(0,0,width,height);
-  hp->aspect = (GLfloat)width/(GLfloat)height;
+  glViewport(0,y,width,height);
+  hp->aspect = h;
 }
 
 
@@ -820,13 +838,7 @@ ENTRYPOINT void init_hypertorus(ModeInfo *mi)
 {
   hypertorusstruct *hp;
 
-  if (hyper == NULL)
-  {
-    hyper = (hypertorusstruct *)calloc(MI_NUM_SCREENS(mi),
-                                       sizeof(hypertorusstruct));
-    if (hyper == NULL)
-      return;
-  }
+  MI_INIT(mi, hyper);
   hp = &hyper[MI_SCREEN(mi)];
 
   
@@ -985,33 +997,6 @@ ENTRYPOINT void draw_hypertorus(ModeInfo *mi)
   glXSwapBuffers(display,window);
 }
 
-
-/*
- *-----------------------------------------------------------------------------
- *    The display is being taken away from us.  Free up malloc'ed 
- *      memory and X resources that we've alloc'ed.  Only called
- *      once, we must zap everything for every screen.
- *-----------------------------------------------------------------------------
- */
-
-ENTRYPOINT void release_hypertorus(ModeInfo *mi)
-{
-  if (hyper != NULL)
-  {
-    int screen;
-
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-    {
-      hypertorusstruct *hp = &hyper[screen];
-
-      if (hp->glx_context)
-        hp->glx_context = (GLXContext *)NULL;
-    }
-    (void) free((void *)hyper);
-    hyper = (hypertorusstruct *)NULL;
-  }
-  FreeAllGL(mi);
-}
 
 #ifndef STANDALONE
 ENTRYPOINT void change_hypertorus(ModeInfo *mi)

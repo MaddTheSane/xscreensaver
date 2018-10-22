@@ -75,8 +75,11 @@ static const char sccsid[] = "@(#)superquadrics.c	4.07 97/11/24 xlockmore";
 					"*count:		25      \n"			\
 					"*cycles:		40      \n"			\
 					"*showFPS:      False   \n"			\
-					"*wireframe:	False	\n"
+					"*wireframe:	False	\n"			\
+					"*suppressRotationAnimation: True\n" \
 
+# define free_superquadrics 0
+# define release_superquadrics 0
 # define superquadrics_handle_event 0
 # include "xlockmore.h"				/* from the xscreensaver distribution */
 #else  /* !STANDALONE */
@@ -114,7 +117,7 @@ ENTRYPOINT ModeSpecOpt superquadrics_opts =
 
 #ifdef USE_MODULES
 ModStruct   superquadrics_description =
-{"superquadrics", "init_superquadrics", "draw_superquadrics", "release_superquadrics",
+{"superquadrics", "init_superquadrics", "draw_superquadrics", NULL,
  "refresh_superquadrics", "init_superquadrics", NULL, &superquadrics_opts,
  1000, 25, 40, 1, 4, 1.0, "",
  "Shows 3D mathematical shapes", 0, NULL};
@@ -547,8 +550,9 @@ NextSuperquadric(superquadricsstruct * sp)
 }
 
 static int
-DisplaySuperquadrics(superquadricsstruct * sp)
+DisplaySuperquadrics(ModeInfo *mi)
 {
+	superquadricsstruct *sp = &superquadrics[MI_SCREEN(mi)];
     int polys = 0;
 	glDrawBuffer(GL_BACK);
 	if (sp->wireframe)
@@ -569,6 +573,16 @@ DisplaySuperquadrics(superquadricsstruct * sp)
 	SetCull(0, sp);
 
     glScalef(0.7, 0.7, 0.7);  /* jwz: scale it down a bit */
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
+
 	polys = DoneScale(sp);
 
 	glPopMatrix();
@@ -578,10 +592,11 @@ DisplaySuperquadrics(superquadricsstruct * sp)
 }
 
 static int
-NextSuperquadricDisplay(superquadricsstruct * sp)
+NextSuperquadricDisplay(ModeInfo *mi)
 {
+	superquadricsstruct *sp = &superquadrics[MI_SCREEN(mi)];
 	NextSuperquadric(sp);
-	return DisplaySuperquadrics(sp);
+	return DisplaySuperquadrics(mi);
 }
 
 #define MINSIZE 200
@@ -604,7 +619,14 @@ ReshapeSuperquadrics(int w, int h)
 		glViewport(0, 0, w, h);
 	}
 #else
-    glViewport(0, 0, w, h);
+    int y = 0;
+
+    if (w > h * 5) {   /* tiny window: show middle */
+      h = w;
+      y = -h/2;
+    }
+
+    glViewport(0, y, w, h);
 #endif
 
 	glMatrixMode(GL_PROJECTION);
@@ -713,11 +735,7 @@ init_superquadrics(ModeInfo * mi)
 
 	superquadricsstruct *sp;
 
-	if (superquadrics == NULL) {
-		if ((superquadrics = (superquadricsstruct *) calloc(MI_NUM_SCREENS(mi),
-				      sizeof (superquadricsstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, superquadrics);
 	sp = &superquadrics[screen];
 	sp->mono = (MI_IS_MONO(mi) ? 1 : 0);
 
@@ -740,7 +758,7 @@ init_superquadrics(ModeInfo * mi)
 				  MI_COUNT(mi), MI_CYCLES(mi), spinspeed, sp);
 		ReshapeSuperquadrics(MI_WIDTH(mi), MI_HEIGHT(mi));
 
-		DisplaySuperquadrics(sp);
+		DisplaySuperquadrics(mi);
 		glFinish();
 		glXSwapBuffers(display, window);
 	} else {
@@ -760,33 +778,25 @@ draw_superquadrics(ModeInfo * mi)
 
 	glXMakeCurrent(display, window, *(sp->glx_context));
 
-    mi->polygon_count = NextSuperquadricDisplay(sp);
+    mi->polygon_count = NextSuperquadricDisplay(mi);
 
     if (mi->fps_p) do_fps (mi);
 	glFinish();
 	glXSwapBuffers(display, window);
 }
 
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_superquadrics(ModeInfo * mi)
 {
 	/* Nothing happens here */
 }
+#endif
 
 ENTRYPOINT void
 reshape_superquadrics(ModeInfo * mi, int width, int height)
 {
   ReshapeSuperquadrics(MI_WIDTH(mi), MI_HEIGHT(mi));
-}
-
-ENTRYPOINT void
-release_superquadrics(ModeInfo * mi)
-{
-	if (superquadrics != NULL) {
-		(void) free((void *) superquadrics);
-		superquadrics = NULL;
-	}
-	FreeAllGL(mi);
 }
 
 

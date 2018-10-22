@@ -90,9 +90,11 @@ static const char sccsid[] = "@(#)polytopes.c  1.2 05/09/28 xlockmore";
 
 #ifdef STANDALONE
 # define DEFAULTS           "*delay:      25000 \n" \
-                            "*showFPS:    False \n"
+                            "*showFPS:    False \n" \
+			    "*suppressRotationAnimation: True\n" \
 
-# define refresh_polytopes 0
+# define free_polytopes 0
+# define release_polytopes 0
 # include "xlockmore.h"         /* from the xscreensaver distribution */
 #else  /* !STANDALONE */
 # include "xlock.h"             /* from the xlockmore distribution */
@@ -100,7 +102,7 @@ static const char sccsid[] = "@(#)polytopes.c  1.2 05/09/28 xlockmore";
 
 #ifdef USE_GL
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # include <X11/keysym.h>
 #endif
 #include "gltrackball.h"
@@ -108,7 +110,7 @@ static const char sccsid[] = "@(#)polytopes.c  1.2 05/09/28 xlockmore";
 
 #ifdef USE_MODULES
 ModStruct   polytopes_description =
-{"polytopes", "init_polytopes", "draw_polytopes", "release_polytopes",
+{"polytopes", "init_polytopes", "draw_polytopes", NULL,
  "draw_polytopes", "change_polytopes", NULL, &polytopes_opts,
  25000, 1, 1, 1, 1.0, 4, "",
  "Shows one of the six regular 4d polytopes rotating in 4d", 0, NULL};
@@ -2827,6 +2829,7 @@ static void display_polytopes(ModeInfo *mi)
   {
     gluPerspective(60.0,pp->aspect,0.1,100.0);
   }
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
@@ -2860,10 +2863,16 @@ static void display_polytopes(ModeInfo *mi)
 ENTRYPOINT void reshape_polytopes(ModeInfo *mi, int width, int height)
 {
   polytopesstruct *pp = &poly[MI_SCREEN(mi)];
+  int y = 0;
+
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width;
+    y = -height/2;
+  }
 
   pp->WindW = (GLint)width;
   pp->WindH = (GLint)height;
-  glViewport(0,0,width,height);
+  glViewport(0,y,width,height);
   pp->aspect = (GLfloat)width/(GLfloat)height;
 }
 
@@ -2946,13 +2955,7 @@ ENTRYPOINT void init_polytopes(ModeInfo *mi)
 {
   polytopesstruct *pp;
 
-  if (poly == NULL)
-  {
-    poly = (polytopesstruct *)calloc(MI_NUM_SCREENS(mi),
-                                     sizeof(polytopesstruct));
-    if (poly == NULL)
-      return;
-  }
+  MI_INIT(mi, poly);
   pp = &poly[MI_SCREEN(mi)];
 
   pp->trackballs[0] = gltrackball_init(True);
@@ -3167,33 +3170,6 @@ ENTRYPOINT void draw_polytopes(ModeInfo *mi)
   glXSwapBuffers(display,window);
 }
 
-
-/*
- *-----------------------------------------------------------------------------
- *    The display is being taken away from us.  Free up malloc'ed 
- *      memory and X resources that we've alloc'ed.  Only called
- *      once, we must zap everything for every screen.
- *-----------------------------------------------------------------------------
- */
-
-ENTRYPOINT void release_polytopes(ModeInfo *mi)
-{
-  if (poly != NULL)
-  {
-    int screen;
-
-    for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-    {
-      polytopesstruct *hp = &poly[screen];
-
-      if (hp->glx_context)
-        hp->glx_context = (GLXContext *)NULL;
-    }
-    (void) free((void *)poly);
-    poly = (polytopesstruct *)NULL;
-  }
-  FreeAllGL(mi);
-}
 
 #ifndef STANDALONE
 ENTRYPOINT void change_polytopes(ModeInfo *mi)

@@ -304,6 +304,7 @@ deco_free (Display *dpy, Window window, void *closure)
 static const char *deco_defaults [] = {
   ".background:		black",
   ".foreground:		white",
+  ".lowrez:		true",
   "*maxDepth:		12",
   "*minWidth:		20",
   "*minHeight:		20",
@@ -313,7 +314,7 @@ static const char *deco_defaults [] = {
   "*goldenRatio:        False",
   "*smoothColors:       False",
   "*mondrian:           False",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation:     True",
 #endif
   0

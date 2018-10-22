@@ -65,7 +65,7 @@ static const char *epicycle_defaults [] = {
   "*divisorPoisson: 0.4",
   "*sizeFactorMin: 1.05",
   "*sizeFactorMax: 2.05",
-#ifdef USE_IPHONE
+#ifdef HAVE_MOBILE
   "*ignoreRotation: True",
 #endif
   0
@@ -618,6 +618,17 @@ static void rescale_circles(struct state *st, Body *pb,
     {
       printf("enlarge by x%.2f skipped...\n", scale);
     }
+
+  if (st->width > st->height * 5 ||  /* window has weird aspect */
+      st->height > st->width * 5)
+    {
+      Circle *p;
+      double r = (st->width > st->height
+                  ? st->width / (double) st->height
+                  : st->height / (double) st->width);
+      for (p=pb->epicycles; p; p=p->pchild)
+        p->radius *= r;
+    }
 }
 
 
@@ -723,7 +734,7 @@ epicycle_draw (Display *dpy, Window window, void *closure)
 
       st->L = compute_divisor_lcm(st->pb0->epicycles);
       
-      st->colour_cycle_rate = fabs(st->L);
+      st->colour_cycle_rate = labs(st->L);
       
       st->xtime = fabs(st->L * st->circle / st->wdot_max);
 

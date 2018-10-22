@@ -1,5 +1,5 @@
 /* xlockmore.c --- xscreensaver compatibility layer for xlockmore modules.
- * xscreensaver, Copyright (c) 1997-2014 Jamie Zawinski <jwz@jwz.org>
+ * xscreensaver, Copyright (c) 1997-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -19,9 +19,12 @@
 #include "xlockmoreI.h"
 #include "screenhack.h"
 
-#if !defined(HAVE_COCOA) && !defined(HAVE_ANDROID)
+#ifndef HAVE_JWXYZ
 # include <X11/Intrinsic.h>
-#endif /* !HAVE_COCOA */
+#endif /* !HAVE_JWXYZ */
+
+#include <assert.h>
+#include <float.h>
 
 #define countof(x) (sizeof((x))/sizeof(*(x)))
 
@@ -157,7 +160,7 @@ xlockmore_setup (struct xscreensaver_function_table *xsft, void *arg)
   /* Put on the PROGCLASS.background/foreground resources. */
   s = (char *) malloc(50);
   *s = 0;
-# ifndef HAVE_COCOA
+# ifndef HAVE_JWXYZ
   strcpy (s, progclass);
 # endif
   strcat (s, ".background: black");
@@ -165,7 +168,7 @@ xlockmore_setup (struct xscreensaver_function_table *xsft, void *arg)
 
   s = (char *) malloc(50);
   *s = 0;
-# ifndef HAVE_COCOA
+# ifndef HAVE_JWXYZ
   strcpy (s, progclass);
 # endif
   strcat (s, ".foreground: white");
@@ -236,6 +239,53 @@ xlockmore_setup (struct xscreensaver_function_table *xsft, void *arg)
 
 
 static void
+xlockmore_release_screens (ModeInfo *mi)
+{
+  struct xlockmore_function_table *xlmft = mi->xlmft;
+
+  /* 2. Call release_##, if it exists. */
+  if (xlmft->hack_release)
+    xlmft->hack_release (mi);
+
+  /* 3. Free the state array. */
+  if (xlmft->state_array) {
+    free(*xlmft->state_array);
+    *xlmft->state_array = NULL;
+    xlmft->state_array = NULL;
+  }
+
+  /* 4. Pretend FreeAllGL(mi) gets called here. */
+
+  mi->xlmft->got_init = 0;
+}
+
+
+static void
+xlockmore_free_screens (ModeInfo *mi)
+{
+  struct xlockmore_function_table *xlmft = mi->xlmft;
+
+  /* Optimization: xlockmore_read_resources calls this lots on first start. */
+  if (!xlmft->got_init)
+    return;
+
+  /* Order is important here: */
+
+  /* 1. Call free_## for all screens. */
+  if (xlmft->hack_free) {
+    int old_screen = mi->screen_number;
+    for (mi->screen_number = 0; mi->screen_number < XLOCKMORE_NUM_SCREENS;
+         ++mi->screen_number) {
+      xlmft->hack_free (mi);
+    }
+    mi->screen_number = old_screen;
+  }
+
+  xlockmore_release_screens (mi);
+}
+
+
+static void
 xlockmore_read_resources (ModeInfo *mi)
 {
   Display *dpy = mi->dpy;
@@ -249,29 +299,75 @@ xlockmore_read_resources (ModeInfo *mi)
       int   *var_i = (int *) var;
       float *var_f = (float *) var;
 
+      /* If any of the options changed, stop this hack's other instances. */
       switch (xlockmore_opts->vars[i].type)
-	{
-	case t_String:
-	  *var_c = get_string_resource (dpy, xlockmore_opts->vars[i].name,
-					xlockmore_opts->vars[i].classname);
-	  break;
-	case t_Float:
-	  *var_f = get_float_resource (dpy, xlockmore_opts->vars[i].name,
-				       xlockmore_opts->vars[i].classname);
-	  break;
-	case t_Int:
-	  *var_i = get_integer_resource (dpy, xlockmore_opts->vars[i].name,
-					 xlockmore_opts->vars[i].classname);
-	  break;
-	case t_Bool:
-	  *var_b = get_boolean_resource (dpy, xlockmore_opts->vars[i].name,
-					 xlockmore_opts->vars[i].classname);
-	  break;
-	default:
-	  abort ();
-	}
+        {
+        case t_String:
+          {
+            char *c = get_string_resource (dpy, xlockmore_opts->vars[i].name,
+                                           xlockmore_opts->vars[i].classname);
+            if ((!c && !*var_c) || (c && *var_c && !strcmp(c, *var_c))) {
+              free (c);
+            } else {
+              xlockmore_free_screens (mi);
+              if (*var_c) free (*var_c);
+              *var_c = c;
+            }
+          }
+          break;
+        case t_Float:
+          {
+            float f = get_float_resource (dpy, xlockmore_opts->vars[i].name,
+                                          xlockmore_opts->vars[i].classname);
+            float frac = fabsf(*var_f) * (1.0f / (1l << (FLT_MANT_DIG - 4)));
+            if (f < *var_f - frac || f > *var_f + frac) {
+              xlockmore_free_screens (mi);
+              *var_f = f;
+            }
+          }
+          break;
+        case t_Int:
+          {
+            int ii = get_integer_resource (dpy, xlockmore_opts->vars[i].name,
+                                          xlockmore_opts->vars[i].classname);
+            if (ii != *var_i) {
+              xlockmore_free_screens (mi);
+              *var_i = ii;
+            }
+          }
+          break;
+        case t_Bool:
+          {
+            Bool b = get_boolean_resource (dpy, xlockmore_opts->vars[i].name,
+                                           xlockmore_opts->vars[i].classname);
+            if (b != *var_b) {
+              xlockmore_free_screens (mi);
+              *var_b = b;
+            }
+          }
+          break;
+        default:
+          abort ();
+        }
     }
 }
+
+
+/* We keep a list of all of the screen numbers that are in use and not
+   yet freed so that they can have sensible screen numbers.  If three
+   displays are created (0, 1, 2) and then #1 is closed, then the fourth
+   display will be given the now-unused display number 1. (Everything in
+   here assumes a 1:1 Display/Screen mapping.)
+
+   XLOCKMORE_NUM_SCREENS is the most number of live displays at one time. So
+   if it's 64, then we'll blow up if the system has 64 monitors and also has
+   System Preferences open (the small preview window).
+
+   Note that xlockmore-style savers tend to allocate big structures, so
+   setting XLOCKMORE_NUM_SCREENS to 1000 will waste a few megabytes.  Also
+   most (all?) of them assume that the number of screens never changes, so
+   dynamically expanding this array won't work.
+ */
 
 
 static void *
@@ -292,53 +388,43 @@ xlockmore_init (Display *dpy, Window window,
   mi->window = window;
   XGetWindowAttributes (dpy, window, &mi->xgwa);
   
-#if defined(HAVE_COCOA) || defined(HAVE_ANDROID)
-  
-# if 0
-  /* In Cocoa and Android-based xscreensaver, all hacks run in the
-     same address space, so each one needs to get its own screen
-     number.  Believe what jwxyz says about screen counts and numbers.
-   */
-  mi->num_screens = ScreenCount (dpy);
-  mi->screen_number = XScreenNumberOfScreen (mi->xgwa.screen);
-# else
-  /* No, that doesn't work.
-     The xlockmore docs/HACKERS.GUIDE says that xlock modes are supposed to
-     support repeated calls to init_*() for the same screen in the same
-     session, but in practice, a number of them blow up if you do that.
-     So instead we're stuck with a world where on OSX/iOS, we have to
-     increment the screen number every time the hack is run. Arrgh.
-   */
-  mi->num_screens = 40;
-  mi->screen_number = xlmft->screen_count;
-  if (mi->screen_number >= mi->num_screens) abort();
-  xlmft->screen_count++;
-# endif
-  root_p = True;
+  /* In Cocoa and Android-based xscreensaver, as well as with DEBUG_PAIR,
+     hacks run in the same address space, so each one needs to get its own
+     screen number.
 
-#else /* real Xlib */
-  
-  /* In Xlib-based xscreensaver, each hack runs in its own address space,
-     so each one only needs to be aware of one screen.
+     Find the first empty slot in live_displays and plug us in.
    */
-  mi->num_screens = 1;
-  mi->screen_number = 0;
-  
-  {  /* kludge for DEBUG_PAIR */
-    static int screen_tick = 0;
-    mi->num_screens++;
-    if (screen_tick)
-      mi->screen_number++;
-    screen_tick++;
+  {
+    const int size = XLOCKMORE_NUM_SCREENS;
+    int i;
+    for (i = 0; i < size; i++) {
+      if (! (xlmft->live_displays & (1 << i)))
+        break;
+    }
+    if (i >= size) abort();
+    xlmft->live_displays |= 1ul << i;
+    xlmft->got_init &= ~(1ul << i);
+    mi->screen_number = i;
   }
 
   root_p = (window == RootWindowOfScreen (mi->xgwa.screen));
 
+#ifndef HAVE_JWXYZ
+
   /* Everybody gets motion events, just in case. */
   XSelectInput (dpy, window, (mi->xgwa.your_event_mask | PointerMotionMask));
 
-#endif /* !HAVE_COCOA */
-  
+#endif /* !HAVE_JWXYZ */
+
+  if (mi->xlmft->hack_release) {
+/*
+    fprintf (
+      stderr,
+      "%s: WARNING: hack_release is not usually recommended; see MI_INIT.\n",
+      progname);
+*/
+  }
+
   color.flags = DoRed|DoGreen|DoBlue;
   color.red = color.green = color.blue = 0;
   if (!XAllocColor(dpy, mi->xgwa.colormap, &color))
@@ -351,7 +437,6 @@ xlockmore_init (Display *dpy, Window window,
 
   if (mono_p)
     {
-      static unsigned long pixels[2];
       static XColor colors[2];
     MONO:
       mi->npixels = 2;
@@ -361,8 +446,6 @@ xlockmore_init (Display *dpy, Window window,
       if (!mi->colors)
         mi->colors = (XColor *) 
           calloc (mi->npixels, sizeof (*mi->colors));
-      pixels[0] = mi->black;
-      pixels[1] = mi->white;
       colors[0].flags = DoRed|DoGreen|DoBlue;
       colors[1].flags = DoRed|DoGreen|DoBlue;
       colors[0].red = colors[0].green = colors[0].blue = 0;
@@ -444,9 +527,6 @@ xlockmore_init (Display *dpy, Window window,
 
   mi->wireframe_p = get_boolean_resource (dpy, "wireframe", "Boolean");
   mi->root_p = root_p;
-#ifdef HAVE_XSHM_EXTENSION
-  mi->use_shm = get_boolean_resource (dpy, "useSHM", "Boolean");
-#endif /* !HAVE_XSHM_EXTENSION */
   mi->fps_p = get_boolean_resource (dpy, "doFPS", "DoFPS");
   mi->recursion_depth = -1;  /* see fps.c */
 
@@ -461,49 +541,95 @@ xlockmore_init (Display *dpy, Window window,
     char *name = get_string_resource (dpy, "font", "Font");
     if (name)
       {
-        XFontStruct *f = XLoadQueryFont (dpy, name);
-        const char *def1 = "-*-helvetica-bold-r-normal-*-180-*";
-        const char *def2 = "fixed";
-        if (!f)
-          {
-            fprintf (stderr, "%s: font %s does not exist, using %s\n",
-                     progname, name, def1);
-            f = XLoadQueryFont (dpy, def1);
-          }
-        if (!f)
-          {
-            fprintf (stderr, "%s: font %s does not exist, using %s\n",
-                     progname, def1, def2);
-            f = XLoadQueryFont (dpy, def2);
-          }
-        if (f) XSetFont (dpy, mi->gc, f->fid);
-        if (f) XFreeFont (dpy, f);
+        XFontStruct *f = load_font_retry (dpy, name);
+        if (!f) abort();
+        XSetFont (dpy, mi->gc, f->fid);
+        XFreeFont (dpy, f);
         free (name);
       }
   }
-
+  
   xlockmore_read_resources (mi);
-
-  XClearWindow (dpy, window);
-
-  mi->xlmft->hack_init (mi);
 
   return mi;
 }
+
+
+static void
+xlockmore_clear (ModeInfo *mi)
+{
+# ifndef HAVE_ANDROID
+  /* TODO: Clear the window for Xlib hacks on Android. */
+  XClearWindow (mi->dpy, mi->window);
+# endif
+}
+
+
+static void
+xlockmore_do_init (ModeInfo *mi)
+{
+  mi->xlmft->got_init |= 1 << mi->screen_number;
+  xlockmore_clear (mi);
+  mi->xlmft->hack_init (mi);
+}
+
+
+static Bool
+xlockmore_got_init (ModeInfo *mi)
+{
+  return mi->xlmft->got_init & (1 << mi->screen_number);
+}
+
+
+static void
+xlockmore_abort_erase (ModeInfo *mi)
+{
+  if (mi->eraser) {
+    eraser_free (mi->eraser);
+    mi->eraser = NULL;
+  }
+  mi->needs_clear = False;
+}
+
+
+static void
+xlockmore_check_init (ModeInfo *mi)
+{
+  if (! xlockmore_got_init (mi)) {
+    xlockmore_abort_erase (mi);
+    xlockmore_do_init (mi);
+  }
+}
+
 
 static unsigned long
 xlockmore_draw (Display *dpy, Window window, void *closure)
 {
   ModeInfo *mi = (ModeInfo *) closure;
-
   unsigned long orig_pause = mi->pause;
   unsigned long this_pause;
 
+  if (mi->needs_clear) {
+    /* OpenGL hacks never get here. */
+    if (!mi->is_drawn) {
+      xlockmore_clear (mi);
+    } else {
+      mi->eraser = erase_window (dpy, window, mi->eraser);
+      /* Delay calls to xlockmore hooks while the erase animation is running. */
+      if (mi->eraser)
+        return 33333;
+    }
+    mi->needs_clear = False;
+  }
+
+  xlockmore_check_init (mi);
+  if (mi->needs_clear)
+    return 0;
   mi->xlmft->hack_draw (mi);
 
   this_pause = mi->pause;
   mi->pause  = orig_pause;
-  return this_pause;
+  return mi->needs_clear ? 0 : this_pause;
 }
 
 
@@ -512,21 +638,55 @@ xlockmore_reshape (Display *dpy, Window window, void *closure,
                  unsigned int w, unsigned int h)
 {
   ModeInfo *mi = (ModeInfo *) closure;
-  if (mi && mi->xlmft->hack_reshape)
-    {
-      XGetWindowAttributes (dpy, window, &mi->xgwa);
-      mi->xlmft->hack_reshape (mi, mi->xgwa.width, mi->xgwa.height);
+  if (mi) {
+    /* Ignore spurious resize events, because xlockmore_do_init usually clears
+       the screen, and there's no reason to do that if we don't have to.
+     */
+# ifndef HAVE_MOBILE
+    /* These are not spurious on mobile: they are rotations. */
+    if (mi->xgwa.width == w && mi->xgwa.height == h)
+      return;
+# endif
+    mi->xgwa.width = w;
+    mi->xgwa.height = h;
+
+    /* Finish any erase operations. */
+    if (mi->needs_clear) {
+      xlockmore_abort_erase (mi);
+      xlockmore_clear (mi);
     }
+
+    /* If there hasn't been an init yet, init now, but don't call reshape_##.
+     */
+    if (xlockmore_got_init (mi) && mi->xlmft->hack_reshape) {
+      mi->xlmft->hack_reshape (mi, mi->xgwa.width, mi->xgwa.height);
+    } else {
+      mi->is_drawn = False;
+      xlockmore_do_init (mi);
+    }
+  }
 }
 
 static Bool
 xlockmore_event (Display *dpy, Window window, void *closure, XEvent *event)
 {
   ModeInfo *mi = (ModeInfo *) closure;
-  if (mi && mi->xlmft->hack_handle_events)
-    return mi->xlmft->hack_handle_events (mi, event);
-  else
-    return False;
+  if (mi) {
+    if (mi->xlmft->hack_handle_events) {
+      xlockmore_check_init (mi);
+      return mi->xlmft->hack_handle_events (mi, event);
+    }
+
+    if (screenhack_event_helper (mi->dpy, mi->window, event)) {
+      /* If a clear is in progress, don't interrupt or restart it. */
+      if (mi->needs_clear)
+        mi->xlmft->got_init &= ~(1ul << mi->screen_number);
+      else
+        mi->xlmft->hack_init (mi);
+      return True;
+    }
+  }
+  return False;
 }
 
 void
@@ -541,22 +701,73 @@ xlockmore_do_fps (Display *dpy, Window w, fps_state *fpst, void *closure)
 static void
 xlockmore_free (Display *dpy, Window window, void *closure)
 {
-  /* Most of the xlockmore/GL hacks don't have `free' functions, and of
-     those that do have them, they're incomplete or buggy.  So, fuck it.
-     Under X11, we're about to exit anyway, and it doesn't matter.
-     On OSX, we'll leak a little.  Beats crashing.
-   */
-#if 0
   ModeInfo *mi = (ModeInfo *) closure;
+
+  if (mi->eraser)
+    eraser_free (mi->eraser);
+
+  /* Some hacks may need to do things with their Display * on cleanup. And
+     under JWXYZ, the Display * for this hack gets cleaned up right after
+     xlockmore_free returns. Thus, hack_free has to happen now, rather than
+     after the final screen has been released.
+   */
   if (mi->xlmft->hack_free)
     mi->xlmft->hack_free (mi);
 
+  /* Find us in live_displays and clear that slot. */
+  assert (mi->xlmft->live_displays & (1ul << mi->screen_number));
+  mi->xlmft->live_displays &= ~(1ul << mi->screen_number);
+  if (!mi->xlmft->live_displays)
+    xlockmore_release_screens (mi);
+
   XFreeGC (dpy, mi->gc);
-  free_colors (dpy, mi->xgwa.colormap, mi->colors, mi->npixels);
+  free_colors (mi->xgwa.screen, mi->xgwa.colormap, mi->colors, mi->npixels);
   free (mi->colors);
   free (mi->pixels);
 
   free (mi);
-#endif
 }
 
+
+void
+xlockmore_mi_init (ModeInfo *mi, size_t state_size, void **state_array)
+{
+  struct xlockmore_function_table *xlmft = mi->xlmft;
+
+  /* Steal the state_array for safe keeping.
+     Only necessary when the screenhack isn't a once per process deal.
+     (i.e. macOS, iOS, Android)
+   */
+  assert ((!xlmft->state_array && !*state_array) ||
+          xlmft->state_array == state_array);
+  xlmft->state_array = state_array;
+
+  if (!*xlmft->state_array) {
+    *xlmft->state_array = calloc (XLOCKMORE_NUM_SCREENS, state_size);
+
+    if (!*xlmft->state_array) {
+#ifdef HAVE_JWXYZ
+      /* Throws an exception instead of exiting the process. */
+      jwxyz_abort ("%s: out of memory", progname);
+#else
+      fprintf (stderr, "%s: out of memory\n", progname);
+      exit (1);
+#endif
+    }
+  }
+
+  /* Find the appropriate state object, clear it, and we're done. */
+  {
+    if (xlmft->hack_free)
+      xlmft->hack_free (mi);
+    memset ((char *)(*xlmft->state_array) + mi->screen_number * state_size, 0,
+            state_size);
+  }
+}
+
+
+Bool
+xlockmore_no_events (ModeInfo *mi, XEvent *event)
+{
+  return False;
+}

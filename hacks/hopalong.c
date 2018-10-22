@@ -61,8 +61,9 @@ static const char sccsid[] = "@(#)hop.c	5.00 2000/11/01 xlockmore";
 
 # define SMOOTH_COLORS
 # define reshape_hop 0
+# define release_hop 0
+# define hop_handle_event 0
 # include "xlockmore.h"		/* in xscreensaver distribution */
-# include "erase.h"
 #else /* STANDALONE */
 # include "xlock.h"		/* in xlockmore distribution */
 #endif /* STANDALONE */
@@ -152,8 +153,8 @@ ENTRYPOINT ModeSpecOpt hop_opts =
 
 #ifdef USE_MODULES
 ModStruct   hop_description =
-{"hop", "init_hop", "draw_hop", "release_hop",
- "refresh_hop", "init_hop", (char *) NULL, &hop_opts,
+{"hop", "init_hop", "draw_hop", (char *) NULL,
+ "refresh_hop", "init_hop", "free_hop", &hop_opts,
  10000, 1000, 2500, 1, 64, 1.0, "",
  "Shows real plane iterated fractals", 0, NULL};
 
@@ -186,9 +187,6 @@ typedef struct {
 	int         count;
 	int         bufsize;
 	XPoint     *pointBuffer;	/* pointer for XDrawPoints */
-#ifdef STANDALONE
-  eraser_state *eraser;
-#endif
 } hopstruct;
 
 static hopstruct *hops = (hopstruct *) NULL;
@@ -201,11 +199,7 @@ init_hop(ModeInfo * mi)
 	double      range;
 	hopstruct  *hp;
 
-	if (hops == NULL) {
-		if ((hops = (hopstruct *) calloc(MI_NUM_SCREENS(mi),
-						 sizeof (hopstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, hops);
 	hp = &hops[MI_SCREEN(mi)];
 
 	hp->centerx = MI_WIDTH(mi) / 2;
@@ -388,9 +382,7 @@ init_hop(ModeInfo * mi)
 			return;
 	}
 
-#ifndef STANDALONE
 	MI_CLEARWINDOW(mi);
-#endif
 
 	XSetForeground(display, gc, MI_WHITE_PIXEL(mi));
 	hp->count = 0;
@@ -408,13 +400,6 @@ draw_hop(ModeInfo * mi)
 	if (hops == NULL)
 		return;
 	hp = &hops[MI_SCREEN(mi)];
-
-#ifdef STANDALONE
-    if (hp->eraser) {
-      hp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), hp->eraser);
-      return;
-    }
-#endif
 
 
 	if (hp->pointBuffer == NULL)
@@ -544,49 +529,26 @@ draw_hop(ModeInfo * mi)
 	XDrawPoints(MI_DISPLAY(mi), MI_WINDOW(mi), MI_GC(mi),
 		    hp->pointBuffer, hp->bufsize, CoordModeOrigin);
 	if (++hp->count > MI_CYCLES(mi)) {
-#ifdef STANDALONE
-      hp->eraser = erase_window (MI_DISPLAY(mi), MI_WINDOW(mi), hp->eraser);
-#endif /* STANDALONE */
 		init_hop(mi);
 	}
 }
 
 ENTRYPOINT void
-release_hop(ModeInfo * mi)
+free_hop(ModeInfo * mi)
 {
-	if (hops != NULL) {
-		int         screen;
+	hopstruct  *hp = &hops[MI_SCREEN(mi)];
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			hopstruct  *hp = &hops[screen];
-
-			if (hp->pointBuffer != NULL)
-				(void) free((void *) hp->pointBuffer);
-		}
-		(void) free((void *) hops);
-		hops = (hopstruct *) NULL;
-	}
+	if (hp->pointBuffer != NULL)
+		(void) free((void *) hp->pointBuffer);
 }
 
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_hop(ModeInfo * mi)
 {
 	MI_CLEARWINDOW(mi);
 }
-
-ENTRYPOINT Bool
-hop_handle_event (ModeInfo *mi, XEvent *event)
-{
-  if (screenhack_event_helper (MI_DISPLAY(mi), MI_WINDOW(mi), event))
-    {
-      MI_CLEARWINDOW(mi);
-      init_hop (mi);
-      return True;
-    }
-  return False;
-}
-
-
+#endif
 
 XSCREENSAVER_MODULE_2 ("Hopalong", hopalong, hop)
 

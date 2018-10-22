@@ -14,10 +14,11 @@
 
 #define DEFAULTS	"*delay:	30000		 \n" \
 			"*wireframe:	False		 \n" \
+			"*suppressRotationAnimation: True\n" \
 
-# define refresh_ball 0
+# define free_ball 0
 # define release_ball 0
-# define ball_handle_event 0
+# define ball_handle_event xlockmore_no_events
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
@@ -231,8 +232,15 @@ ENTRYPOINT void
 reshape_ball (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective (30.0, 1/h, 1.0, 100.0);
@@ -243,6 +251,13 @@ reshape_ball (ModeInfo *mi, int width, int height)
              0.0, 0.0, 0.0,
              0.0, 2.0,  10.0);
 
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 }
 
 static void
@@ -288,11 +303,7 @@ init_ball (ModeInfo *mi)
   int wire = MI_IS_WIREFRAME(mi);
   blinkboxstruct *bp;
   
-  if(blinkbox == NULL) {
-    if((blinkbox = (blinkboxstruct *) calloc(MI_NUM_SCREENS(mi),
-                                             sizeof (blinkboxstruct))) == NULL)
-      return;
-  }
+  MI_INIT (mi, blinkbox);
   bp = &blinkbox[MI_SCREEN(mi)];
 
   if ((bp->glx_context = init_GL(mi)) != NULL) {

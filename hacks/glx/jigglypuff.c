@@ -39,8 +39,9 @@
 # define DEFAULTS           "*delay: 20000\n" \
                             "*showFPS: False\n" \
                             "*wireframe: False\n" \
+			    "*suppressRotationAnimation: True\n" \
 
-# define refresh_jigglypuff 0
+# define free_jigglypuff 0
 # define release_jigglypuff 0
 # include "xlockmore.h"
 #else
@@ -51,9 +52,9 @@
 # include "config.h"
 #endif
 
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include "gltrackball.h"
-#include "../images/jigglymap.xpm"
+#include "images/gen/jigglymap_png.h"
 
 #ifdef USE_GL
 
@@ -767,8 +768,8 @@ static void update_shape(jigglystruct *js)
 
 static void init_texture(ModeInfo *mi)
 {
-    XImage *img = xpm_to_ximage(mi->dpy, mi->xgwa.visual,
-			       mi->xgwa.colormap, jigglymap_xpm);
+    XImage *img = image_data_to_ximage(mi->dpy, mi->xgwa.visual,
+                                       jigglymap_png, sizeof(jigglymap_png));
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
 		 img->width, img->height, 0, GL_RGBA,
@@ -939,13 +940,19 @@ ENTRYPOINT Bool jigglypuff_handle_event(ModeInfo *mi, XEvent *event)
 
 ENTRYPOINT void reshape_jigglypuff(ModeInfo *mi, int width, int height)
 {
-    GLfloat aspect = (GLfloat)width / (GLfloat)height;
+  double h = (GLfloat) height / (GLfloat) width;  
+  int y = 0;
 
-    glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-0.5*aspect, 0.5*aspect, -0.5, 0.5, 1, 20);
-/*    glTranslatef(0, 0, -10);*/
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport(0, y, width, height);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glFrustum(-0.5*(1/h), 0.5*(1/h), -0.5, 0.5, 1, 20);
 }
 
 ENTRYPOINT void draw_jigglypuff(ModeInfo *mi)
@@ -959,6 +966,16 @@ ENTRYPOINT void draw_jigglypuff(ModeInfo *mi)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0,0,-10);
+
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180)
+        glScalef (1/h, 1/h, 1/h);
+    }
+# endif
 
     glRotatef(js->angle, sin(js->axis), cos(js->axis), -sin(js->axis));
     glTranslatef(0, 0, 5);
@@ -999,14 +1016,7 @@ ENTRYPOINT void init_jigglypuff(ModeInfo *mi)
     jigglystruct *js;
     int subdivs;
 
-    if(!jss) {
-	jss = (jigglystruct*)
-	    calloc(MI_NUM_SCREENS(mi), sizeof(jigglystruct));
-	if(!jss) {
-	    fprintf(stderr, "%s: No..memory...must...abort..\n", progname);
-	    exit(1);
-	}
-    }
+    MI_INIT(mi, jss);
 
     js = &jss[MI_SCREEN(mi)];
 

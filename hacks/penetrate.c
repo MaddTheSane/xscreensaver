@@ -172,10 +172,11 @@ static void launch (struct state *st, int xlim, int ylim, int src)
   m->splits = 0;
   if (m->jenis < 50) {
     int j = ylim * 0.4;
-    if (j)
+    if (j) {
 	 m->splits = random() % j;
 	 if (m->splits < ylim * 0.08)
 		m->splits = 0;
+    }
   }
 
   /* special if we're from another missile */
@@ -387,23 +388,11 @@ penetrate_init (Display *dpy, Window window)
   if (st->lrate < 0) st->lrate = 2;
   st->startlrate = st->lrate;
 
-  st->font = XLoadQueryFont(st->dpy, levelfont);
-  if (!st->font) {
-    fprintf (stderr, "%s: could not load font %s.\n", progname, levelfont);
-    st->font = XLoadQueryFont(st->dpy, scorefont);
-    if (! st->font)
-      st->font = XLoadQueryFont(st->dpy, "fixed");
-    if (! st->font) abort();
-  }
+  st->font = load_font_retry(st->dpy, levelfont);
+  if (!st->font) abort();
 
-  st->scoreFont = XLoadQueryFont(st->dpy, scorefont);
-  if (!st->scoreFont) {
-    fprintf (stderr, "%s: could not load font %s.\n", progname, scorefont);
-    st->scoreFont = XLoadQueryFont(st->dpy, levelfont);
-    if (! st->scoreFont)
-      st->scoreFont = XLoadQueryFont(st->dpy, "fixed");
-    if (! st->scoreFont) abort();
-  }
+  st->scoreFont = load_font_retry(st->dpy, scorefont);
+  if (!st->scoreFont) abort();
 
   for (i = 0; i < kMaxMissiles; i++)
     st->missile[i].alive = 0;
@@ -436,7 +425,7 @@ penetrate_init (Display *dpy, Window window)
   gcv.foreground = get_pixel_resource(st->dpy, st->cmap, "background", "Background");
   st->erase_gc = XCreateGC(st->dpy, st->window, GCForeground, &gcv);
 
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
   jwxyz_XSetAntiAliasing (st->dpy, st->erase_gc, False);
   jwxyz_XSetAntiAliasing (st->dpy, st->draw_gc, False);
 # endif
@@ -967,6 +956,7 @@ penetrate_free (Display *dpy, Window window, void *closure)
 
 
 static const char *penetrate_defaults [] = {
+  ".lowrez:     true",
   ".background:	black",
   ".foreground:	white",
   "*fpsTop:	true",

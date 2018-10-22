@@ -46,7 +46,7 @@
 "GetViewPortIsFullOfLies: False",
 "*demoCommand: xscreensaver-demo",
 "*prefsCommand: xscreensaver-demo -prefs",
-"*helpURL: http://www.jwz.org/xscreensaver/man.html",
+"*helpURL: https://www.jwz.org/xscreensaver/man.html",
 "*loadURL: firefox '%s' || mozilla '%s' || netscape '%s'",
 "*manualCommand: xterm -sb -fg black -bg gray75 -T '%s manual' \
 		    -e /bin/sh -c 'man \"%s\" ; read foo'",
@@ -265,19 +265,38 @@
   GL: 				romanboy -root				    \\n\
 				tessellimage -root			    \\n\
   GL: 				winduprobot -root			    \\n\
-  GL: 				splitflap -root				    \\n",
+  GL: 				splitflap -root				    \\n\
+  GL: 				cubestack -root				    \\n\
+  GL: 				cubetwist -root				    \\n\
+  GL: 				discoball -root				    \\n\
+  GL: 				dymaxionmap -root			    \\n\
+  GL: 				energystream -root			    \\n\
+  GL: 				hexstrut -root				    \\n\
+  GL: 				hydrostat -root				    \\n\
+  GL: 				raverhoop -root				    \\n\
+  GL: 				splodesic -root				    \\n\
+  GL: 				unicrud -root				    \\n\
+  GL: 				esper -root				    \\n\
+  GL: 				vigilance -root				    \\n\
+  GL: 				crumbler -root				    \\n\
+				filmleader -root			    \\n\
+				glitchpeg -root				    \\n\
+  GL: 				maze3d -root				    \\n\
+  GL: 				peepers -root				    \\n\
+  GL: 				razzledazzle -root			    \\n\
+				vfeedback -root				    \\n",
 "XScreenSaver.pointerPollTime:		0:00:05",
 "XScreenSaver.pointerHysteresis:		10",
 "XScreenSaver.initialDelay:		0:00:00",
 "XScreenSaver.windowCreationTimeout:	0:00:30",
 "XScreenSaver.bourneShell:		/bin/sh",
-"*Dialog.headingFont:		*-helvetica-bold-r-*-*-*-180-*-*-*-iso8859-1",
-"*Dialog.bodyFont:		*-helvetica-bold-r-*-*-*-140-*-*-*-iso8859-1",
-"*Dialog.labelFont:		*-helvetica-bold-r-*-*-*-140-*-*-*-iso8859-1",
-"*Dialog.unameFont:		*-helvetica-bold-r-*-*-*-120-*-*-*-iso8859-1",
-"*Dialog.buttonFont:		*-helvetica-bold-r-*-*-*-140-*-*-*-iso8859-1",
-"*Dialog.dateFont:		*-helvetica-medium-r-*-*-*-80-*-*-*-iso8859-1",
-"*passwd.passwdFont:		*-courier-medium-r-*-*-*-140-*-*-*-iso8859-1",
+"*Dialog.headingFont:	-*-helvetica-bold-r-*-*-*-180-*-*-*-*-iso8859-1",
+"*Dialog.bodyFont:	-*-helvetica-bold-r-*-*-*-140-*-*-*-*-iso8859-1",
+"*Dialog.labelFont:	-*-helvetica-bold-r-*-*-*-140-*-*-*-*-iso8859-1",
+"*Dialog.unameFont:	-*-helvetica-bold-r-*-*-*-120-*-*-*-*-iso8859-1",
+"*Dialog.buttonFont:	-*-helvetica-bold-r-*-*-*-140-*-*-*-*-iso8859-1",
+"*Dialog.dateFont:	-*-helvetica-medium-r-*-*-*-80-*-*-*-*-iso8859-1",
+"*passwd.passwdFont:	-*-courier-medium-r-*-*-*-140-*-*-*-iso8859-1",
 "*Dialog.foreground:		#000000",
 "*Dialog.background:		#E6E6E6",
 "*Dialog.Button.foreground:	#000000",
@@ -302,7 +321,7 @@
 "*passwd.asterisks:              True",
 "*passwd.uname:                  True",
 "*splash.heading.label:		XScreenSaver %s",
-"*splash.body.label:		Copyright \\251 1991-2015 by",
+"*splash.body.label:		Copyright \\251 1991-2018 by",
 "*splash.body2.label:		Jamie Zawinski <jwz@jwz.org>",
 "*splash.demo.label:		Settings",
 "*splash.help.label:		Help",
@@ -320,14 +339,19 @@
 "*hacks.ccurve.name:         CCurve",
 "*hacks.cloudlife.name:      CloudLife",
 "*hacks.companioncube.name:  CompanionCube",
+"*hacks.cubestack.name:      CubeStack",
 "*hacks.cubestorm.name:      CubeStorm",
+"*hacks.cubetwist.name:      CubeTwist",
 "*hacks.cubicgrid.name:      CubicGrid",
 "*hacks.cwaves.name:         CWaves",
 "*hacks.dangerball.name:     DangerBall",
 "*hacks.decayscreen.name:    DecayScreen",
 "*hacks.dnalogo.name:        DNA Logo",
+"*hacks.dymaxionmap.name:    DymaxionMap",
+"*hacks.energystream.name:   EnergyStream",
 "*hacks.euler2d.name:        Euler2D",
 "*hacks.fadeplot.name:       FadePlot",
+"*hacks.filmleader.name:     FilmLeader",
 "*hacks.flipflop.name:       FlipFlop",
 "*hacks.flipscreen3d.name:   FlipScreen3D",
 "*hacks.fliptext.name:       FlipText",
@@ -339,6 +363,7 @@
 "*hacks.gflux.name:          GFlux",
 "*hacks.gleidescope.name:    Gleidescope",
 "*hacks.glforestfire.name:   GLForestFire",
+"*hacks.glitchpeg.name:      GlitchPEG",
 "*hacks.hyperball.name:      HyperBall",
 "*hacks.hypercube.name:      HyperCube",
 "*hacks.ifs.name:            IFS",
@@ -348,6 +373,7 @@
 "*hacks.lcdscrub.name:       LCDscrub",
 "*hacks.lmorph.name:         LMorph",
 "*hacks.m6502.name:          m6502",
+"*hacks.maze3d.name:         Maze3D",
 "*hacks.memscroller.name:    MemScroller",
 "*hacks.metaballs.name:      MetaBalls",
 "*hacks.mirrorblob.name:     MirrorBlob",
@@ -358,6 +384,8 @@
 "*hacks.popsquares.name:     PopSquares",
 "*hacks.projectiveplane.name:ProjectivePlane",
 "*hacks.quasicrystal.name:   QuasiCrystal",
+"*hacks.raverhoop.name:      RaverHoop",
+"*hacks.razzledazzle.name:   RazzleDazzle",
 "*hacks.rd-bomb.name:        RDbomb",
 "*hacks.rdbomb.name:         RDbomb",
 "*hacks.romanboy.name:       RomanBoy",
@@ -373,10 +401,12 @@
 "*hacks.starwars.name:       StarWars",
 "*hacks.stonerview.name:     StonerView",
 "*hacks.t3d.name:            T3D",
+"*hacks.testx11.name:        TestX11",
 "*hacks.timetunnel.name:     TimeTunnel",
 "*hacks.topblock.name:       TopBlock",
 "*hacks.tronbit.name:        TronBit",
 "*hacks.unknownpleasures.name:UnknownPleasures",
+"*hacks.vfeedback.name:      VFeedback",
 "*hacks.vidwhacker.name:     VidWhacker",
 "*hacks.webcollage.name:     WebCollage",
 "*hacks.whirlwindwarp.name:  WhirlWindWarp",

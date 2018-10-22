@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2003-2015 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2003-2017 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -25,8 +25,9 @@
 /* #define DEBUG */
 
 #include <math.h>
+#include <time.h>
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # include <X11/Intrinsic.h>
 #endif
 
@@ -163,6 +164,34 @@ pick_font_size (state *s)
 }
 
 
+#ifdef HAVE_JWXYZ
+
+static char *
+append_font_name(Display *dpy, char *dest, const XFontStruct *font)
+{
+  int i;
+  for (i = 0; i != font->n_properties; ++i) {
+    if (font->properties[i].name == XA_FONT) {
+      const char *suffix = XGetAtomName (dpy, font->properties[i].card32);
+      strcpy(dest, suffix);
+      return dest + strlen(suffix);
+    }
+  }
+
+  dest[0] = '?';
+  dest[1] = 0;
+  return dest + 1;
+
+/*
+  float s;
+  const char *n = jwxyz_nativeFontName (font->fid, &s);
+  return dest + sprintf (dest, "%s %.1f", n, s);
+ */
+}
+
+#endif
+
+
 /* Finds the set of scalable fonts on the system; picks one;
    and loads that font in a random pixel size.
    Returns False if something went wrong.
@@ -174,7 +203,7 @@ pick_font_1 (state *s, sentence *se)
   char pattern[1024];
   char pattern2[1024];
 
-# ifndef HAVE_COCOA /* real Xlib */
+#ifndef HAVE_JWXYZ /* real Xlib */
   char **names = 0;
   char **names2 = 0;
   XFontStruct *info = 0;
@@ -333,7 +362,7 @@ pick_font_1 (state *s, sentence *se)
   XFreeFontInfo (names2, info, count2);
   XFreeFontNames (names);
 
-# else  /* HAVE_COCOA */
+# else  /* HAVE_JWXYZ */
 
   if (s->font_override)
     sprintf (pattern, "%.200s", s->font_override);
@@ -346,7 +375,7 @@ pick_font_1 (state *s, sentence *se)
       sprintf (pattern, "*-%s-%s-%s-*-*-*-%d-*", family, weight, slant, size);
     }
   ok = True;
-# endif /* HAVE_COCOA */
+# endif /* HAVE_JWXYZ */
 
   if (! ok) return False;
 
@@ -364,11 +393,14 @@ pick_font_1 (state *s, sentence *se)
     }
 
   strcpy (pattern2, pattern);
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
   {
-    float s;
-    const char *n = jwxyz_nativeFontName (se->xftfont->xfont->fid, &s);
-    sprintf (pattern2 + strlen(pattern2), " (%s %.1f)", n, s);
+    char *out = pattern2 + strlen(pattern2);
+    out[0] = ' ';
+    out[1] = '(';
+    out = append_font_name (s->dpy, out + 2, se->xftfont->xfont);
+    out[0] = ')';
+    out[1] = 0;
   }
 # endif
 
@@ -493,7 +525,7 @@ static char *unread_word_text = 0;
 /* Returns a newly-allocated string with one word in it, or NULL if there
    is no complete word available.
  */
-static const char *
+static char *
 get_word_text (state *s)
 {
   const char *start = s->buf;
@@ -520,9 +552,9 @@ get_word_text (state *s)
 
   if (unread_word_text)
     {
-      start = unread_word_text;
+      result = unread_word_text;
       unread_word_text = 0;
-      return start;
+      return strdup (result);
     }
 
   /* Skip over whitespace at the beginning of the buffer,
@@ -1121,7 +1153,7 @@ populate_sentence (state *s, sentence *se)
 
   while (!done)
     {
-      const char *txt = get_word_text (s);
+      char *txt = get_word_text (s);
       word *w;
       if (!txt)
         {
@@ -1146,6 +1178,8 @@ populate_sentence (state *s, sentence *se)
         }
 
       w = new_word (s, se, txt, !se->move_chars_p);
+      free (txt);
+      txt = 0;
 
       /* If we have a few words, let punctuation terminate the sentence:
          stop gathering more words if the last word ends in a period, etc. */
@@ -1185,6 +1219,7 @@ populate_sentence (state *s, sentence *se)
               y + se->xftfont->ascent + se->xftfont->descent > s->xgwa.height)
             {
               unread_word (s, w);
+              free (w);
               /* done = True; */
               break;
             }
@@ -1592,7 +1627,7 @@ fontglide_draw_metrics (state *s)
   gc  = XCreateGC (s->dpy, dest, 0, 0);
   XSetFont (s->dpy, gc,  s->metrics_font1->fid);
 
-# ifdef HAVE_COCOA
+# if defined(HAVE_JWXYZ)
   jwxyz_XSetAntiAliasing (s->dpy, gc, False);
 # endif
 
@@ -1617,12 +1652,8 @@ fontglide_draw_metrics (state *s)
     }
 
   strcpy (fn2, fn);
-# ifdef HAVE_COCOA
-  {
-    float ss;
-    const char *n = jwxyz_nativeFontName (s->metrics_xftfont->xfont->fid, &ss);
-    sprintf (fn2, "%s %.1f", n, ss);
-  }
+# ifdef HAVE_JWXYZ
+  append_font_name (s->dpy, fn2, s->metrics_xftfont->xfont);
 # endif
 
   xftdraw = XftDrawCreate (s->dpy, dest, s->xgwa.visual,
@@ -1652,10 +1683,10 @@ fontglide_draw_metrics (state *s)
                s->xgwa.height - 5,
                fn2, strlen(fn2));
 
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
   {
-    char *name =
-      jwxyz_unicode_character_name (s->metrics_font1->fid, s->debug_metrics_p);
+    char *name = jwxyz_unicode_character_name (
+      s->dpy, s->metrics_font1->fid, s->debug_metrics_p);
     if (!name || !*name) name = strdup("unknown character name");
     XDrawString (s->dpy, dest, gc, 
                  10,
@@ -1741,7 +1772,7 @@ fontglide_draw_metrics (state *s)
         {
           Pixmap p2;
           GC gc2 = XCreateGC (s->dpy, p, 0, 0);
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
           jwxyz_XSetAntiAliasing (s->dpy, gc2, False);
 # endif
           XSetFont (s->dpy, gc2, s->metrics_font1->fid);
@@ -1749,7 +1780,7 @@ fontglide_draw_metrics (state *s)
           XFillRectangle (s->dpy, p, gc2, 0, 0, pixw, pixh);
           XSetForeground (s->dpy, gc,  WhitePixelOfScreen (s->xgwa.screen));
           XSetForeground (s->dpy, gc2, WhitePixelOfScreen (s->xgwa.screen));
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
           jwxyz_XSetAntiAliasing (s->dpy, gc2,
                                   s->debug_metrics_antialiasing_p);
 # endif
@@ -1890,7 +1921,7 @@ fontglide_draw_metrics (state *s)
         {
           XSetFont (s->dpy, gc, s->metrics_font1->fid);
           XSetForeground (s->dpy, gc,  WhitePixelOfScreen (s->xgwa.screen));
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
           jwxyz_XSetAntiAliasing (s->dpy, gc, s->debug_metrics_antialiasing_p);
 # endif
           sprintf (txt2, "%s        [XX%sXX]    [%s%s%s%s]",
@@ -1913,7 +1944,7 @@ fontglide_draw_metrics (state *s)
                          xoff + x/2 + (sc*cc.rbearing/2) - cc.rbearing/2,
                          ascent + 10,
                          txt2, strlen(txt2));
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
           jwxyz_XSetAntiAliasing (s->dpy, gc, False);
 # endif
           XSetFont (s->dpy, gc, s->metrics_font2->fid);
@@ -1949,7 +1980,7 @@ fontglide_draw_metrics (state *s)
                        txt2, strlen(txt2));
         }
 
-# ifdef HAVE_COCOA
+# ifdef HAVE_JWXYZ
       jwxyz_XSetAntiAliasing (s->dpy, gc, True);
 # endif
 
@@ -2056,7 +2087,7 @@ fontglide_draw_metrics (state *s)
                  xoff + x + sc*cc.rbearing, y - sc*ascent,
                  xoff + x + sc*cc.rbearing, y + sc*descent + 40);
 
-      y += sc * (ascent + descent) * 2;
+      /* y += sc * (ascent + descent) * 2; */
     }
   }
 
@@ -2196,7 +2227,7 @@ fontglide_init (Display *dpy, Window window)
                         ? 199 : 0);
   s->debug_scale = 6;
 
-#  ifdef HAVE_COCOA
+#  ifdef HAVE_JWXYZ
   if (s->debug_metrics_p && !s->font_override)
     s->font_override = "Helvetica Bold 16";
 #  endif
@@ -2205,7 +2236,7 @@ fontglide_init (Display *dpy, Window window)
 
   s->dbuf = get_boolean_resource (dpy, "doubleBuffer", "Boolean");
 
-# ifdef HAVE_COCOA	/* Don't second-guess Quartz's double-buffering */
+# ifdef HAVE_JWXYZ	/* Don't second-guess Quartz's double-buffering */
   s->dbuf = False;
 # endif
 

@@ -19,13 +19,14 @@
 #define DEFAULTS	    "*delay:   20000   \n" \
 			    "*showFPS: False   \n"
 
-# define refresh_antinspect 0
+# define free_antinspect 0
+# define release_antinspect 0
 #include "xlockmore.h"
 #else
 #include "xlock.h"
 #endif
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
 #else
 # include <X11/Xlib.h>
@@ -65,7 +66,7 @@ ENTRYPOINT ModeSpecOpt antinspect_opts = {sizeof opts / sizeof opts[0],
 
 #ifdef USE_MODULES
 ModStruct   antinspect_description =
-  {"antinspect", "init_antinspect", "draw_antinspect", "release_antinspect",
+  {"antinspect", "init_antinspect", "draw_antinspect", (char *) NULL,
    "draw_antinspect", "change_antinspect", (char *) NULL, &antinspect_opts,
    1000, 1, 1, 1, 4, 1.0, "",
    "draws some ants", 0, NULL};
@@ -548,10 +549,17 @@ static Bool draw_antinspect_strip(ModeInfo * mi)
 ENTRYPOINT void reshape_antinspect(ModeInfo * mi, int width, int height) 
 {
   double h = (GLfloat) height / (GLfloat) width;  
+  int y = 0;
   antinspectstruct *mp = &antinspect[MI_SCREEN(mi)];
   mp->linewidth = (width / 512) + 1;
 
-  glViewport(0, 0, mp->WindW = (GLint) width, mp->WindH = (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport(0, y, mp->WindW = (GLint) width, mp->WindH = (GLint) height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
@@ -588,15 +596,6 @@ static void pinit(void)
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, front_specular);
 }
 
-ENTRYPOINT void release_antinspect(ModeInfo * mi) 
-{
-  if(antinspect) {
-	free((void *) antinspect);
-	antinspect = (antinspectstruct *) NULL;
-  }
-  FreeAllGL(mi);
-}
-
 ENTRYPOINT Bool antinspect_handle_event (ModeInfo *mi, XEvent *event) 
 {
   antinspectstruct *mp = &antinspect[MI_SCREEN(mi)];
@@ -613,11 +612,7 @@ ENTRYPOINT void init_antinspect(ModeInfo * mi)
 {
   antinspectstruct *mp;
   
-  if(antinspect == NULL) {
-    if((antinspect = (antinspectstruct *) calloc(MI_NUM_SCREENS(mi),
-						 sizeof (antinspectstruct))) == NULL)
-      return;
-  }
+  MI_INIT(mi, antinspect);
   mp = &antinspect[MI_SCREEN(mi)];
   mp->step = NRAND(90);
   mp->ant_position = NRAND(90);
@@ -655,20 +650,30 @@ ENTRYPOINT void draw_antinspect(ModeInfo * mi)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glPushMatrix();
-  glRotatef(current_device_rotation(), 0, 0, 1);
 
   mi->polygon_count = 0;
 
   /* position camera --- this works well, we can peer inside 
      the antbubble */
   glTranslatef(0.0, 0.0, -10.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+    glRotatef(o, 0, 0, 1);
+  }
+# endif
+
   gltrackball_rotate(mp->trackball);
   glRotatef((15.0/2.0 + 15.0*sin(mp->ant_step/100.0)), 1.0, 0.0, 0.0);
   glRotatef(30.0, 1.0, 0.0, 0.0);
   glRotatef(180.0, 0.0, 1.0, 0.0);
   
   if (!draw_antinspect_strip(mi)) {
-	release_antinspect(mi);
+	MI_ABORT(mi);
 	return;
   }
   

@@ -1,4 +1,4 @@
-/* glmatrix, Copyright (c) 2003, 2004 Jamie Zawinski <jwz@jwz.org>
+/* glmatrix, Copyright (c) 2003-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -20,7 +20,7 @@
 			"*showFPS:      False         \n" \
 			"*wireframe:    False         \n" \
 
-# define refresh_matrix 0
+# define free_matrix 0
 # define release_matrix 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -29,14 +29,9 @@
 #define BELLRAND(n) ((frand((n)) + frand((n)) + frand((n))) / 3)
 
 #include "xlockmore.h"
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 
-#ifdef __GNUC__
-  __extension__  /* don't warn about "string length is greater than the length
-                    ISO C89 compilers are required to support" when including
-                    the following XPM file... */
-#endif
-#include "../images/matrix3.xpm"
+#include "images/gen/matrix3_png.h"
 
 #ifdef USE_GL /* whole file */
 
@@ -572,8 +567,15 @@ ENTRYPOINT void
 reshape_matrix (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -696,11 +698,11 @@ load_textures (ModeInfo *mi, Bool flip_p)
   int cw, ch;
   int orig_w, orig_h;
 
-  /* The Matrix XPM is 512x598 -- but GL texture sizes must be powers of 2.
+  /* The Matrix image is 512x598 -- but GL texture sizes must be powers of 2.
      So we waste some padding rows to round up.
    */
-  xi = xpm_to_ximage (mi->dpy, mi->xgwa.visual, mi->xgwa.colormap,
-                      matrix3_xpm);
+  xi = image_data_to_ximage (mi->dpy, mi->xgwa.visual, 
+                             matrix3_png, sizeof(matrix3_png));
   orig_w = xi->width;
   orig_h = xi->height;
   mp->real_char_rows = CHAR_ROWS;
@@ -787,7 +789,7 @@ load_textures (ModeInfo *mi, Bool flip_p)
   glBindTexture (GL_TEXTURE_2D, mp->texture);
   check_gl_error ("texture init");
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, xi->width, xi->height, 0, GL_RGBA,
-                GL_UNSIGNED_INT_8_8_8_8_REV, xi->data);
+                GL_UNSIGNED_BYTE, xi->data);
   {
     char buf[255];
     sprintf (buf, "creating %dx%d texture:", xi->width, xi->height);
@@ -822,14 +824,7 @@ init_matrix (ModeInfo *mi)
   if (wire)
     do_texture = False;
 
-  if (!mps) {
-    mps = (matrix_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (matrix_configuration));
-    if (!mps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, mps);
 
   mp = &mps[MI_SCREEN(mi)];
   mp->glx_context = init_GL(mi);

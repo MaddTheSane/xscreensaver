@@ -1,4 +1,4 @@
-/* companioncube, Copyright (c) 2011-2014 Jamie Zawinski <jwz@jwz.org>
+/* companioncube, Copyright (c) 2011-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -26,7 +26,7 @@
 /* #define DEBUG */
 
 
-# define refresh_cube 0
+# define free_cube 0
 # define release_cube 0
 #define DEF_SPEED  "1.0"
 #define DEF_SPIN   "False"
@@ -43,7 +43,7 @@
 #include "xlockmore.h"
 #include "rotator.h"
 #include "gltrackball.h"
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include <ctype.h>
 
 #ifdef USE_GL /* whole file */
@@ -348,8 +348,15 @@ ENTRYPOINT void
 reshape_cube (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -360,6 +367,14 @@ reshape_cube (ModeInfo *mi, int width, int height)
   gluLookAt( 0.0, 0.0, 30.0,
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -386,14 +401,7 @@ init_cube (ModeInfo *mi)
   int wire = MI_IS_WIREFRAME(mi);
   int i;
 
-  if (!bps) {
-    bps = (cube_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (cube_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 

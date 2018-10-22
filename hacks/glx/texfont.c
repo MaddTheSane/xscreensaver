@@ -1,4 +1,4 @@
-/* texfonts, Copyright (c) 2005-2015 Jamie Zawinski <jwz@jwz.org>
+/* texfonts, Copyright (c) 2005-2017 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -9,7 +9,6 @@
  * implied warranty.
  *
  * Renders X11 fonts into textures for use with OpenGL.
- * A higher level API is in glxfonts.c.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -44,6 +43,7 @@
 #endif /* HAVE_XSHM_EXTENSION */
 
 #include "xft.h"
+#include "pow2.h"
 #include "resources.h"
 #include "texfont.h"
 #include "fps.h"	/* for current_device_rotation() */
@@ -82,20 +82,6 @@ struct texture_font_data {
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
 
-/* return the next larger power of 2. */
-static int
-to_pow2 (int i)
-{
-  static const unsigned int pow2[] = { 
-    1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 
-    2048, 4096, 8192, 16384, 32768, 65536 };
-  int j;
-  for (j = 0; j < sizeof(pow2)/sizeof(*pow2); j++)
-    if (pow2[j] >= i) return pow2[j];
-  abort();  /* too big! */
-}
-
-
 /* Given a Pixmap (of screen depth), converts it to an OpenGL luminance mipmap.
    RGB are averaged to grayscale, and the resulting value is treated as alpha.
    Pass in the size of the pixmap; the size of the texture is returned
@@ -111,12 +97,25 @@ bitmap_to_texture (Display *dpy, Pixmap p, Visual *visual, int depth,
   Bool mipmap_p = True;
   int ow = *wP;
   int oh = *hP;
-  int w2 = to_pow2 (ow);
-  int h2 = to_pow2 (oh);
+  GLsizei w2 = (GLsizei) to_pow2 (ow);
+  GLsizei h2 = (GLsizei) to_pow2 (oh);
   int x, y, max, scale;
   XImage *image = 0;
   unsigned char *data = (unsigned char *) calloc (w2 * 2, (h2 + 1));
   unsigned char *out = data;
+
+  /* OpenGLES doesn't support GL_INTENSITY, so instead of using a
+     texture with 1 byte per pixel, the intensity value, we have
+     to use 2 bytes per pixel: solid white, and an alpha value.
+   */
+# ifdef HAVE_JWZGLES
+#  undef GL_INTENSITY
+# endif
+
+# ifdef HAVE_XSHM_EXTENSION
+  Bool use_shm = get_boolean_resource (dpy, "useSHM", "Boolean");
+  XShmSegmentInfo shm_info;
+# endif /* HAVE_XSHM_EXTENSION */
 
   /* If either dimension is larger than the supported size, reduce.
      We still return the old size to keep the caller's math working,
@@ -131,28 +130,6 @@ bitmap_to_texture (Display *dpy, Pixmap p, Visual *visual, int depth,
       scale *= 2;
     }
 
-  /* OpenGLES doesn't support GL_INTENSITY, so instead of using a
-     texture with 1 byte per pixel, the intensity value, we have
-     to use 2 bytes per pixel: solid white, and an alpha value.
-   */
-# ifdef HAVE_JWZGLES
-#  undef GL_INTENSITY
-# endif
-
-# ifdef GL_INTENSITY
-  GLuint iformat = GL_INTENSITY;
-  GLuint format  = GL_LUMINANCE;
-# else
-  GLuint iformat = GL_LUMINANCE_ALPHA;
-  GLuint format  = GL_LUMINANCE_ALPHA;
-# endif
-  GLuint type    = GL_UNSIGNED_BYTE;
-
-# ifdef HAVE_XSHM_EXTENSION
-  Bool use_shm = get_boolean_resource (dpy, "useSHM", "Boolean");
-  XShmSegmentInfo shm_info;
-# endif /* HAVE_XSHM_EXTENSION */
-
 # ifdef HAVE_XSHM_EXTENSION
   if (use_shm)
     {
@@ -165,8 +142,15 @@ bitmap_to_texture (Display *dpy, Pixmap p, Visual *visual, int depth,
     }
 # endif /* HAVE_XSHM_EXTENSION */
 
-  if (!image)
-    image = XGetImage (dpy, p, 0, 0, ow, oh, ~0L, ZPixmap);
+  if (!image) {
+    /* XCreateImage fills in (red|green_blue)_mask. XGetImage only does that
+       when reading from a Window, not when it's a Pixmap.
+     */
+    image = XCreateImage (dpy, visual, depth, ZPixmap, 0, NULL, ow, oh,
+                          BitmapPad (dpy), 0);
+    image->data = malloc (image->height * image->bytes_per_line);
+    XGetSubImage (dpy, p, 0, 0, ow, oh, ~0L, ZPixmap, image, 0, 0);
+  }
 
 # ifdef HAVE_JWZGLES
   /* This would work, but it's wasteful for no benefit. */
@@ -187,13 +171,13 @@ bitmap_to_texture (Display *dpy, Pixmap p, Visual *visual, int depth,
                              XGetPixel (image, sx, sy));
       /* instead of averaging all three channels, let's just use red,
          and assume it was already grayscale. */
-      unsigned long r = pixel & visual->red_mask;
+      unsigned long r = pixel & image->red_mask;
       /* This goofy trick is to make any of RGBA/ABGR/ARGB work. */
       pixel = ((r >> 24) | (r >> 16) | (r >> 8) | r) & 0xFF;
 
 # ifdef DUMP_BITMAPS
       if (sx < ow && sy < oh)
-#  ifdef HAVE_COCOA
+#  ifdef HAVE_JWXYZ
         fprintf (stderr, "%c", 
                  r >= 0xFF000000 ? '#' : 
                  r >= 0x88000000 ? '%' : 
@@ -226,14 +210,30 @@ bitmap_to_texture (Display *dpy, Pixmap p, Visual *visual, int depth,
     destroy_xshm_image (dpy, image, &shm_info);
   else
 # endif /* HAVE_XSHM_EXTENSION */
+  {
+    /* We malloc'd image->data, so we free it. */
+    free (image->data);
+    image->data = NULL;
     XDestroyImage (image);
+  }
 
   image = 0;
 
-  if (mipmap_p)
-    gluBuild2DMipmaps (GL_TEXTURE_2D, iformat, w2, h2, format, type, data);
-  else
-    glTexImage2D (GL_TEXTURE_2D, 0, iformat, w2, h2, 0, format, type, data);
+  {
+# ifdef GL_INTENSITY
+    GLuint iformat = GL_INTENSITY;
+    GLuint format  = GL_LUMINANCE;
+# else
+    GLuint iformat = GL_LUMINANCE_ALPHA;
+    GLuint format  = GL_LUMINANCE_ALPHA;
+# endif
+    GLuint type    = GL_UNSIGNED_BYTE;
+
+    if (mipmap_p)
+      gluBuild2DMipmaps (GL_TEXTURE_2D, iformat, w2, h2, format, type, data);
+    else
+      glTexImage2D (GL_TEXTURE_2D, 0, iformat, w2, h2, 0, format, type, data);
+  }
 
   {
     char msg[100];
@@ -273,7 +273,7 @@ load_texture_font (Display *dpy, char *res)
   if (!res || !*res) abort();
 
   if (!strcmp (res, "fpsFont")) {  /* Kludge. */
-    def1 = "-*-courier-bold-r-normal-*-*-140-*-*-*-*-*-*";
+    def1 = "-*-courier-bold-r-normal-*-*-180-*-*-*-*-*-*"; /* also fps.c */
     cache_size = 0;  /* No need for a cache on FPS: already throttled. */
   }
 
@@ -485,6 +485,7 @@ get_cache (texture_font_data *data, const char *string)
    */
   if (count > data->cache_size)
     {
+      if (!prev) abort();
       free (prev->string);
       prev->string     = 0;
       prev->tex_width  = 0;
@@ -646,7 +647,16 @@ print_texture_string (texture_font_data *data, const char *string)
       tex_height = data->cache->tex_height;
     }
   else
-    string_to_texture (data, string, &overall, &tex_width, &tex_height);
+    {
+# if defined HAVE_JWXYZ && defined JWXYZ_GL
+      /* TODO, JWXYZ_GL: Mixing Xlib and GL has issues. */
+      memset (&overall, 0, sizeof(overall));
+      tex_width = 8;
+      tex_height = 8;
+# else
+      string_to_texture (data, string, &overall, &tex_width, &tex_height);
+# endif
+    }
 
   {
     int ofront, oblend;
@@ -654,6 +664,9 @@ print_texture_string (texture_font_data *data, const char *string)
     GLfloat omatrix[16];
     GLfloat qx0, qy0, qx1, qy1;
     GLfloat tx0, ty0, tx1, ty1;
+
+    /* If face culling is not enabled, draw front and back. */
+    Bool draw_back_face_p = !glIsEnabled (GL_CULL_FACE);
 
     /* Save the prevailing texture environment, and set up ours.
      */
@@ -690,6 +703,7 @@ print_texture_string (texture_font_data *data, const char *string)
     tx1 = (overall.rbearing - overall.lbearing) / (GLfloat) tex_width;
     ty0 = (overall.ascent + overall.descent)    / (GLfloat) tex_height;
 
+    glEnable (GL_CULL_FACE);
     glFrontFace (GL_CCW);
     glBegin (GL_QUADS);
     glTexCoord2f (tx0, ty0); glVertex3f (qx0, qy0, 0);
@@ -697,6 +711,18 @@ print_texture_string (texture_font_data *data, const char *string)
     glTexCoord2f (tx1, ty1); glVertex3f (qx1, qy1, 0);
     glTexCoord2f (tx0, ty1); glVertex3f (qx0, qy1, 0);
     glEnd();
+
+    if (draw_back_face_p)
+      {
+        glFrontFace (GL_CW);
+        glBegin (GL_QUADS);
+        glTexCoord2f (tx0, ty0); glVertex3f (qx0, qy0, 0);
+        glTexCoord2f (tx1, ty0); glVertex3f (qx1, qy0, 0);
+        glTexCoord2f (tx1, ty1); glVertex3f (qx1, qy1, 0);
+        glTexCoord2f (tx0, ty1); glVertex3f (qx0, qy1, 0);
+        glEnd();
+        glDisable (GL_CULL_FACE);
+      }
 
     glPopMatrix();
 
@@ -789,7 +815,8 @@ print_texture_label (Display *dpy,
       XCharStruct cs;
       int ascent, descent;
       int x, y, w, h, swap;
-      int rot = (int) current_device_rotation();
+      /* int rot = (int) current_device_rotation(); */
+      int rot = 0;  /* Since GL hacks rotate now */
 
       glLoadIdentity();
       glViewport (0, 0, window_width, window_height);
@@ -805,7 +832,9 @@ print_texture_label (Display *dpy,
 # ifdef USE_IPHONE
       {
         /* Size of the font is in points, so scale iOS pixels to points. */
-        GLfloat scale = window_width / 768.0;
+        GLfloat scale = ((window_width > window_height
+                          ? window_width : window_height)
+                         / 768.0);
         if (scale < 1) scale = 1;
 
         /* jwxyz-XLoadFont has already doubled the font size, to compensate
@@ -901,6 +930,17 @@ print_texture_label (Display *dpy,
 
   glMatrixMode(GL_MODELVIEW);
 }
+
+
+#ifdef HAVE_JWXYZ
+char *
+texfont_unicode_character_name (texture_font_data *data, unsigned long uc)
+{
+  Font fid = data->xftfont->xfont->fid;
+  return jwxyz_unicode_character_name (data->dpy, fid, uc);
+}
+#endif /* HAVE_JWXYZ */
+
 
 
 /* Releases the font and texture.

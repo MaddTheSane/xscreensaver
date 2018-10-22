@@ -25,13 +25,14 @@ static const char sccsid[] = "@(#)antmaze.c	5.01 2001/03/01 xlockmore";
 			"*showFPS:      False   \n" \
 			"*fpsSolid:     True    \n"
 
-# define refresh_antmaze 0
+# define free_antmaze 0
+# define release_antmaze 0
 # include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 # include "xlock.h"		/* from the xlockmore distribution */
 #endif /* !STANDALONE */
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
 #else
 # include <X11/Xlib.h>
@@ -81,7 +82,7 @@ ENTRYPOINT ModeSpecOpt antmaze_opts =
 
 #ifdef USE_MODULES
 ModStruct   antmaze_description =
-{"antmaze", "init_antmaze", "draw_antmaze", "release_antmaze",
+{"antmaze", "init_antmaze", "draw_antmaze", NULL,
  "draw_antmaze", "change_antmaze", NULL, &antmaze_opts,
  1000, 1, 1, 1, 4, 1.0, "",
  "draws some ants", 0, NULL};
@@ -1287,15 +1288,6 @@ static void pinit(antmazestruct *mp)
 /*   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, front_specular); */
 }
 
-ENTRYPOINT void release_antmaze(ModeInfo * mi) 
-{
-  if(antmaze) {
-	free((void *) antmaze);
-	antmaze = (antmazestruct *) NULL;
-  }
-  FreeAllGL(mi);
-}
-
 #define MAX_MAGNIFICATION 10
 #define max(a, b) a < b ? b : a
 #define min(a, b) a < b ? a : b
@@ -1337,11 +1329,7 @@ ENTRYPOINT void init_antmaze(ModeInfo * mi)
 
   antmazestruct *mp;
   
-  if (antmaze == NULL) {
-	if ((antmaze = (antmazestruct *) calloc(MI_NUM_SCREENS(mi),
-						sizeof (antmazestruct))) == NULL)
-	  return;
-  }
+  MI_INIT(mi, antmaze);
   mp = &antmaze[MI_SCREEN(mi)];
   mp->step = NRAND(90);
   mp->ant_position = NRAND(90);
@@ -1422,6 +1410,7 @@ ENTRYPOINT void init_antmaze(ModeInfo * mi)
 static void
 device_rotate(ModeInfo *mi)
 {
+#if 0
   GLfloat rot = current_device_rotation();
   glRotatef(rot, 0, 0, 1);
   if ((rot >  45 && rot <  135) ||
@@ -1430,6 +1419,7 @@ device_rotate(ModeInfo *mi)
       GLfloat s = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
       glScalef (1/s, s, 1);
     }
+#endif
 }
 
 
@@ -1490,7 +1480,7 @@ ENTRYPOINT void draw_antmaze(ModeInfo * mi)
 
   /* sync */
   if(!draw_antmaze_strip(mi)) {
-    release_antmaze(mi);
+    MI_ABORT(mi);
     return;
   }
 
@@ -1516,7 +1506,7 @@ ENTRYPOINT void draw_antmaze(ModeInfo * mi)
 
   /* sync */
   if(!draw_antmaze_strip(mi)) {
-    release_antmaze(mi);
+    MI_ABORT(mi);
     return;
   }
 

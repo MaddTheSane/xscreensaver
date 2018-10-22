@@ -1,4 +1,4 @@
-/* flyingtoasters, Copyright (c) 2003-2014 Jamie Zawinski <jwz@jwz.org>
+/* flyingtoasters, Copyright (c) 2003-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -32,7 +32,7 @@
 
 /* #define DEBUG */
 
-# define refresh_toasters 0
+# define free_toasters 0
 # define release_toasters 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -47,13 +47,13 @@
 
 #include "xlockmore.h"
 #include "gltrackball.h"
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include <ctype.h>
 
 #define HAVE_TEXTURE
 #ifdef HAVE_TEXTURE
-# include "../images/chromesphere.xpm"
-# include "../images/toast.xpm"
+# include "images/gen/chromesphere_png.h"
+# include "images/gen/toast_png.h"
 #endif /* HAVE_TEXTURE */
 
 
@@ -291,8 +291,15 @@ ENTRYPOINT void
 reshape_toasters (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -303,6 +310,14 @@ reshape_toasters (ModeInfo *mi, int width, int height)
   gluLookAt( 0.0, 2.0, 30.0,
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -330,8 +345,8 @@ load_textures (ModeInfo *mi)
   toaster_configuration *bp = &bps[MI_SCREEN(mi)];
   XImage *xi;
 
-  xi = xpm_to_ximage (mi->dpy, mi->xgwa.visual, mi->xgwa.colormap,
-                      chromesphere_xpm);
+  xi = image_data_to_ximage (mi->dpy, mi->xgwa.visual, 
+                             chromesphere_png, sizeof(chromesphere_png));
   clear_gl_error();
 
 #ifndef HAVE_JWZGLES /* No SPHERE_MAP yet */
@@ -341,38 +356,26 @@ load_textures (ModeInfo *mi)
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
-                xi->width, xi->height, 0,
-                GL_RGBA,
-# ifndef USE_IPHONE
-                GL_UNSIGNED_INT_8_8_8_8_REV,
-# else
-                GL_UNSIGNED_BYTE,
-# endif
-                xi->data);
+                xi->width, xi->height, 0, 
+                GL_RGBA, GL_UNSIGNED_BYTE, xi->data);
   check_gl_error("texture");
   XDestroyImage (xi);
   xi = 0;
 #endif
 
-  xi = xpm_to_ximage (mi->dpy, mi->xgwa.visual, mi->xgwa.colormap,
-                      toast_xpm);
+  xi = image_data_to_ximage (mi->dpy, mi->xgwa.visual, 
+                             toast_png, sizeof(toast_png));
 
   glGenTextures (1, &bp->toast_texture);
   glBindTexture (GL_TEXTURE_2D, bp->toast_texture);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                 xi->width, xi->height, 0,
-                GL_RGBA,
-# ifndef USE_IPHONE
-                GL_UNSIGNED_INT_8_8_8_8_REV,
-# else
-                GL_UNSIGNED_BYTE,
-# endif
-                xi->data);
+                GL_RGBA, GL_UNSIGNED_BYTE, xi->data);
   check_gl_error("texture");
   XDestroyImage (xi);
   xi = 0;
@@ -389,14 +392,7 @@ init_toasters (ModeInfo *mi)
   int wire = MI_IS_WIREFRAME(mi);
   int i;
 
-  if (!bps) {
-    bps = (toaster_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (toaster_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 

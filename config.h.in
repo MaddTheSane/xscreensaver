@@ -37,6 +37,14 @@
 /* Define to 1 if you have the `bind_textdomain_codeset' function. */
 #undef HAVE_BIND_TEXTDOMAIN_CODESET
 
+/* Define to 1 if you have the Mac OS X function CFLocaleCopyCurrent in the
+   CoreFoundation framework. */
+#undef HAVE_CFLOCALECOPYCURRENT
+
+/* Define to 1 if you have the Mac OS X function CFPreferencesCopyAppValue in
+   the CoreFoundation framework. */
+#undef HAVE_CFPREFERENCESCOPYAPPVALUE
+
 /* Define this if you have Gnome and want to build support for the
    xscreensaver control panel in the Gnome Control Center (gnomecc). (This is
    needed only with Gtk 1.x.) */
@@ -163,6 +171,11 @@
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
 
+/* Define this if the Portable Network Graphics library is installed. It is
+   basically required, but many things will more-or-less limp along without
+   it. */
+#undef HAVE_LIBPNG
+
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
 
@@ -257,6 +270,9 @@
 /* Define to 1 if you have the `sigtimedwait' function. */
 #undef HAVE_SIGTIMEDWAIT
 
+/* Define to 1 if you have the `sqrtf' function. */
+#undef HAVE_SQRTF
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
@@ -288,6 +304,9 @@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/termios.h> header file. */
+#undef HAVE_SYS_TERMIOS_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
@@ -355,10 +374,6 @@
 /* Define this if you have the Xmu library. This is standard part of X, and if
    your vendor doesn't ship it, you should report that as a bug. */
 #undef HAVE_XMU
-
-/* Define this if you have the XPM library installed. Some of the demos can
-   make use of this if it is available. */
-#undef HAVE_XPM
 
 /* Define this if you have the X Shared Memory Extension. */
 #undef HAVE_XSHM_EXTENSION
@@ -455,3 +470,6 @@
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
+
+/* Define to `int' if <sys/types.h> or <sys/socket.h> does not define. */
+#undef socklen_t

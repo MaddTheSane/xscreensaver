@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1992-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1992-2018 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -60,6 +60,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #ifdef __hpux
  /* Which of the ten billion standards does values.h belong to?
@@ -67,14 +68,28 @@
 # include <values.h>
 #endif
 
-#if defined(HAVE_COCOA) || defined(HAVE_ANDROID)
+#ifdef HAVE_JWXYZ
 # include "jwxyz.h"
+# include <string.h> /* X11/Xos.h brings this in. */
+/* From utils/visual.c. */
+# define DEFAULT_VISUAL	-1
+# define GL_VISUAL	-6
 #else  /* real X11 */
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <X11/Xresource.h>
 # include <X11/Xos.h>
-#endif /* !HAVE_COCOA */
+#endif /* !HAVE_JWXYZ */
+
+#if defined(USE_IPHONE) || defined(HAVE_ANDROID)
+# define HAVE_MOBILE
+#endif
+
+#ifdef HAVE_ANDROID
+ /* So that hacks' debug output shows up in logcat... */
+# undef  fprintf
+# define fprintf(S, ...) Log(__VA_ARGS__)
+#endif
 
 /* M_PI ought to have been defined in math.h, but... */
 #ifndef M_PI
@@ -98,6 +113,11 @@
 #include "grabscreen.h"
 #include "visual.h"
 #include "fps.h"
+#include "font-retry.h"
+
+#ifdef HAVE_RECORD_ANIM
+# include "recanim.h"
+#endif
 
 /* Be Posixly correct */
 #undef  bzero
@@ -128,8 +148,12 @@ struct xscreensaver_function_table {
   void           (*free_cb)    (Display *, Window, void *);
   void           (*fps_cb)     (Display *, Window, fps_state *, void *);
 
+# ifndef HAVE_JWXYZ
   Visual *       (*pick_visual_hook) (Screen *);
   Bool           (*validate_visual_hook) (Screen *, const char *, Visual *);
+# else
+  int            visual;
+# endif
 
 };
 

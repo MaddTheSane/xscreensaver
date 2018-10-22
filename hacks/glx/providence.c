@@ -19,7 +19,8 @@
 			    "*showFPS: False   \n" \
 			    "*wireframe: False \n"
 
-# define refresh_providence 0
+# define free_providence 0
+# define release_providence 0
 #include "xlockmore.h"
 #else
 #include "xlock.h"
@@ -53,7 +54,7 @@ ENTRYPOINT ModeSpecOpt providence_opts = {
 #ifdef USE_MODULES
 ModStruct   providence_description = {
   "providence", "init_providence", "draw_providence", 
-  "release_providence", "draw_providence", "change_providence", 
+  (char *) NULL, "draw_providence", "change_providence", 
   (char *) NULL, &providence_opts, 1000, 1, 1, 1, 4, 1.0, "",
   "draws pyramid with glory", 0, NULL
 };
@@ -595,10 +596,17 @@ static void draw_providence_strip(ModeInfo *mi)
 
 ENTRYPOINT void reshape_providence(ModeInfo * mi, int width, int height) 
 {
-  double h = (GLfloat) height / (GLfloat) width;  
   providencestruct *mp = &providence[MI_SCREEN(mi)];
+  double h = (GLfloat) height / (GLfloat) width;  
+  int y = 0;
 
-  glViewport(0, 0, mp->WindW = (GLint) width, mp->WindH = (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 3;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport(0, y, mp->WindW = (GLint) width, mp->WindH = (GLint) height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
@@ -623,18 +631,6 @@ static void pinit(providencestruct *mp)
   glNewList(mp->pyramidlist, GL_COMPILE);
   draw_seal(mp);
   glEndList();
-}
-
-/* cleanup routine */
-ENTRYPOINT void release_providence(ModeInfo * mi) 
-{
-
-  if(providence) {
-    free((void *) providence);
-    providence = (providencestruct *) NULL;
-  }
-
-  FreeAllGL(mi);
 }
 
 /* event handling */
@@ -671,11 +667,7 @@ ENTRYPOINT void init_providence(ModeInfo *mi)
 {
   providencestruct *mp;
   
-  if(!providence) {
-    if((providence = (providencestruct *) 
-	calloc(MI_NUM_SCREENS(mi), sizeof (providencestruct))) == NULL)
-      return;
-  }
+  MI_INIT(mi, providence);
   mp = &providence[MI_SCREEN(mi)];
   mp->trackball = gltrackball_init (False);
 
@@ -766,6 +758,15 @@ ENTRYPOINT void draw_providence(ModeInfo * mi)
   glRotatef(10.0+20.0*sin(mp->theta/2.0), 1.0, 0.0, 0.0);
   gltrackball_rotate(mp->trackball);
   glRotatef(mp->theta * 180.0 / Pi, 0.0, -1.0, 0.0);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
   /* draw providence */
   draw_providence_strip(mi);

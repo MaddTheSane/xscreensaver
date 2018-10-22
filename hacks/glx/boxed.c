@@ -45,8 +45,8 @@ static const char sccsid[] = "@(#)boxed.c	0.9 01/09/26 xlockmore";
 			"*showFPS:   False   \n" \
 			"*wireframe: False   \n"
 
-# define refresh_boxed 0
-# define boxed_handle_event 0
+# define release_boxed 0
+# define boxed_handle_event xlockmore_no_events
 # include "xlockmore.h"		/* from the xscreensaver distribution */
 #else  /* !STANDALONE */
 # include "xlock.h"		/* from the xlockmore distribution */
@@ -97,8 +97,8 @@ ENTRYPOINT ModeSpecOpt boxed_opts = {countof(opts), opts, countof(vars), vars, N
 #ifdef USE_MODULES
 
 ModStruct   boxed_description = { 
-     "boxed", "init_boxed", "draw_boxed", "release_boxed",
-     "draw_boxed", "init_boxed", NULL, &boxed_opts,
+     "boxed", "init_boxed", "draw_boxed", NULL,
+     "draw_boxed", "init_boxed", "free_boxed", &boxed_opts,
      1000, 1, 2, 1, 4, 1.0, "",
      "Shows GL's boxed balls", 0, NULL};
 
@@ -831,20 +831,22 @@ static int drawball(boxedstruct *gp, ball *b, int wire)
 
    if (!gp->gllists[GLL_BALL]) {
       glNewList(gp->listobjects + GLL_BALL,GL_COMPILE);
+      glBegin(wire ? GL_LINES : GL_TRIANGLES);
       cnt = SPHERE_INDICES/3;
       for (i=0; i<cnt; i++) {
 	 pos = i * 3;
-	 glBegin(wire ? GL_LINE_LOOP : GL_TRIANGLES);
 	 glNormal3f(spherev[spherei[pos+0]].x,spherev[spherei[pos+0]].y,spherev[spherei[pos+0]].z);
 	 glVertex3f(spherev[spherei[pos+0]].x,spherev[spherei[pos+0]].y,spherev[spherei[pos+0]].z);
 	 glNormal3f(spherev[spherei[pos+1]].x,spherev[spherei[pos+1]].y,spherev[spherei[pos+1]].z);
          gp->list_polys[GLL_BALL]++;
 	 glVertex3f(spherev[spherei[pos+1]].x,spherev[spherei[pos+1]].y,spherev[spherei[pos+1]].z);
+	 if (wire)
+	    glVertex3f(spherev[spherei[pos+1]].x,spherev[spherei[pos+1]].y,spherev[spherei[pos+1]].z);
 	 glNormal3f(spherev[spherei[pos+2]].x,spherev[spherei[pos+2]].y,spherev[spherei[pos+2]].z);
 	 glVertex3f(spherev[spherei[pos+2]].x,spherev[spherei[pos+2]].y,spherev[spherei[pos+2]].z);
          gp->list_polys[GLL_BALL]++;
-	 glEnd();
       }
+      glEnd();
       glEndList();
       gp->gllists[GLL_BALL] = 1;
    } else {
@@ -856,6 +858,27 @@ static int drawball(boxedstruct *gp, ball *b, int wire)
    return polys;
 }
 
+
+/*
+ * Draw a single triangle
+ */
+static void drawtri(triman *t, int wire, int i)
+{
+   const vectorf *spherev = t->vertices + i*3;
+   const vectorf *loc = &t->tris[i].loc;
+
+   glNormal3f(t->normals[i].x,t->normals[i].y,t->normals[i].z);
+   glVertex3f(spherev[0].x+loc->x,spherev[0].y+loc->y,spherev[0].z+loc->z);
+   glVertex3f(spherev[1].x+loc->x,spherev[1].y+loc->y,spherev[1].z+loc->z);
+   if (wire)
+      glVertex3f(spherev[1].x+loc->x,spherev[1].y+loc->y,spherev[1].z+loc->z);
+   glVertex3f(spherev[2].x+loc->x,spherev[2].y+loc->y,spherev[2].z+loc->z);
+   if (wire) {
+      glVertex3f(spherev[2].x+loc->x,spherev[2].y+loc->y,spherev[2].z+loc->z);
+      glVertex3f(spherev[0].x+loc->x,spherev[0].y+loc->y,spherev[0].z+loc->z);
+  }
+}
+
     
 /* 
  * Draw all triangles in triman
@@ -863,8 +886,7 @@ static int drawball(boxedstruct *gp, ball *b, int wire)
 static int drawtriman(triman *t, int wire) 
 {
    int polys = 0;
-   int i,pos;
-   vectorf *spherev = t->vertices;
+   int i;
    GLfloat col[3];
    
    glPushMatrix();
@@ -877,6 +899,7 @@ static int drawtriman(triman *t, int wire)
    col[1] *= 0.3;
    col[2] *= 0.3;
    glMaterialfv(GL_FRONT, GL_EMISSION,col);
+   glBegin(wire ? GL_LINES : GL_TRIANGLES);
    
    for (i=0; i<t->num_tri; i++) {
       if (t->tris[i].gone > 3) { continue; }
@@ -891,17 +914,8 @@ static int drawtriman(triman *t, int wire)
 	  col[2] *= 0.8;
 	  glMaterialfv(GL_FRONT, GL_EMISSION,col);
 
-	  pos = i*3;
-	  glPushMatrix();
-	  glTranslatef(t->tris[i].loc.x,t->tris[i].loc.y,t->tris[i].loc.z);
-	  glBegin(wire ? GL_LINE_LOOP : GL_TRIANGLES);
-	  glNormal3f(t->normals[i].x,t->normals[i].y,t->normals[i].z);
-	  glVertex3f(spherev[pos+0].x,spherev[pos+0].y,spherev[pos+0].z);
-	  glVertex3f(spherev[pos+1].x,spherev[pos+1].y,spherev[pos+1].z);
-	  glVertex3f(spherev[pos+2].x,spherev[pos+2].y,spherev[pos+2].z);
+	  drawtri(t, wire, i);
 	  polys++;
-	  glEnd();
-	  glPopMatrix();
 
 	  glColor3f(t->color.x,t->color.y,t->color.z);
 	  col[0] = t->color.x;
@@ -917,19 +931,11 @@ static int drawtriman(triman *t, int wire)
 	  continue;
       }
 
-      pos = i*3;
-      glPushMatrix();
-      glTranslatef(t->tris[i].loc.x,t->tris[i].loc.y,t->tris[i].loc.z);
-      glBegin(wire ? GL_LINE_LOOP : GL_TRIANGLES);
-      glNormal3f(t->normals[i].x,t->normals[i].y,t->normals[i].z);
-      glVertex3f(spherev[pos+0].x,spherev[pos+0].y,spherev[pos+0].z);
-      glVertex3f(spherev[pos+1].x,spherev[pos+1].y,spherev[pos+1].z);
-      glVertex3f(spherev[pos+2].x,spherev[pos+2].y,spherev[pos+2].z);
+      drawtri(t, wire, i);
       polys++;
-      glEnd();
-      glPopMatrix();
-   }   
-   glPopMatrix();   
+   }
+   glEnd();
+   glPopMatrix();
    return polys;
 }
       
@@ -1023,7 +1029,15 @@ static void draw(ModeInfo * mi)
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glLoadIdentity();
    
-   glRotatef(current_device_rotation(), 0, 0, 1);
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+    glRotatef(o, 0, 0, 1);
+  }
+# endif
 
    gp->tic += 0.01f;
    gp->camtic += 0.01f + 0.01f * sin(gp->tic * speed);
@@ -1155,8 +1169,15 @@ static void draw(ModeInfo * mi)
 ENTRYPOINT void reshape_boxed(ModeInfo *mi, int width, int height)
 {
    GLfloat     h = (GLfloat) height / (GLfloat) width;
+   int y = 0;
+
+   if (width > height * 5) {   /* tiny window: show middle */
+     height = width * 9/16;
+     y = -height/2;
+     h = height / (GLfloat) width;
+   }
    
-   glViewport(0, 0, (GLint) width, (GLint) height);
+   glViewport(0, y, (GLint) width, (GLint) height);
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    gluPerspective(50.0,1/h,2.0,1000.0);
@@ -1277,9 +1298,7 @@ init_boxed(ModeInfo * mi)
    /* Boolean     rgba, doublebuffer, cmap_installed; */
    boxedstruct *gp;
 
-   if (boxed == NULL) {
-      if ((boxed = (boxedstruct *) calloc(MI_NUM_SCREENS(mi),sizeof (boxedstruct))) == NULL) return;
-   }
+   MI_INIT(mi, boxed);
    gp = &boxed[screen];
    gp->window = MI_WINDOW(mi);
    
@@ -1320,37 +1339,27 @@ draw_boxed(ModeInfo * mi)
 }
 
 ENTRYPOINT void
-release_boxed(ModeInfo * mi)
+free_boxed(ModeInfo * mi)
 {
+   boxedstruct *gp = &boxed[MI_SCREEN(mi)];
    int i;
+
+   if (gp->glx_context) {
+      /* Display lists MUST be freed while their glXContext is current. */
+      glXMakeCurrent(MI_DISPLAY(mi), gp->window, *(gp->glx_context));
    
-   if (boxed != NULL) {
-      int screen;
-      
-      for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-	 boxedstruct *gp = &boxed[screen];
-	 
-	 if (gp->glx_context) {
-	    /* Display lists MUST be freed while their glXContext is current. */
-	    glXMakeCurrent(MI_DISPLAY(mi), gp->window, *(gp->glx_context));
-	    
-	    if (glIsList(gp->listobjects))
-	      glDeleteLists(gp->listobjects, 3);
-	    
-	    for (i=0;i<gp->bman.num_balls;i++) {
-	       if (gp->bman.balls[i].bounced) freetris(&gp->tman[i]);
-	    }
-	    free (gp->bman.balls);
-	    free (gp->tman);
-	    free (gp->tex1);
-		 
-	    
-	 }
+      if (glIsList(gp->listobjects))
+        glDeleteLists(gp->listobjects, 3);
+
+      for (i=0;i<gp->bman.num_balls;i++) {
+         if (gp->bman.balls[i].bounced) freetris(&gp->tman[i]);
       }
-      (void) free((void *) boxed);
-      boxed = NULL;
+      free (gp->bman.balls);
+      free (gp->tman);
+      free (gp->tex1);
+
+
    }
-   FreeAllGL(mi);
 }
 
 

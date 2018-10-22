@@ -50,6 +50,9 @@ static const char sccsid[] = "@(#)euler2d.c	5.00 2000/11/01 xlockmore";
 					"*ignoreRotation: True \n" \
 
 # define SMOOTH_COLORS
+# define release_euler2d 0
+# define reshape_euler2d 0
+# define euler2d_handle_event 0
 # include "xlockmore.h"		/* in xscreensaver distribution */
 #else /* STANDALONE */
 # include "xlock.h"		/* in xlockmore distribution */
@@ -89,8 +92,8 @@ ENTRYPOINT ModeSpecOpt euler2d_opts =
 
 #ifdef USE_MODULES
 ModStruct   euler2d_description = {
-	"euler2d", "init_euler2d", "draw_euler2d", "release_euler2d",
-	"refresh_euler2d", "init_euler2d", (char *) NULL, &euler2d_opts,
+	"euler2d", "init_euler2d", "draw_euler2d", (char *) NULL,
+	"refresh_euler2d", "init_euler2d", "free_euler2d", &euler2d_opts,
 	1000, 1024, 3000, 1, 64, 1.0, "",
 	"Simulates 2D incompressible invisid fluid.", 0, NULL
 };
@@ -112,6 +115,7 @@ typedef struct {
 	int        height;
 	int        count;
 	double     xshift,yshift,scale;
+	double     xshift2,yshift2;
 	double     radius;
 
         int        N;
@@ -480,11 +484,12 @@ ode_solve(euler2dstruct *sp)
 
 #define deallocate(p,t) if (p!=NULL) {(void) free((void *) p); p=(t*)NULL; }
 #define allocate(p,t,s) if ((p=(t*)malloc(sizeof(t)*s))==NULL)\
-{free_euler2d(sp);return;}
+{free_euler2d(mi);return;}
 
-static void
-free_euler2d(euler2dstruct *sp)
+ENTRYPOINT void
+free_euler2d(ModeInfo * mi)
 {
+	euler2dstruct *sp = &euler2ds[MI_SCREEN(mi)];
 	deallocate(sp->csegs, XSegment);
 	deallocate(sp->old_segs, XSegment);
 	deallocate(sp->nold_segs, int);
@@ -520,14 +525,10 @@ init_euler2d (ModeInfo * mi)
 	delta_t = 0.001;
         if (power>1.0) delta_t *= pow(0.1,power-1);
 
-	if (euler2ds == NULL) {
-		if ((euler2ds = (euler2dstruct *) calloc(MI_NUM_SCREENS(mi),
-					       sizeof (euler2dstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, euler2ds);
 	sp = &euler2ds[MI_SCREEN(mi)];
 
-#ifdef HAVE_COCOA
+#ifdef HAVE_JWXYZ
   jwxyz_XSetAntiAliasing (MI_DISPLAY(mi), MI_GC(mi),  False);
 #endif
 
@@ -536,8 +537,25 @@ init_euler2d (ModeInfo * mi)
 
 	sp->count = 0;
 
+    sp->xshift2 = sp->yshift2 = 0;
+
 	sp->width = MI_WIDTH(mi);
 	sp->height = MI_HEIGHT(mi);
+
+    if (sp->width > sp->height * 5 ||  /* window has weird aspect */
+        sp->height > sp->width * 5)
+    {
+      if (sp->width > sp->height)
+        {
+          sp->height = sp->width * 0.8;
+          sp->yshift2 = -sp->height/2;
+        }
+      else
+        {
+          sp->width = sp->height * 0.8;
+          sp->xshift2 = -sp->width/2;
+        }
+    }
 
 	sp->N = MI_COUNT(mi)+number_of_vortex_points;
 	sp->Nvortex = number_of_vortex_points;
@@ -552,8 +570,6 @@ init_euler2d (ModeInfo * mi)
 	/* Clear the background. */
 	MI_CLEARWINDOW(mi);
 	 
-	free_euler2d(sp);
-
 	/* Allocate memory. */
 
 	if (sp->csegs == NULL) {
@@ -679,6 +695,8 @@ init_euler2d (ModeInfo * mi)
 		else
 			sp->yshift = (low[besti-nr_rotates/2]+high[besti-nr_rotates/2])/2.0*sp->scale+sp->height/2;
 
+        sp->xshift += sp->xshift2;
+        sp->yshift += sp->yshift2;
 
 /* Initialize boundary */
 
@@ -856,44 +874,13 @@ draw_euler2d (ModeInfo * mi)
 
 }
 
-ENTRYPOINT void
-reshape_euler2d(ModeInfo * mi, int width, int height)
-{
-  XClearWindow (MI_DISPLAY (mi), MI_WINDOW(mi));
-  init_euler2d (mi);
-}
-
-ENTRYPOINT void
-release_euler2d (ModeInfo * mi)
-{
-	if (euler2ds != NULL) {
-		int         screen;
-
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-			free_euler2d(&euler2ds[screen]);
-		(void) free((void *) euler2ds);
-		euler2ds = (euler2dstruct *) NULL;
-	}
-}
-
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_euler2d (ModeInfo * mi)
 {
 	MI_CLEARWINDOW(mi);
 }
-
-ENTRYPOINT Bool
-euler2d_handle_event (ModeInfo *mi, XEvent *event)
-{
-  if (screenhack_event_helper (MI_DISPLAY(mi), MI_WINDOW(mi), event))
-    {
-      init_euler2d (mi);
-      return True;
-    }
-  return False;
-}
-
-
+#endif
 
 XSCREENSAVER_MODULE ("Euler2D", euler2d)
 

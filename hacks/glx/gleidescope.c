@@ -74,9 +74,10 @@
 		"*delay:		20000		\n"	\
 		"*showFPS:		False		\n"	\
 		"*size:			0			\n"	\
-		"*useSHM:		True		\n"
+		"*useSHM:		True		\n" \
+		"*suppressRotationAnimation: True\n" \
 
-# define refresh_gleidescope 0
+# define release_gleidescope 0
 # include "xlockmore.h"				/* from the xscreensaver distribution */
 #else  /* !STANDALONE */
 # include "xlock.h"					/* from the xlockmore distribution */
@@ -85,7 +86,7 @@
 #ifdef USE_GL
 
 #include "colors.h"
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #include "grab-ximage.h"
 
 #ifdef GRAB
@@ -104,7 +105,7 @@ static Bool		rotate;			/* rotate in place */
 static Bool		norotate;		/* no rotate in place */
 static Bool		zoom;			/* zooming camera */
 static Bool		nozoom;			/* no zooming camera */
-static char		*image;			/* name of texture to load */
+static char		*image_str;		/* name of texture to load */
 static int		duration;		/* length of time to display grabbed image */
 
 #define MAX_CAM_SPEED			1.0
@@ -154,7 +155,7 @@ static argtype vars[] = {
 	{&norotate,		"norotate",	"noRotate",	DEF_NOROTATE,	t_Bool},
 	{&zoom,			"zoom",		"Zoom",		DEF_ZOOM,	t_Bool},
 	{&nozoom,		"nozoom",	"noZoom",	DEF_NOZOOM,	t_Bool},
-	{&image,		"image",	"Image",	DEF_IMAGE,	t_String},
+	{&image_str,		"image",	"Image",	DEF_IMAGE,	t_String},
 	{&duration,		"duration",	"Duration",	DEF_DURATION,		t_Int},
 };
 
@@ -180,9 +181,9 @@ ENTRYPOINT ModeSpecOpt gleidescope_opts = {
 
 #ifdef USE_MODULES
 ModStruct   gleidescope_description = { 
-     "gleidescope", "init_gleidescope", "draw_gleidescope", "release_gleidescope",
-     "draw_gleidescope", "init_gleidescope", NULL, &gleidescope_opts,
-     1000, 1, 2, 1, 4, 1.0, "",
+     "gleidescope", "init_gleidescope", "draw_gleidescope", NULL,
+     "draw_gleidescope", "init_gleidescope", "free_gleidescope",
+     &gleidescope_opts, 1000, 1, 2, 1, 4, 1.0, "",
      "GL Kaleidescope", 0, NULL};
 #endif
 
@@ -874,15 +875,15 @@ setup_random_texture (ModeInfo *mi, texture *texture)
 	texture->start_time = time((time_t *)0);
 }
 
-static void
+static Bool
 setup_file_texture (ModeInfo *mi, char *filename, texture *texture)
 {
 	Display *dpy = mi->dpy;
 	Visual *visual = mi->xgwa.visual;
 	char buf[1024];
 
-	Colormap cmap = mi->xgwa.colormap;
-	XImage *image = xpm_file_to_ximage (dpy, visual, cmap, filename);
+	XImage *image = file_to_ximage (dpy, visual, filename);
+    if (!image) return False;
 
 #ifdef DEBUG
 	printf("FileTexture\n");
@@ -915,6 +916,7 @@ setup_file_texture (ModeInfo *mi, char *filename, texture *texture)
 	texture->min_ty = 0.0;
 	texture->max_ty = 1.0;
 	texture->start_time = time((time_t *)0);
+    return True;
 }
 
 static void
@@ -922,14 +924,15 @@ setup_texture(ModeInfo * mi, texture *texture)
 {
 	gleidestruct *gp = &gleidescope[MI_SCREEN(mi)];
 
-	if (!image || !*image || !strcmp(image, "DEFAULT")) {
+	if (!image_str || !*image_str || !strcmp(image_str, "DEFAULT")) {
+    BUILTIN:
 		/* no image specified - use system settings */
 #ifdef DEBUG
 		printf("SetupTexture: get_snapshot\n");
 #endif
 		getSnapshot(mi, texture);
 	} else {
-		if (strcmp(image, "GENERATE") == 0) {
+		if (strcmp(image_str, "GENERATE") == 0) {
 #ifdef DEBUG
 			printf("SetupTexture: random_texture\n");
 #endif
@@ -939,7 +942,8 @@ setup_texture(ModeInfo * mi, texture *texture)
 #ifdef DEBUG
 			printf("SetupTexture: file_texture\n");
 #endif
-			setup_file_texture(mi, image, texture);
+			if (! setup_file_texture(mi, image_str, texture))
+              goto BUILTIN;
 		}
 	}
 	/* copy start time from texture */
@@ -1117,14 +1121,8 @@ draw_hexagons(ModeInfo *mi, int translucency, texture *texture)
 {
     int polys = 0;
 	int		i;
-	GLfloat	col[4];
 	vector2f t[3];
 	gleidestruct *gp = &gleidescope[MI_SCREEN(mi)];
-
-	col[0] = 1.0;
-	col[1] = 1.0;
-	col[2] = 1.0;
-	col[3] = (float)translucency / MAX_FADE;
 
 	calculate_texture_coords(mi, texture, t);
 
@@ -1246,7 +1244,6 @@ draw(ModeInfo * mi)
 	GLfloat	x_angle, y_angle, z_angle;
 	gleidestruct *gp = &gleidescope[MI_SCREEN(mi)];
 	vectorf	v1;
-	GLfloat pos[4];
 
     mi->polygon_count = 0;
 
@@ -1328,11 +1325,14 @@ draw(ModeInfo * mi)
 			0.0);
 #endif
 
-	/* light position same as camera */
-	pos[0] = v1.x;
-	pos[1] = v1.y;
-	pos[2] = v1.z;
-	pos[3] = 0;
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+    {
+      GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+      int o = (int) current_device_rotation();
+      if (o != 0 && o != 180 && o != -180)
+        glScalef (1/h, 1/h, 1/h);
+    }
+# endif
 
 	if (gp->fade == 0)
 	{
@@ -1394,14 +1394,24 @@ draw(ModeInfo * mi)
  */
 ENTRYPOINT void reshape_gleidescope(ModeInfo *mi, int width, int height)
 {
+	gleidestruct *gp = &gleidescope[MI_SCREEN(mi)];
 	GLfloat		h = (GLfloat) height / (GLfloat) width;
 
-	glViewport(0, 0, (GLint) width, (GLint) height);
+    int y = 0;
+
+    if (width > height * 5) {   /* tiny window: show middle */
+      height = width * 9/16;
+      y = -height/2;
+      h = height / (GLfloat) width;
+    }
+
+	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(gp->glx_context));
+
+	glViewport(0, y, (GLint) width, (GLint) height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(50.0, 1/h, 0.1, 2000.0);
 	glMatrixMode (GL_MODELVIEW);
-
 	glLineWidth(1);
 	glPointSize(1);   
 }
@@ -1527,12 +1537,7 @@ init_gleidescope(ModeInfo * mi)
 	gleidestruct *gp;
 	int screen = MI_SCREEN(mi);
 
-	if (gleidescope == NULL) {
-		gleidescope = (gleidestruct *) calloc(MI_NUM_SCREENS(mi), sizeof (gleidestruct));
-		if (gleidescope == NULL) {
-			return;
-		}
-	}
+	MI_INIT(mi, gleidescope);
 	gp = &gleidescope[screen];
 	gp->window = MI_WINDOW(mi);
     gp->size = -1;
@@ -1601,27 +1606,17 @@ draw_gleidescope(ModeInfo * mi)
 }
 
 ENTRYPOINT void
-release_gleidescope(ModeInfo * mi)
+free_gleidescope(ModeInfo * mi)
 {
-	if (gleidescope != NULL) {
-		int screen;
+	gleidestruct *gp = &gleidescope[MI_SCREEN(mi)];
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			gleidestruct *gp = &gleidescope[screen];
+	/* acd -  is this needed? */
+	if (gp->glx_context) {
+		/* Display lists MUST be freed while their glXContext is current. */
+		glXMakeCurrent(MI_DISPLAY(mi), gp->window, *(gp->glx_context));
 
-			/* acd -  is this needed? */
-			if (gp->glx_context) {
-				/* Display lists MUST be freed while their glXContext is current. */
-				glXMakeCurrent(MI_DISPLAY(mi), gp->window, *(gp->glx_context));
-
-				/* acd - was code here for freeing things that are no longer in struct */
-			}
-		}
-		(void) free((void *) gleidescope);
-		gleidescope = NULL;
+		/* acd - was code here for freeing things that are no longer in struct */
 	}
-	
-	FreeAllGL(mi);
 }
 
 XSCREENSAVER_MODULE ("Gleidescope", gleidescope)

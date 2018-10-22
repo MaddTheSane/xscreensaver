@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2001-2013 by Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2001-2018 by Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -69,7 +69,7 @@
   /* On MacOS under X11, the usual X11 mechanism of getting a screen shot
      doesn't work, and we need to use an external program.  This is only
      used when running under X11 on MacOS.  If it's a Cocoa build, this
-     path is not taken, and OSX/osxgrabscreen.m is used instead.
+     path is not taken, and OSX/grabclient-osx.m is used instead.
    */
 # define USE_EXTERNAL_SCREEN_GRABBER
 #endif
@@ -256,9 +256,24 @@ compute_image_scaling (int src_w, int src_h,
       float rw = (float) dest_w  / src_w;
       float rh = (float) dest_h / src_h;
       float r = (rw < rh ? rw : rh);
-      int tw = src_w * r;
-      int th = src_h * r;
-      int pct = (r * 100);
+      int tw, th, pct;
+
+      /* If the window is a goofy aspect ratio, take a middle slice of
+         the image instead. */
+      if (dest_w > dest_h * 5 || dest_h > dest_w * 5)
+        {
+          double r2 = (dest_w > dest_h
+                       ? dest_w / (double) dest_h
+                       : dest_h / (double) dest_w);
+          r *= r2;
+          if (verbose_p)
+            fprintf (stderr, "%s: weird aspect: scaling by %.1f\n",
+                     progname, r2);
+        }
+
+      tw = src_w * r;
+      th = src_h * r;
+      pct = (r * 100);
 
 #if 0
       /* this optimization breaks things */
@@ -281,8 +296,8 @@ compute_image_scaling (int src_w, int src_h,
   if (destx < 0) srcx = -destx, destx = 0;
   if (desty < 0) srcy = -desty, desty = 0;
 
-  if (dest_w < src_w) src_w = dest_w;
-  if (dest_h < src_h) src_h = dest_h;
+  /* if (dest_w < src_w) src_w = dest_w;
+     if (dest_h < src_h) src_h = dest_h; */
 
   *scaled_w_ret = src_w;
   *scaled_h_ret = src_h;
@@ -292,8 +307,23 @@ compute_image_scaling (int src_w, int src_h,
   *scaled_to_y_ret = desty;
 
   if (verbose_p)
-    fprintf (stderr, "%s: displaying %dx%d image at %d,%d in %dx%d.\n",
-             progname, src_w, src_h, destx, desty, dest_w, dest_h);
+    fprintf (stderr, "%s: displaying %dx%d+%d+%d image at %d,%d in %dx%d.\n",
+             progname, src_w, src_h, srcx, srcy, destx, desty, dest_w, dest_h);
+}
+
+
+static void
+colorbars (Screen *screen, Visual *visual, Drawable drawable, Colormap cmap)
+{
+  Pixmap mask = 0;
+  unsigned long *pixels; /* ignored - unfreed */
+  int npixels;
+  Pixmap logo = xscreensaver_logo (screen, visual, drawable, cmap,
+                                   BlackPixelOfScreen (screen),
+                                   &pixels, &npixels, &mask, True);
+  draw_colorbars (screen, visual, drawable, cmap, 0, 0, 0, 0, logo, mask);
+  XFreePixmap (DisplayOfScreen (screen), logo);
+  XFreePixmap (DisplayOfScreen (screen), mask);
 }
 
 
@@ -466,6 +496,8 @@ read_file_gdk (Screen *screen, Window window, Drawable drawable,
          gdk_pixbuf_render_pixmap_and_mask_for_colormap() instead.
          But I haven't tried.
        */
+      if (srcx > 0) w -= srcx;
+      if (srcy > 0) h -= srcy;
       gdk_pixbuf_xlib_render_to_drawable_alpha (pb, drawable,
                                                 srcx, srcy, destx, desty,
                                                 w, h,
@@ -840,8 +872,7 @@ jpg_error_exit (j_common_ptr cinfo)
 {
   getimg_jpg_error_mgr *err = (getimg_jpg_error_mgr *) cinfo->err;
   cinfo->err->output_message (cinfo);
-  draw_colorbars (err->screen, err->visual, err->drawable, err->cmap,
-                  0, 0, 0, 0);
+  colorbars (err->screen, err->visual, err->drawable, err->cmap);
   XSync (DisplayOfScreen (err->screen), False);
   exit (1);
 }
@@ -1491,7 +1522,7 @@ drawable_miniscule_p (Display *dpy, Drawable drawable)
   int xx, yy;
   unsigned int bw, d, w = 0, h = 0;
   XGetGeometry (dpy, drawable, &root, &xx, &yy, &w, &h, &bw, &d);
-  return (w < 32 || h < 32);
+  return (w < 32 || h < 30);
 }
 
 
@@ -1665,8 +1696,7 @@ get_image (Screen *screen,
         if (verbose_p)
           fprintf (stderr, "%s: drawing colorbars.\n", progname);
         XGetWindowAttributes (dpy, window, &xgwa);
-        draw_colorbars (screen, xgwa.visual, drawable, xgwa.colormap,
-                        0, 0, 0, 0);
+        colorbars (screen, xgwa.visual, drawable, xgwa.colormap);
         XSync (dpy, False);
         if (! file_prop) file_prop = "";
 

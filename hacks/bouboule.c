@@ -88,6 +88,7 @@ static const char sccsid[] = "@(#)bouboule.c	4.00 97/01/01 xlockmore";
 					"*ignoreRotation: True  \n"
 
 # define SMOOTH_COLORS
+# define release_bouboule 0
 # define bouboule_handle_event 0
 # include "xlockmore.h"				/* from the xscreensaver distribution */
 #else  /* !STANDALONE */
@@ -315,11 +316,9 @@ init_bouboule(ModeInfo * mi)
 	int         i;
 	double      theta, omega;
 
-	if (starfield == NULL) {
-		if ((starfield = (StarField *) calloc(MI_NUM_SCREENS(mi),
-						sizeof (StarField))) == NULL)
-			return;
-	}
+    if (MI_WIDTH(mi) > 2560) size *= 2;  /* Retina displays */
+
+	MI_INIT (mi, starfield);
 	sp = &starfield[MI_SCREEN(mi)];
 
 	sp->width = MI_WIN_WIDTH(mi);
@@ -543,7 +542,7 @@ draw_bouboule(ModeInfo * mi)
 	Star       *star;
 	XArc       *arc = NULL, *arcleft = NULL;
 
-#ifdef HAVE_COCOA	/* Don't second-guess Quartz's double-buffering */
+#ifdef HAVE_JWXYZ	/* Don't second-guess Quartz's double-buffering */
     XClearWindow(MI_DISPLAY(mi), MI_WINDOW(mi));
 #endif
 
@@ -804,38 +803,30 @@ draw_bouboule(ModeInfo * mi)
 }
 
 ENTRYPOINT void
-release_bouboule(ModeInfo * mi)
+free_bouboule(ModeInfo * mi)
 {
-	if (starfield != NULL) {
-		int         screen;
+	StarField  *sp = &starfield[MI_SCREEN(mi)];
 
-		for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++) {
-			StarField  *sp = &starfield[screen];
-
-			if (sp->star)
-				(void) free((void *) sp->star);
-			if (sp->xarc)
-				(void) free((void *) sp->xarc);
-			if (sp->xarcleft)
-				(void) free((void *) sp->xarcleft);
+	if (sp->star)
+		(void) free((void *) sp->star);
+	if (sp->xarc)
+		(void) free((void *) sp->xarc);
+	if (sp->xarcleft)
+		(void) free((void *) sp->xarcleft);
 #if ((USEOLDXARCS == 1) || (ADAPT_ERASE == 1))
-			if (sp->oldxarc)
-				(void) free((void *) sp->oldxarc);
-			if (sp->oldxarcleft)
-				(void) free((void *) sp->oldxarcleft);
+	if (sp->oldxarc)
+		(void) free((void *) sp->oldxarc);
+	if (sp->oldxarcleft)
+		(void) free((void *) sp->oldxarcleft);
 #endif
-			sinfree(&(sp->x));
-			sinfree(&(sp->y));
-			sinfree(&(sp->z));
-			sinfree(&(sp->sizex));
-			sinfree(&(sp->sizey));
-			sinfree(&(sp->thetax));
-			sinfree(&(sp->thetay));
-			sinfree(&(sp->thetaz));
-		}
-		(void) free((void *) starfield);
-		starfield = NULL;
-	}
+	sinfree(&(sp->x));
+	sinfree(&(sp->y));
+	sinfree(&(sp->z));
+	sinfree(&(sp->sizex));
+	sinfree(&(sp->sizey));
+	sinfree(&(sp->thetax));
+	sinfree(&(sp->thetay));
+	sinfree(&(sp->thetaz));
 }
 
 ENTRYPOINT void
@@ -856,10 +847,12 @@ reshape_bouboule(ModeInfo * mi, int width, int height)
         POSCANRAND);
 }
 
+#ifndef STANDALONE
 ENTRYPOINT void
 refresh_bouboule(ModeInfo * mi)
 {
 	/* Do nothing, it will refresh by itself */
 }
+#endif
 
 XSCREENSAVER_MODULE ("Bouboule", bouboule)

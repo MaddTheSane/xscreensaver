@@ -25,7 +25,7 @@
 			"*showFPS:      False            \n" \
 			"*wireframe:    False            \n" \
 
-# define refresh_boing 0
+# define free_boing 0
 # define release_boing 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -61,6 +61,8 @@ typedef struct {
   GLXContext *glx_context;
   trackball_state *trackball;
   Bool button_down_p;
+
+  GLfloat speed;
 
   GLuint ball_list;
   double ball_x,   ball_y,   ball_z,   ball_th;
@@ -429,10 +431,10 @@ tick_physics (ModeInfo *mi)
   bp->ball_x  += bp->ball_dx;
   if      (bp->ball_x < min) bp->ball_x = min, bp->ball_dx = -bp->ball_dx,
     bp->ball_dth = -bp->ball_dth,
-    bp->ball_dx += (frand(speed/2) - speed);
+    bp->ball_dx += (frand(bp->speed/2) - bp->speed);
   else if (bp->ball_x > max) bp->ball_x = max, bp->ball_dx = -bp->ball_dx,
     bp->ball_dth = -bp->ball_dth,
-    bp->ball_dx += (frand(speed/2) - speed);
+    bp->ball_dx += (frand(bp->speed/2) - bp->speed);
 
   bp->ball_dy += bp->ball_ddy;
   bp->ball_y  += bp->ball_dy;
@@ -453,11 +455,18 @@ ENTRYPOINT void
 reshape_boing (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
   h *= 4.0 / 3.0;   /* Back in the caveman days we couldn't even afford
                        square pixels! */
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 3/4;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -500,14 +509,7 @@ init_boing (ModeInfo *mi)
   boing_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
 
-  if (!bps) {
-    bps = (boing_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (boing_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -568,16 +570,16 @@ init_boing (ModeInfo *mi)
 
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  speed = speed / 800.0;
+  bp->speed = speed / 800.0;
 
-  bp->ball_dth = (spin ? -speed * 7 * 360 : 0);
+  bp->ball_dth = (spin ? -bp->speed * 7 * 360 : 0);
 
   bp->ball_x   = 0.5 - ((ball_size/2) + frand(1-ball_size));
   bp->ball_y   = 0.2;
-  bp->ball_dx  = speed * 6 + frand(speed);
-  bp->ball_ddy = -speed;
+  bp->ball_dx  = bp->speed * 6 + frand(bp->speed);
+  bp->ball_ddy = -bp->speed;
 
-  bp->ball_dz  = speed * 6 + frand(speed);
+  bp->ball_dz  = bp->speed * 6 + frand(bp->speed);
 
   bp->trackball = gltrackball_init (False);
 }
@@ -611,12 +613,14 @@ draw_boing (ModeInfo *mi)
   {
     double rot = current_device_rotation();
     glRotatef(rot, 0, 0, 1);
+/*
     if ((rot >  45 && rot <  135) ||
         (rot < -45 && rot > -135))
       {
         GLfloat s = MI_WIDTH(mi) / (GLfloat) MI_HEIGHT(mi);
         glScalef (1/s, s, 1);
       }
+*/
   }
 
   gltrackball_rotate (bp->trackball);

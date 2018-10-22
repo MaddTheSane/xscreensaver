@@ -18,9 +18,11 @@
 #define DEFAULTS "*delay:     20000 \n" \
                  "*showFPS:   False \n" \
                  "*wireframe: False \n" \
-                 "*useSHM:    True  \n"
+                 "*useSHM:    True  \n" \
+		 "*suppressRotationAnimation: True\n" \
 
-# define refresh_screenflip 0
+# define free_screenflip 0
+# define release_screenflip 0
 # include "xlockmore.h"                         /* from the xscreensaver distribution */
 # include "gltrackball.h"
 #else  /* !STANDALONE */
@@ -69,7 +71,7 @@ ENTRYPOINT ModeSpecOpt screenflip_opts = {countof(opts), opts, countof(vars), va
 
 #ifdef USE_MODULES
 ModStruct   screenflip_description =
-{"screenflip", "init_screenflip", "draw_screenflip", "release_screenflip",
+{"screenflip", "init_screenflip", "draw_screenflip", NULL,
  "draw_screenflip", "init_screenflip", NULL, &screenflip_opts,
  1000, 1, 2, 1, 4, 1.0, "",
  "Screenflips", 0, NULL};
@@ -311,6 +313,7 @@ static void display(Screenflip *c, int wire)
   gluLookAt(viewer[0], viewer[1], viewer[2], 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
   glPushMatrix();
 
+/*
   glRotatef(rot, 0, 0, 1);
   if ((rot >  45 && rot <  135) ||
       (rot < -45 && rot > -135))
@@ -318,6 +321,7 @@ static void display(Screenflip *c, int wire)
       GLfloat s = c->winw / (GLfloat) c->winh;
       glScalef (s, 1/s, 1);
     }
+*/
 
   if (inposition(c)) {
     frozen = 0;
@@ -331,9 +335,9 @@ static void display(Screenflip *c, int wire)
       if (random() % 2)
         c->dgamma = 1/60 - (float)(random() % 100)/3000;
     }
-    glRotatef(-rot, 0, 0, 1);
-    gltrackball_rotate (c->trackball);
     glRotatef(rot, 0, 0, 1);
+    gltrackball_rotate (c->trackball);
+    glRotatef(-rot, 0, 0, 1);
     if (rotate) glRotatef(c->rot, c->rx, c->ry, c->rz);
 /* update variables with each frame */
     if(!c->button_down_p && !c->fadetime) {
@@ -435,11 +439,7 @@ ENTRYPOINT void init_screenflip(ModeInfo *mi)
   int screen = MI_SCREEN(mi);
   Screenflip *c;
 
- if (screenflip == NULL) {
-   if ((screenflip = (Screenflip *) calloc(MI_NUM_SCREENS(mi),
-                                        sizeof(Screenflip))) == NULL)
-          return;
- }
+ MI_INIT(mi, screenflip);
  c = &screenflip[screen];
  c->window = MI_WINDOW(mi);
 
@@ -511,15 +511,6 @@ ENTRYPOINT void draw_screenflip(ModeInfo *mi)
   if(mi->fps_p) do_fps(mi);
   glFinish(); 
   glXSwapBuffers(disp, w);
-}
-
-ENTRYPOINT void release_screenflip(ModeInfo *mi)
-{
-  if (screenflip != NULL) {
-   (void) free((void *) screenflip);
-   screenflip = NULL;
-  }
-  FreeAllGL(mi);
 }
 
 XSCREENSAVER_MODULE_2 ("FlipScreen3D", flipscreen3d, screenflip)

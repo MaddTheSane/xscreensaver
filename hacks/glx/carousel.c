@@ -1,4 +1,4 @@
-/* carousel, Copyright (c) 2005-2015 Jamie Zawinski <jwz@jwz.org>
+/* carousel, Copyright (c) 2005-2018 Jamie Zawinski <jwz@jwz.org>
  * Loads a sequence of images and rotates them around.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -12,7 +12,16 @@
  * Created: 21-Feb-2005
  */
 
-#define DEF_FONT "-*-helvetica-bold-r-normal-*-*-240-*-*-*-*-*-*"
+#if defined(HAVE_COCOA) || defined(HAVE_ANDROID)
+# define DEF_FONT "OCR A Std 48, Lucida Console 48, Monaco 48"
+#elif 0  /* real X11, XQueryFont() */
+# define DEF_FONT "-*-helvetica-bold-r-normal-*-*-480-*-*-*-*-*-*"
+#else    /* real X11, load_font_retry() */
+# define DEF_FONT "-*-ocr a std-medium-r-*-*-*-480-*-*-m-*-*-*"
+#endif
+
+#define DEF_TITLE_FONT "-*-helvetica-bold-r-normal-*-*-480-*-*-*-*-*-*"
+
 #define DEFAULTS  "*count:           7         \n" \
 		  "*delay:           10000     \n" \
 		  "*wireframe:       False     \n" \
@@ -20,11 +29,12 @@
 	          "*fpsSolid:        True      \n" \
 	          "*useSHM:          True      \n" \
 		  "*font:	   " DEF_FONT "\n" \
+		  "*titleFont:	   " DEF_TITLE_FONT "\n" \
                   "*desktopGrabber:  xscreensaver-getimage -no-desktop %s\n" \
 		  "*grabDesktopImages:   False \n" \
 		  "*chooseRandomImages:  True  \n"
 
-# define refresh_carousel 0
+# define free_carousel 0
 # define release_carousel 0
 # include "xlockmore.h"
 
@@ -46,7 +56,7 @@
 #include "grab-ximage.h"
 #include "texfont.h"
 
-# ifndef HAVE_COCOA
+# ifndef HAVE_JWXYZ
 #  include <X11/Intrinsic.h>     /* for XrmDatabase in -debug mode */
 # endif
 
@@ -101,7 +111,7 @@ typedef struct {
   Bool awaiting_first_images_p;
   int loads_in_progress;
 
-  texture_font_data *texfont;
+  texture_font_data *texfont, *titlefont;
 
   fade_mode mode;
   int mode_tick;
@@ -232,6 +242,11 @@ load_image (ModeInfo *mi, image_frame *frame)
       int h = (MI_HEIGHT(mi) / 2) - 1;
       if (w <= 10) w = 10;
       if (h <= 10) h = 10;
+
+      if (w > h * 5) {   /* tiny window: use 16:9 boxes */
+        h = w * 9/16;
+      }
+
       load_texture_async (mi->xgwa.screen, mi->window, *ss->glx_context, w, h,
                           mipmap_p, frame->loading.texid, 
                           image_loaded_cb, frame);
@@ -399,8 +414,15 @@ ENTRYPOINT void
 reshape_carousel (ModeInfo *mi, int width, int height)
 {
   GLfloat h = (GLfloat) height / (GLfloat) width;
+  int y = 0;
 
-  glViewport (0, 0, (GLint) width, (GLint) height);
+  if (width > height * 5) {   /* tiny window: show middle */
+    height = width * 9/16;
+    y = -height/2;
+    h = height / (GLfloat) width;
+  }
+
+  glViewport (0, y, (GLint) width, (GLint) height);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -463,7 +485,7 @@ carousel_handle_event (ModeInfo *mi, XEvent *event)
 static void
 hack_resources (Display *dpy)
 {
-# ifndef HAVE_COCOA
+# ifndef HAVE_JWXYZ
   char *res = "desktopGrabber";
   char *val = get_string_resource (dpy, res, "DesktopGrabber");
   char buf1[255];
@@ -475,7 +497,7 @@ hack_resources (Display *dpy)
   value.addr = buf2;
   value.size = strlen(buf2);
   XrmPutResource (&db, buf1, "String", &value);
-# endif /* !HAVE_COCOA */
+# endif /* !HAVE_JWXYZ */
 }
 
 
@@ -498,7 +520,7 @@ loading_msg (ModeInfo *mi, int n)
     {
       /* only do this once, so that the string doesn't move. */
       XCharStruct e;
-      texture_string_metrics (ss->texfont, text, &e, 0, 0);
+      texture_string_metrics (ss->titlefont, text, &e, 0, 0);
       ss->loading_sw = e.width;
       ss->loading_sh = e.ascent + e.descent;
     }
@@ -513,6 +535,7 @@ loading_msg (ModeInfo *mi, int n)
   glPushMatrix();
   glLoadIdentity();
 
+/*
   {
     double rot = current_device_rotation();
     glRotatef(rot, 0, 0, 1);
@@ -523,13 +546,16 @@ loading_msg (ModeInfo *mi, int n)
         glScalef (s, 1/s, 1);
       }
   }
+*/
 
-  if (MI_WIDTH(mi) < MI_HEIGHT(mi))  /* USE_IPHONE portrait orientation */
+# ifdef HAVE_MOBILE
+  if (MI_WIDTH(mi) < MI_HEIGHT(mi))  /* portrait orientation */
     {
       GLfloat s = (MI_WIDTH(mi) / (GLfloat) MI_HEIGHT(mi));
       glScalef (s, s, s);
       glTranslatef(-s/2, 0, 0);
     }
+# endif
 
   glOrtho(0, MI_WIDTH(mi), 0, MI_HEIGHT(mi), -1, 1);
   glTranslatef ((MI_WIDTH(mi)  - ss->loading_sw) / 2,
@@ -538,7 +564,7 @@ loading_msg (ModeInfo *mi, int n)
   glColor3f (1, 1, 0);
   glEnable (GL_TEXTURE_2D);
   glDisable (GL_DEPTH_TEST);
-  print_texture_string (ss->texfont, text);
+  print_texture_string (ss->titlefont, text);
   glEnable (GL_DEPTH_TEST);
   glPopMatrix();
 
@@ -559,11 +585,7 @@ init_carousel (ModeInfo *mi)
   carousel_state *ss;
   int wire = MI_IS_WIREFRAME(mi);
   
-  if (sss == NULL) {
-    if ((sss = (carousel_state *)
-         calloc (MI_NUM_SCREENS(mi), sizeof(carousel_state))) == NULL)
-      return;
-  }
+  MI_INIT (mi, sss);
   ss = &sss[screen];
 
   if ((ss->glx_context = init_GL(mi)) != NULL) {
@@ -631,6 +653,7 @@ init_carousel (ModeInfo *mi)
     }
 
   ss->texfont = load_texture_font (MI_DISPLAY(mi), "font");
+  ss->titlefont = load_texture_font (MI_DISPLAY(mi), "titleFont");
 
   if (debug_p)
     hack_resources (MI_DISPLAY (mi));

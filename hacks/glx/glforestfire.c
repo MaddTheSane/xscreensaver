@@ -81,7 +81,6 @@ static const char sccsid[] = "@(#)fire.c	5.02 2001/09/26 xlockmore";
 		"*showFPS:    False \n" \
 		"*wireframe:  False \n"	\
 
-# define refresh_fire 0
 #define MODE_fire
 #include "xlockmore.h"		/* from the xscreensaver distribution */
 #include "gltrackball.h"
@@ -96,16 +95,11 @@ static const char sccsid[] = "@(#)fire.c	5.02 2001/09/26 xlockmore";
 
 #if defined( USE_XPM ) || defined( USE_XPMINC ) || defined(STANDALONE)
 /* USE_XPM & USE_XPMINC in xlock mode ; HAVE_XPM in xscreensaver mode */
-#include "xpm-ximage.h"
+#include "ximage-loader.h"
 #define I_HAVE_XPM
 
-#ifdef STANDALONE
-#include "../images/ground.xpm"
-#include "../images/tree.xpm"
-#else /* !STANDALONE */
-#include "pixmaps/ground.xpm"
-#include "pixmaps/tree.xpm"
-#endif /* !STANDALONE */
+#include "images/gen/ground_png.h"
+#include "images/gen/tree_png.h"
 #endif /* HAVE_XPM */
 
 /* vector utility macros */
@@ -535,8 +529,10 @@ static void inittextures(ModeInfo * mi)
 	glBindTexture(GL_TEXTURE_2D, fs->groundid);
 #endif /* HAVE_GLBINDTEXTURE */
 
-        if ((fs->gtexture = xpm_to_ximage(MI_DISPLAY(mi), MI_VISUAL(mi),
-			 MI_COLORMAP(mi), ground)) == None) {
+        if ((fs->gtexture = image_data_to_ximage(MI_DISPLAY(mi), MI_VISUAL(mi),
+                                                 ground_png,
+                                                 sizeof(ground_png)))
+            == None) {
 	    (void) fprintf(stderr, "Error reading the ground texture.\n");
 	    glDeleteTextures(1, &fs->groundid);
             do_texture = False;
@@ -549,10 +545,7 @@ static void inittextures(ModeInfo * mi)
     clear_gl_error();
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                  fs->gtexture->width, fs->gtexture->height, 0,
-                 GL_RGBA,
-                 /* GL_UNSIGNED_BYTE, */
-                 GL_UNSIGNED_INT_8_8_8_8_REV,
-                 fs->gtexture->data);
+                 GL_RGBA, GL_UNSIGNED_BYTE, fs->gtexture->data);
     check_gl_error("texture");
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -569,8 +562,11 @@ static void inittextures(ModeInfo * mi)
 #ifdef HAVE_GLBINDTEXTURE
 	    glBindTexture(GL_TEXTURE_2D,fs->treeid);
 #endif /* HAVE_GLBINDTEXTURE */
-            if ((fs->ttexture = xpm_to_ximage(MI_DISPLAY(mi), MI_VISUAL(mi),
-			 MI_COLORMAP(mi), tree)) == None) {
+            if ((fs->ttexture = image_data_to_ximage(MI_DISPLAY(mi),
+                                                     MI_VISUAL(mi),
+                                                     tree_png,
+                                                     sizeof(tree_png)))
+                == None) {
 	      (void)fprintf(stderr,"Error reading tree texture.\n");
 	      glDeleteTextures(1, &fs->treeid);
 	      fs->treeid    = 0;
@@ -581,10 +577,7 @@ static void inittextures(ModeInfo * mi)
         clear_gl_error();
 	    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                      fs->ttexture->width, fs->ttexture->height, 0,
-                     GL_RGBA,
-                     /* GL_UNSIGNED_BYTE, */
-                     GL_UNSIGNED_INT_8_8_8_8_REV,
-                     fs->ttexture->data);
+                     GL_RGBA, GL_UNSIGNED_BYTE, fs->ttexture->data);
         check_gl_error("texture");
 
 	    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
@@ -621,13 +614,15 @@ static Bool inittree(ModeInfo * mi)
 		return False;
     }
     /* initialise positions */
-    for(i=0;i<fs->num_trees;i++)
-    	do {
-      	    fs->treepos[i].x =vrnd()*TREEOUTR*2.0-TREEOUTR;
-      	    fs->treepos[i].y =0.0;
-      	    fs->treepos[i].z =vrnd()*TREEOUTR*2.0-TREEOUTR;
-      	    dist=sqrt(fs->treepos[i].x *fs->treepos[i].x +fs->treepos[i].z *fs->treepos[i].z );
-        } while((dist<TREEINR) || (dist>TREEOUTR));
+    for(i=0;i<fs->num_trees;i++) {
+      do {
+        fs->treepos[i].x =vrnd()*TREEOUTR*2.0-TREEOUTR;
+        fs->treepos[i].y =0.0;
+        fs->treepos[i].z =vrnd()*TREEOUTR*2.0-TREEOUTR;
+        dist = sqrt(fs->treepos[i].x * fs->treepos[i].x +
+                    fs->treepos[i].z * fs->treepos[i].z);
+      } while((dist<TREEINR) || (dist>TREEOUTR));
+    }
 	return True;
 }
 
@@ -885,9 +880,11 @@ static Bool Init(ModeInfo * mi)
  */
 
 
-static void
-free_fire(firestruct *fs)
+ENTRYPOINT void
+free_fire(ModeInfo * mi)
 {
+	firestruct *fs = &fire[MI_SCREEN(mi)];
+
 	if (mode_font != None && fs->fontbase != None) {
 		glDeleteLists(fs->fontbase, mode_font->max_char_or_byte2 -
 			mode_font->min_char_or_byte2 + 1);
@@ -929,14 +926,7 @@ init_fire(ModeInfo * mi)
 {
     firestruct *fs;
 
-    /* allocate the main fire table if needed */
-    if (fire == NULL) {
-	if ((fire = (firestruct *) calloc(MI_NUM_SCREENS(mi),
-					  sizeof(firestruct))) == NULL)
-	    return;
-    }
-
-    /* initialise the per screen fire structure */
+    MI_INIT (mi, fire);
     fs = &fire[MI_SCREEN(mi)];
     fs->np = MI_COUNT(mi);
     fs->fog = do_fog;
@@ -944,14 +934,14 @@ init_fire(ModeInfo * mi)
     /* initialise fire particles if any */
     if ((fs->np)&&(fs->p == NULL)) {
 	if ((fs->p = (part *) calloc(fs->np, sizeof(part))) == NULL) {
-	    free_fire(fs);
+	    free_fire(mi);
 	    return;
 	}
     }
     else if (fs->r == NULL) {
         /* initialise rain particles if no fire particles */
 	if ((fs->r = (rain *) calloc(NUMPART, sizeof(part))) == NULL) {
-	    free_fire(fs);
+	    free_fire(mi);
 	    return;
 	}
     }
@@ -974,7 +964,7 @@ init_fire(ModeInfo * mi)
 #endif
 	glDrawBuffer(GL_BACK);
 	if (!Init(mi)) {
-		free_fire(fs);
+		free_fire(mi);
 		return;
 	}
     } else {
@@ -1043,13 +1033,6 @@ ENTRYPOINT void draw_fire(ModeInfo * mi)
 
 ENTRYPOINT void release_fire(ModeInfo * mi)
 {
-    if (fire != NULL) {
-    int screen;
-	for (screen = 0; screen < MI_NUM_SCREENS(mi); screen++)
-		free_fire(&fire[screen]);
-	(void) free((void *) fire);
-	fire = (firestruct *) NULL;
-    }
     if (mode_font != None)
     {
 	/* only free-ed when there are no more screens used */

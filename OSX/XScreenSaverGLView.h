@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2006-2012 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2006-2016 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,6 +22,7 @@
 # import <OpenGLES/ES1/gl.h>
 # import <OpenGLES/ES1/glext.h>
 # import <QuartzCore/QuartzCore.h>
+# import "jwzglesI.h"
 #else
 # import <AppKit/NSOpenGL.h>
 #endif
@@ -30,6 +31,8 @@
 {
 # ifdef USE_IPHONE
   GLuint gl_depthbuffer;
+  BOOL _suppressRotationAnimation;
+  jwzgles_state *_glesState;
 # endif /* USE_IPHONE */
 }
 

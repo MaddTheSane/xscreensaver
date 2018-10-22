@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifndef HAVE_COCOA
+#ifndef HAVE_JWXYZ
 # include <GL/gl.h>
 # include <GL/glu.h>
 # include <GL/glx.h>
@@ -285,12 +285,15 @@ struct _global_info_t {
 	float sys_glWidth;
 	float sys_glHeight;
 
+	double gTimeCounter;
+	int first;
+	double oldFrameTime;
+
 	flurry_info_t *flurry;
 };
 
 #define kNumSpectrumEntries 512
 
-void OTSetup(void);
-double TimeInSecondsSinceStart(void);
+double TimeInSecondsSinceStart(const global_info_t *global);
 
 #endif /* Include/Define */

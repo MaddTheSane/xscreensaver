@@ -14,7 +14,7 @@
 			"*showFPS:      False       \n" \
 			"*wireframe:    False       \n"
 
-# define refresh_bit 0
+# define free_bit 0
 # define release_bit 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -301,7 +301,7 @@ draw_histogram (ModeInfo *mi, GLfloat ratio)
     glPushMatrix();
 
     glLoadIdentity();
-    glRotatef(current_device_rotation(), 0, 0, 1);
+    /* glRotatef(current_device_rotation(), 0, 0, 1); */
     glOrtho (0, mi->xgwa.width, 0, mi->xgwa.height, -1, 1);
 
     for (k = 0; k < overlays; k++)
@@ -407,14 +407,7 @@ init_bit (ModeInfo *mi)
   bit_configuration *bp;
   int i;
 
-  if (!bps) {
-    bps = (bit_configuration *)
-      calloc (MI_NUM_SCREENS(mi), sizeof (bit_configuration));
-    if (!bps) {
-      fprintf(stderr, "%s: out of memory\n", progname);
-      exit(1);
-    }
-  }
+  MI_INIT (mi, bps);
 
   bp = &bps[MI_SCREEN(mi)];
 
@@ -483,8 +476,17 @@ draw_bit (ModeInfo *mi)
     }
 
   glPushMatrix ();
-  glRotatef(current_device_rotation(), 0, 0, 1);
   glScalef(1.1, 1.1, 1.1);
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    int o = (int) current_device_rotation();
+    if (o != 0 && o != 180 && o != -180)
+      glScalef (1/h, 1/h, 1/h);
+    glRotatef(o, 0, 0, 1);
+  }
+# endif
 
   {
     double x, y, z;
@@ -513,6 +515,11 @@ draw_bit (ModeInfo *mi)
     double ratio = 1 - ((bp->last_time + bp->frequency) - now) / bp->frequency;
     if (ratio > 1) ratio = 1;
     mi->polygon_count += draw_histogram (mi, ratio);
+
+    if (MI_WIDTH(mi) > MI_HEIGHT(mi) * 5) {   /* wide window: scale up */
+      glScalef (8, 8, 8);
+    }
+
     mi->polygon_count += animate_bits (mi, omodel, nmodel, ratio);
     tick_bit (mi, now);
   }

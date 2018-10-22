@@ -59,7 +59,7 @@ static const char sccsid[] = "@(#)stairs.c	4.07 97/11/24 xlockmore";
 # define DEFAULTS			"*delay:		20000   \n" \
 							"*showFPS:      False   \n"
 
-# define refresh_stairs 0
+# define release_stairs 0
 # include "xlockmore.h"		/* from the xscreensaver distribution */
 #else /* !STANDALONE */
 # include "xlock.h"			/* from the xlockmore distribution */
@@ -71,8 +71,8 @@ static const char sccsid[] = "@(#)stairs.c	4.07 97/11/24 xlockmore";
 #if 0
 #include "e_textures.h"
 #else
-#include "xpm-ximage.h"
-#include "../images/wood.xpm"
+#include "ximage-loader.h"
+#include "images/gen/wood_png.h"
 #endif
 
 #include "sphere.h"
@@ -83,8 +83,8 @@ ENTRYPOINT ModeSpecOpt stairs_opts =
 
 #ifdef USE_MODULES
 ModStruct   stairs_description =
-{"stairs", "init_stairs", "draw_stairs", "release_stairs",
- "draw_stairs", "change_stairs", NULL, &stairs_opts,
+{"stairs", "init_stairs", "draw_stairs", NULL,
+ "draw_stairs", "change_stairs", "free_stairs", &stairs_opts,
  1000, 1, 1, 1, 4, 1.0, "",
  "Shows Infinite Stairs, an Escher-like scene", 0, NULL};
 
@@ -320,8 +320,14 @@ ENTRYPOINT void
 reshape_stairs (ModeInfo * mi, int width, int height)
 {
 	stairsstruct *sp = &stairs[MI_SCREEN(mi)];
+    int y = 0;
 
-	glViewport(0, 0, sp->WindW = (GLint) width, sp->WindH = (GLint) height);
+    if (width > height * 5) {   /* tiny window: show middle */
+      height = width;
+      y = -height/2;
+    }
+
+	glViewport(0, y, sp->WindW = (GLint) width, sp->WindH = (GLint) height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 5.0, 15.0);
@@ -354,7 +360,7 @@ stairs_handle_event (ModeInfo *mi, XEvent *event)
       XLookupString (&event->xkey, &c, 1, &keysym, 0);
       if (c == ' ' || c == '\t')
         {
-          gltrackball_reset (sp->trackball);
+          gltrackball_reset (sp->trackball, 0, 0);
           return True;
         }
     }
@@ -406,16 +412,11 @@ pinit(ModeInfo *mi)
     check_gl_error("mipmapping");
 #else
     {
-      XImage *img = xpm_to_ximage (mi->dpy,
-                                   mi->xgwa.visual,
-                                   mi->xgwa.colormap,
-                                   wood_texture);
+      XImage *img = image_data_to_ximage (mi->dpy, mi->xgwa.visual,
+                                          wood_png, sizeof(wood_png));
 	  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA,
                     img->width, img->height, 0,
-                    GL_RGBA,
-                    /* GL_UNSIGNED_BYTE, */
-                    GL_UNSIGNED_INT_8_8_8_8_REV,
-                    img->data);
+                    GL_RGBA, GL_UNSIGNED_BYTE, img->data);
       check_gl_error("texture");
       XDestroyImage (img);
     }
@@ -437,11 +438,7 @@ init_stairs (ModeInfo * mi)
 	int         screen = MI_SCREEN(mi);
 	stairsstruct *sp;
 
-	if (stairs == NULL) {
-		if ((stairs = (stairsstruct *) calloc(MI_NUM_SCREENS(mi),
-					     sizeof (stairsstruct))) == NULL)
-			return;
-	}
+	MI_INIT (mi, stairs);
 	sp = &stairs[screen];
 
 	sp->step = 0.0;
@@ -482,12 +479,6 @@ draw_stairs (ModeInfo * mi)
 	glPushMatrix();
 
     glRotatef(rot, 0, 0, 1);
-    if ((rot >  45 && rot <  135) ||
-        (rot < -45 && rot > -135))
-      {
-        GLfloat s = MI_WIDTH(mi) / (GLfloat) MI_HEIGHT(mi);
-        glScalef (s, 1/s, 1);
-      }
 
 	glTranslatef(0.0, 0.0, -10.0);
 
@@ -496,6 +487,14 @@ draw_stairs (ModeInfo * mi)
 	} else {
 		glScalef(Scale4Iconic * sp->WindH / sp->WindW, Scale4Iconic, Scale4Iconic);
 	}
+
+# ifdef HAVE_MOBILE	/* Keep it the same relative size when rotated. */
+  {
+    GLfloat h = MI_HEIGHT(mi) / (GLfloat) MI_WIDTH(mi);
+    if (rot != 0 && rot != 180 && rot != -180)
+      glScalef (1/h, 1/h, 1/h);
+  }
+# endif
 
     gltrackball_rotate (sp->trackball);
 
@@ -577,20 +576,12 @@ change_stairs (ModeInfo * mi)
 #endif /* !STANDALONE */
 
 ENTRYPOINT void
-release_stairs (ModeInfo * mi)
+free_stairs (ModeInfo * mi)
 {
-	if (stairs != NULL) {
-      int i;
-      for (i = 0; i < MI_NUM_SCREENS(mi); i++) {
-        stairsstruct *sp = &stairs[i];
-        if (glIsList(sp->objects)) {
-          glDeleteLists(sp->objects, 1);
-        }
-      }
-      free(stairs);
-      stairs = NULL;
+	stairsstruct *sp = &stairs[MI_SCREEN(mi)];
+	if (glIsList(sp->objects)) {
+		glDeleteLists(sp->objects, 1);
 	}
-	FreeAllGL(mi);
 }
 
 XSCREENSAVER_MODULE ("Stairs", stairs)
