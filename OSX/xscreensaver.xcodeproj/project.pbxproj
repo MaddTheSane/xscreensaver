@@ -333,12 +333,9 @@
 /* Begin PBXBuildFile section */
 		5501D1961DBDCC3D00624BE9 /* xshm.c in Sources */ = {isa = PBXBuildFile; fileRef = 5501D1941DBDCC0200624BE9 /* xshm.c */; };
 		550FB6001AD64424001A4FA5 /* Media-iOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 550FB5FD1AD64424001A4FA5 /* Media-iOS.xcassets */; };
+		55166090217E846D003D5515 /* XScreensaver-iOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5516608F217E846D003D5515 /* XScreensaver-iOS.xcassets */; };
 		55374E321E1582C6005E2362 /* pow2.c in Sources */ = {isa = PBXBuildFile; fileRef = 55374E301E1582AA005E2362 /* pow2.c */; };
 		55374E331E1582D2005E2362 /* pow2.h in Headers */ = {isa = PBXBuildFile; fileRef = 55374E311E1582AA005E2362 /* pow2.h */; };
-		557BF07E1EE90D3B00846DCE /* settings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 557BF07A1EE90C8B00846DCE /* settings@2x.png */; };
-		557BF07F1EE90D3B00846DCE /* settings@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 557BF07B1EE90C8B00846DCE /* settings@3x.png */; };
-		557BF0801EE90D3B00846DCE /* stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 557BF07C1EE90C8B00846DCE /* stop@2x.png */; };
-		557BF0811EE90D3B00846DCE /* stop@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 557BF07D1EE90C8B00846DCE /* stop@3x.png */; };
 		55EDCB3D1AD498A800251909 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EDCB3C1AD498A800251909 /* LaunchScreen.xib */; };
 		AF012918157C1E4C00C396E1 /* chessmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = AFA55E2309935F2B00F3E977 /* chessmodels.c */; };
 		AF01590A2077F56000F624F5 /* OCRAStd.otf in Resources */ = {isa = PBXBuildFile; fileRef = AFEC68361BD6CA85004C1B64 /* OCRAStd.otf */; };
@@ -390,8 +387,6 @@
 		AF0FAF2809CA712600EE1051 /* xscreensaver-getimage-file in Resources */ = {isa = PBXBuildFile; fileRef = AF0FAF1209CA712600EE1051 /* xscreensaver-getimage-file */; };
 		AF0FAF2909CA712600EE1051 /* xscreensaver-getimage-file in Resources */ = {isa = PBXBuildFile; fileRef = AF0FAF1209CA712600EE1051 /* xscreensaver-getimage-file */; };
 		AF0FAF3C159BAC7C00BCE2F7 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF0FAF3B159BAC7B00BCE2F7 /* CoreText.framework */; };
-		AF142BAE1EE75DBF0005C0A8 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = AF142BAC1EE75DBF0005C0A8 /* settings.png */; };
-		AF142BAF1EE75DBF0005C0A8 /* stop.png in Resources */ = {isa = PBXBuildFile; fileRef = AF142BAD1EE75DBF0005C0A8 /* stop.png */; };
 		AF142BB11EFEFBA20005C0A8 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF142BB01EFEFBA20005C0A8 /* Photos.framework */; };
 		AF1A17680D6D6EE3008AF328 /* XScreenSaverSubclass.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9CC7A0099580E70075E99B /* XScreenSaverSubclass.m */; };
 		AF1A177F0D6D6F3E008AF328 /* lcdscrub.c in Sources */ = {isa = PBXBuildFile; fileRef = AF1A177E0D6D6F3E008AF328 /* lcdscrub.c */; };
@@ -7515,12 +7510,9 @@
 		5501D1941DBDCC0200624BE9 /* xshm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xshm.c; path = utils/xshm.c; sourceTree = "<group>"; };
 		5501D1951DBDCC0200624BE9 /* xshm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xshm.h; path = utils/xshm.h; sourceTree = "<group>"; };
 		550FB5FD1AD64424001A4FA5 /* Media-iOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Media-iOS.xcassets"; sourceTree = "<group>"; };
+		5516608F217E846D003D5515 /* XScreensaver-iOS.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "XScreensaver-iOS.xcassets"; sourceTree = "<group>"; };
 		55374E301E1582AA005E2362 /* pow2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pow2.c; path = utils/pow2.c; sourceTree = "<group>"; };
 		55374E311E1582AA005E2362 /* pow2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pow2.h; path = utils/pow2.h; sourceTree = "<group>"; };
-		557BF07A1EE90C8B00846DCE /* settings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings@2x.png"; sourceTree = "<group>"; };
-		557BF07B1EE90C8B00846DCE /* settings@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings@3x.png"; sourceTree = "<group>"; };
-		557BF07C1EE90C8B00846DCE /* stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stop@2x.png"; sourceTree = "<group>"; };
-		557BF07D1EE90C8B00846DCE /* stop@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stop@3x.png"; sourceTree = "<group>"; };
 		55EDCB3C1AD498A800251909 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* XScreenSaver.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = XScreenSaver.plist; sourceTree = "<group>"; };
 		AF01294C157D31DD00C396E1 /* iSaverRunner.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = iSaverRunner.plist; sourceTree = SOURCE_ROOT; };
@@ -7546,8 +7538,6 @@
 		AF0FAF0B09CA6FF900EE1051 /* xscreensaver-text */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-text"; path = "../driver/xscreensaver-text"; sourceTree = "<group>"; };
 		AF0FAF1209CA712600EE1051 /* xscreensaver-getimage-file */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = text.script.perl; name = "xscreensaver-getimage-file"; path = "../driver/xscreensaver-getimage-file"; sourceTree = "<group>"; };
 		AF0FAF3B159BAC7B00BCE2F7 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
-		AF142BAC1EE75DBF0005C0A8 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
-		AF142BAD1EE75DBF0005C0A8 /* stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stop.png; sourceTree = "<group>"; };
 		AF142BB01EFEFBA20005C0A8 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Photos.framework; sourceTree = DEVELOPER_DIR; };
 		AF14EE300E3CEF1A004CBBD2 /* XScreenSaver.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = XScreenSaver.icns; sourceTree = "<group>"; };
 		AF1A17730D6D6EE3008AF328 /* LCDscrub.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LCDscrub.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -12561,6 +12551,7 @@
 				AF56019B157DAA3D00DB2055 /* iSaverRunner.xib */,
 				55EDCB3C1AD498A800251909 /* LaunchScreen.xib */,
 				550FB5FD1AD64424001A4FA5 /* Media-iOS.xcassets */,
+				5516608F217E846D003D5515 /* XScreensaver-iOS.xcassets */,
 				AF2D522513E954A0002AA818 /* SaverRunner.icns */,
 				AF73FF201A08AB9400E485E9 /* iSaverRunner57t.png */,
 				AF9771D90989DC4A001F8B92 /* SaverRunner.plist */,
@@ -12573,12 +12564,6 @@
 				AFEC68381BD6CDF9004C1B64 /* YearlReg.ttf */,
 				AFC43E731C68364B00C89999 /* PxPlus_IBM_VGA8.ttf */,
 				AF939AD42038C0040032DD23 /* luximr.ttf */,
-				AF142BAC1EE75DBF0005C0A8 /* settings.png */,
-				557BF07A1EE90C8B00846DCE /* settings@2x.png */,
-				557BF07B1EE90C8B00846DCE /* settings@3x.png */,
-				AF142BAD1EE75DBF0005C0A8 /* stop.png */,
-				557BF07C1EE90C8B00846DCE /* stop@2x.png */,
-				557BF07D1EE90C8B00846DCE /* stop@3x.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -20797,12 +20782,6 @@
 				AFC43E741C68364B00C89999 /* PxPlus_IBM_VGA8.ttf in Resources */,
 				AFEC68391BD6CDF9004C1B64 /* YearlReg.ttf in Resources */,
 				AF939AD72038C5F00032DD23 /* luximr.ttf in Resources */,
-				AF142BAE1EE75DBF0005C0A8 /* settings.png in Resources */,
-				557BF07E1EE90D3B00846DCE /* settings@2x.png in Resources */,
-				557BF07F1EE90D3B00846DCE /* settings@3x.png in Resources */,
-				AF142BAF1EE75DBF0005C0A8 /* stop.png in Resources */,
-				557BF0801EE90D3B00846DCE /* stop@2x.png in Resources */,
-				557BF0811EE90D3B00846DCE /* stop@3x.png in Resources */,
 				AF918AB4158FC53D002B5D1E /* abstractile.xml in Resources */,
 				AF918AB5158FC53D002B5D1E /* anemone.xml in Resources */,
 				AF918AB6158FC53D002B5D1E /* anemotaxis.xml in Resources */,
@@ -21003,6 +20982,7 @@
 				AF918B76158FC53E002B5D1E /* swirl.xml in Resources */,
 				AF918B78158FC53E002B5D1E /* tangram.xml in Resources */,
 				AF68A49819196E3E00D41CD1 /* tessellimage.xml in Resources */,
+				55166090217E846D003D5515 /* XScreensaver-iOS.xcassets in Resources */,
 				AF918B79158FC53E002B5D1E /* thornbird.xml in Resources */,
 				AF918B7A158FC53E002B5D1E /* timetunnel.xml in Resources */,
 				AF918B7B158FC53E002B5D1E /* topblock.xml in Resources */,
