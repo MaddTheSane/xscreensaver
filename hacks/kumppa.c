@@ -215,10 +215,10 @@ static Bool make_rots(struct state *st, double xspeed,double yspeed)
   st->rotsizeY=(int)(2/yspeed+1);
   iy=(double)(st->midy+1)/(double)(st->rotsizeY);
 
-  st->Xrotations=malloc((st->midx+2)*sizeof(unsigned int));
-  st->Xrottable=malloc((st->rotsizeX+1)*sizeof(unsigned int));
-  st->Yrotations=malloc((st->midy+2)*sizeof(unsigned int));
-  st->Yrottable=malloc((st->rotsizeY+1)*sizeof(unsigned int));
+  st->Xrotations=malloc((st->midx+2)*sizeof(int));
+  st->Xrottable=malloc((st->rotsizeX+1)*sizeof(int));
+  st->Yrotations=malloc((st->midy+2)*sizeof(int));
+  st->Yrottable=malloc((st->rotsizeY+1)*sizeof(int));
   chks=malloc(((st->midx>st->midy)?st->midx:st->midy)*sizeof(Bool));
   if (!st->Xrottable || !st->Yrottable || !st->Xrotations || !st->Yrotations || !chks) return False;
 
@@ -531,6 +531,8 @@ kumppa_free (Display *dpy, Window window, void *closure)
   free (st->Yrotations);
   free (st->Xrottable);
   free (st->Yrottable);
+  free (st->rotateX);
+  free (st->rotateY);
   free (st);
 }
 

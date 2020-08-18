@@ -1,4 +1,4 @@
-/* filmleader, Copyright (c) 2018 Jamie Zawinski <jwz@jwz.org>
+/* filmleader, Copyright (c) 2018-2019 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -53,6 +53,7 @@ filmleader_init (Display *dpy, Window window)
 {
   struct state *st = (struct state *) calloc (1, sizeof(*st));
   XGCValues gcv;
+  char *s;
 
   st->dpy = dpy;
   st->window = window;
@@ -105,15 +106,15 @@ filmleader_init (Display *dpy, Window window)
 
   st->xftdraw = XftDrawCreate (dpy, st->pix, st->xgwa.visual,
                                st->xgwa.colormap);
-  st->font = load_xft_font_retry (dpy, screen_number (st->xgwa.screen),
-                                  get_string_resource (dpy, "numberFont",
-                                                       "Font"));
-  st->font2 = load_xft_font_retry (dpy, screen_number (st->xgwa.screen),
-                                   get_string_resource (dpy, "numberFont2",
-                                                        "Font"));
-  st->font3 = load_xft_font_retry (dpy, screen_number (st->xgwa.screen),
-                                   get_string_resource (dpy, "numberFont3",
-                                                        "Font"));
+  s = get_string_resource (dpy, "numberFont", "Font");
+  st->font = load_xft_font_retry (dpy, screen_number (st->xgwa.screen), s);
+  if (s) free (s);
+  s = get_string_resource (dpy, "numberFont2", "Font");
+  st->font2 = load_xft_font_retry (dpy, screen_number (st->xgwa.screen), s);
+  if (s) free (s);
+  s = get_string_resource (dpy, "numberFont3", "Font");
+  st->font3 = load_xft_font_retry (dpy, screen_number (st->xgwa.screen), s);
+  if (s) free (s);
 
   st->bg = get_pixel_resource (dpy, st->xgwa.colormap,
                                "textBackground", "Background");
@@ -124,12 +125,15 @@ filmleader_init (Display *dpy, Window window)
   st->trace_color = get_pixel_resource (dpy, st->xgwa.colormap,
                                         "traceColor", "Foreground");
 
-  XftColorAllocName (dpy, st->xgwa.visual, st->xgwa.colormap,
-                     get_string_resource (dpy, "textColor", "Foreground"),
+  s = get_string_resource (dpy, "textColor", "Foreground");
+  XftColorAllocName (dpy, st->xgwa.visual, st->xgwa.colormap, s,
                      &st->xft_text_color_1);
-  XftColorAllocName (dpy, st->xgwa.visual, st->xgwa.colormap,
-                     get_string_resource (dpy, "textBackground", "Background"),
+  if (s) free (s);
+
+  s = get_string_resource (dpy, "textBackground", "Background");
+  XftColorAllocName (dpy, st->xgwa.visual, st->xgwa.colormap, s,
                      &st->xft_text_color_2);
+  if (s) free (s);
 
   return st;
 }
@@ -219,10 +223,10 @@ filmleader_draw (Display *dpy, Window window, void *closure)
           XftTextExtentsUtf8 (dpy, xftfont, (FcChar8 *)
                               blurbs[i].s[0], strlen(blurbs[i].s[0]),
                               &extents);
-          lbearing = -extents.x;
+          /* lbearing = -extents.x; */
           rbearing = extents.width - extents.x;
           ascent   = extents.y;
-          descent  = extents.height - extents.y;
+          /* descent  = extents.height - extents.y; */
 
           x = (st->w - rbearing) / 2;
           y = st->h * 0.1 + ascent;
@@ -241,10 +245,10 @@ filmleader_draw (Display *dpy, Window window, void *closure)
                   XftTextExtentsUtf8 (dpy, xftfont, (FcChar8 *)
                                       blurbs[i].s[0], strlen(blurbs[i].s[j]),
                                       &extents);
-                  lbearing = -extents.x;
-                  rbearing = extents.width - extents.x;
-                  ascent   = extents.y;
-                  descent  = extents.height - extents.y;
+                  /* lbearing = -extents.x; */
+                  /* rbearing = extents.width - extents.x; */
+                  /* ascent   = extents.y; */
+                  /* descent  = extents.height - extents.y; */
                 }
             }
 
@@ -356,7 +360,7 @@ filmleader_draw (Display *dpy, Window window, void *closure)
       lbearing = -extents.x;
       rbearing = extents.width - extents.x;
       ascent   = extents.y;
-      descent  = extents.height - extents.y;
+      /* descent  = extents.height - extents.y; */
 
       x = st->w * 0.1;
       y = st->h * 0.1 + ascent;
@@ -373,8 +377,8 @@ filmleader_draw (Display *dpy, Window window, void *closure)
       XftTextExtentsUtf8 (dpy, xftfont, (FcChar8 *) s, strlen(s), &extents);
       lbearing = -extents.x;
       rbearing = extents.width - extents.x;
-      ascent   = extents.y;
-      descent  = extents.height - extents.y;
+      /* ascent   = extents.y; */
+      /* descent  = extents.height - extents.y; */
 
       x = st->w * 0.1;
       y = st->h * 0.95;
@@ -512,6 +516,7 @@ filmleader_free (Display *dpy, Window window, void *closure)
 {
   struct state *st = (struct state *) closure;
   analogtv_release (st->tv);
+  free (st->inp);
   XftDrawDestroy (st->xftdraw);
   XftColorFree(dpy, st->xgwa.visual, st->xgwa.colormap, &st->xft_text_color_1);
   XftColorFree(dpy, st->xgwa.visual, st->xgwa.colormap, &st->xft_text_color_2);
@@ -541,13 +546,22 @@ static const char *filmleader_defaults [] = {
 
 # endif
 
-# ifdef USE_IPHONE
+  /* Note: these font sizes aren't relative to screen pixels, but to the
+     712 x Y or X x 712 canvas that we draw in, which is then scaled to
+     the size of the screen by analogtv. */
 
+# ifdef USE_IPHONE
   "*numberFont:  Helvetica Bold 120",
   "*numberFont2: Helvetica 36",
   "*numberFont3: Helvetica 28",
 
-# else /* X11, Cocoa or Android */
+# elif defined(HAVE_COCOA)
+  /* Need to double these because ANALOGTV_DEFAULTS sets lowrez: true */
+  "*numberFont:  Helvetica Bold 240",
+  "*numberFont2: Helvetica 72",
+  "*numberFont3: Helvetica 56",
+
+# else /* X11 or Android */
 
   "*numberFont:  -*-helvetica-bold-r-*-*-*-1700-*-*-*-*-*-*",
   "*numberFont2: -*-helvetica-medium-r-*-*-*-500-*-*-*-*-*-*",

@@ -396,7 +396,7 @@ fizzle (eraser_state *st)
       unsigned int i;
 
       st->fizzle_rnd =
-        (unsigned short *) malloc (sizeof(unsigned short) * chunks);
+        (unsigned short *) calloc (sizeof(unsigned short), chunks);
 
       if (! st->fizzle_rnd)
         return;
@@ -750,7 +750,7 @@ eraser_init (Display *dpy, Window window)
     which = -1;
   else
     which = get_integer_resource(dpy, "eraseMode", "Integer");
-  free (s);
+  if (s) free (s);
 
   if (which < 0 || which >= countof(erasers))
     which = random() % countof(erasers);

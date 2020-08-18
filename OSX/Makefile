@@ -12,11 +12,16 @@ XCODE_APP = /Applications/Xcode.app
 TARGETS    = All Savers
 #ARCH      = -arch i386 -arch x86_64 ONLY_ACTIVE_ARCH=NO
 CERT	   = 'Developer ID Installer: Jamie Zawinski (4627ATJELP)'
+CERT2	   = 'Developer ID Application: Jamie Zawinski (4627ATJELP)'
 PKGID	   = org.jwz.xscreensaver
 THUMBDIR   = build/screenshots
 XCODEBUILD = $(XCODE_APP)/Contents/Developer/usr/bin/xcodebuild
 SETFILE    = $(XCODE_APP)/Contents/Developer/Tools/SetFile
 SETICON    = ./seticon.pl
+
+# Using $(MAKE) directly means the shell executes things even with "make -n"
+MAKE2 = $(MAKE)
+
 
 default: release
 all: debug release
@@ -29,7 +34,8 @@ distclean:
 	-rm -f config.status config.cache config.log \
 	  *.bak *.rej TAGS *~ "#"*
 	-rm -rf autom4te*.cache
-	-rm -rf build Sparkle.framework
+	-rm -rf build
+#	-rm -rf Sparkle.framework
 
 distdepend:: Sparkle.framework
 distdepend:: update_plist_version
@@ -43,7 +49,14 @@ release:: distdepend
 release:: check_versions
 
 Sparkle.framework:
-	unzip ../archive/Sparkle.framework-2013-12-04.zip
+	rm -rf bin sparkle-bin
+	tar -vxjf ../archive/Sparkle-1.21.2.tar.bz2 \
+	  --exclude CHANGELOG \
+	  --exclude LICENSE \
+	  --exclude SampleAppcast.xml \
+	  --exclude Sparkle.framework.dSYM \
+	  --exclude Sparkle\ Test\ App\*
+	mv bin sparkle-bin
 
 # Download and resize images from jwz.org.
 # This saves us having to include 4MB of images in the tar file
@@ -54,7 +67,7 @@ Sparkle.framework:
 
 BASE = xscreensaver/screenshots/
 URL = https://www.jwz.org/$(BASE)
-WGET = wget -q -U xscreensaver-build-osx
+WGET = wget -q -U xscreensaver-build-osx --content-on-error=0
 CVT  = -thumbnail '200x150^' -gravity center -extent 200x150 \
      \( +clone  -alpha extract \
         -draw 'fill black polygon 0,0 0,6 6,0 fill white circle 6,6 6,0' \
@@ -220,7 +233,7 @@ update_plist_version:
 
 updates.xml::
 	./updates.pl xscreensaver ../README ../archive ~/www/xscreensaver
-	@$(MAKE) test_sig
+	@$(MAKE2) test_sig
 
 test_sig::
 	@								    \
@@ -235,6 +248,9 @@ test_sig::
   SIGB=/tmp/$$NN.sig ;							    \
   HASH=/tmp/$$NN.hash ;							    \
   rm -f "$$SIGB" "$$HASH" ;						    \
+  if ( echo "$$SIG" | grep -qi ERROR ); then				    \
+    echo "No signature in updates.xml" >&2 ; exit 1 ;			    \
+  fi ;									    \
   echo "$$SIG " | base64 -D  > "$$SIGB" ;				    \
   set -e ;								    \
   for OPENSSL in /usr/bin/openssl /opt/local/bin/openssl ; do		    \
@@ -279,12 +295,12 @@ build/Release/installer.pkg: installer.rtf installer.xml installer.sh installer.
   rm -rf "$$STAGE" ;							\
 
 
-# -format UDBZ saves 4% (~1.2 MB) over UDZO.
-dmg:: distdepend
-dmg:: check_versions check_coretext
+dmg:: distdepend check_versions check_coretext
 #dmg:: check_gc
 dmg:: build/Release/installer.pkg
-dmg::
+dmg:: _dmg notarize
+
+_dmg::
 	@								      \
   set -e ;								      \
   SRC=../utils/version.h ;						      \
@@ -301,7 +317,7 @@ dmg::
   DST="$$STAGE/Screen Savers" ;						      \
   PKG="$$STAGE/Install Everything.pkg" ;				      \
   rm -f "$$DMG" ;							      \
-  rm -rf "$$STAGE" ;							      \
+  sudo rm -rf "$$STAGE" ;						      \
   echo + mkdir -p "$$DST" ;						      \
          mkdir -p "$$DST" ;						      \
 									      \
@@ -334,6 +350,10 @@ dmg::
    fi ;									      \
   done ;								      \
 									      \
+  true codesign --force --sign $(CERT2) "$$DST/"*.app/Contents/Resources/*.saver ; \
+  rm -rf "$$DST/"*.app/Contents/Resources/*.saver/Contents/_CodeSignature ;   \
+  codesign --force --sign $(CERT2) "$$DST/"*.app ;			      \
+									      \
   set -x ;								      \
   cp -p bindist.rtf "$$STAGE/Read Me.rtf" ;				      \
   cp -p build/Release/installer.pkg "$$PKG" ;				      \
@@ -353,23 +373,103 @@ dmg::
   mv "$$STAGE/bindist.webloc"  "$$STAGE/Get the iPhone:iPad Version.webloc" ; \
   mv "$$STAGE/bindist2.webloc" "$$STAGE/Get the Android Version.webloc" ;     \
 									      \
+  echo Fuck this shit. ;						      \
+  rm -r "$$DST"/Apple2.app ;						      \
+  rm -r "$$DST"/Phosphor.app ;						      \
+  rm -r "$$DST"/WebCollage.saver ;					      \
+									      \
   set +x ;								      \
+									      \
+  echo "Chowning..." ;							      \
+  sudo chown -R root:wheel "$$STAGE/"* ;				      \
+									      \
   echo "Checking signatures..." ;					      \
   spctl --assess --type install "$$PKG" ;				      \
   spctl --assess --type execute "$$SRC/XScreenSaverUpdater.app" ;	      \
-  spctl --assess --type execute "$$DST/"*.app ;				      \
+  true spctl --assess --type execute "$$DST/"*.app ;			      \
   spctl --assess --type install "$$DST/"*.saver ;			      \
   set -x ;								      \
 									      \
   hdiutil makehybrid -quiet -ov -hfs -hfs-volume-name "$$VOLNAME"	      \
     -hfs-openfolder "$$STAGE" "$$STAGE" -o "$$TMPDMG" ;			      \
-  rm -rf "$$STAGE" ;							      \
+  echo "Chowning back and deleting..." ;				      \
+  sudo chown -R `whoami` "$$STAGE/"* ;					      \
+  sudo rm -rf "$$STAGE" ;						      \
 									      \
   hdiutil convert -quiet -ov -format UDBZ -imagekey zlib-level=9	      \
     "$$TMPDMG" -o "$$DMG" ;						      \
   xattr -w com.apple.quarantine "0000;00000000;;" "$$DMG" ;		      \
   rm -f "$$TMPDMG" ;							      \
-  ls -ldhgF "$$DMG"
+									      \
+  codesign --sign $(CERT2) "$$DMG" ;					      \
+  spctl --assess --type install "$$DMG" ;				      \
+									      \
+  ls -ldhgF "$$DMG" ;							      \
+  $(MAKE2) notarize ;							      \
+
+
+# To set up notarization:
+#  - Log in on https://appleid.apple.com/
+#  - Generate App-Specific Password, "altool-notarizer"
+#  - Keychain Access / New
+#  - Name: "altool-notarizer", Account: "jwz@jwz.org",
+#    Pass: the one you just generated.
+#
+# "make notarize", which will upload the DMG (slow).
+# "notarize_wait" waits for the response to be ready (takes 5+ minutes).
+# Only once that has arrived can we "staple" it onto the DMG.
+#
+# https://developer.apple.com/documentation/security/notarizing_your_app_before_distribution/customizing_the_notarization_workflow?language=objc
+#
+# Note that if Sparkle.framework/.../Autoupdate.app is not independently
+# signed, it won't pass. I had to add a build phase for that.
+#
+NOTARGS=-u "jwz@jwz.org" -p "@keychain:altool-notarizer"
+
+notarize::
+	@								      \
+  set -e ;								      \
+  SRC=../utils/version.h ;						      \
+  V=`sed -n 's/[^0-9]*\([0-9]\.[0-9][^. ]*\).*/\1/p' $$SRC` ;		      \
+  BASE="xscreensaver-$$V" ;						      \
+  OUTDIR="../archive" ;							      \
+  DMG="$$OUTDIR/$$BASE.dmg" ;						      \
+  set -x ;								      \
+  xcrun altool --notarize-app --primary-bundle-id "org.jwz.xscreensaver"      \
+    --file "$$DMG" $(NOTARGS) ;						      \
+  echo "" ;								      \
+  sleep 3 ;								      \
+  $(MAKE2) notarize_wait staple updates.xml
+
+notarize_wait::
+	@TODAY=`date +%Y-%m-%d` ;					      \
+	 while ( xcrun altool --notarization-history 0 $(NOTARGS) |	      \
+		 grep "$$TODAY" |					      \
+		 grep -q 'in progress' ); do				      \
+	  echo `date +%I:%M:` "waiting for notarization..." ;		      \
+	  xcrun altool --notarization-history 0 $(NOTARGS) |		      \
+		 grep "$$TODAY" ;					      \
+	  sleep 15 ;							      \
+	done ;								      \
+	echo '' ;							      \
+	xcrun altool --notarization-history 0 $(NOTARGS) ;		      \
+
+staple::
+	@								      \
+  set -e ;								      \
+  SRC=../utils/version.h ;						      \
+  V=`sed -n 's/[^0-9]*\([0-9]\.[0-9][^. ]*\).*/\1/p' $$SRC` ;		      \
+  BASE="xscreensaver-$$V" ;						      \
+  OUTDIR="../archive" ;							      \
+  DMG="$$OUTDIR/$$BASE.dmg" ;						      \
+  set -x ;								      \
+  xcrun stapler staple "$$DMG" ;					      \
+  xcrun stapler validate "$$DMG" ;					      \
+
+notarization_history::
+	xcrun altool --notarization-history 0 $(NOTARGS)
+	@echo 'now do: xcrun altool $(NOTARGS) --notarization-info <UUID>' ;  \
+	echo 'and wget the LogFileURL' ;				      \
 
 
 # When debugging, sometimes I have to reset the preferences for all

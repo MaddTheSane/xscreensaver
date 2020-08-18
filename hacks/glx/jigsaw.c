@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1997-2017 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1997-2019 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -59,7 +59,6 @@
 		  "*suppressRotationAnimation: True\n" \
 
 
-# define free_jigsaw 0
 # define release_jigsaw 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -556,7 +555,7 @@ draw_piece (jigsaw_configuration *jc, puzzle_piece *p,
 # else  /* !HAVE_TESS */
 
       GLfloat *tri = (GLfloat *)
-        (GLfloat *) malloc (s->n_points * 4 * 3 * 3 * sizeof(*pts));
+        malloc (s->n_points * 4 * 3 * 3 * sizeof(*tri));
       GLfloat *otri = tri;
       int count;
       GLdouble zz;
@@ -1436,7 +1435,7 @@ draw_jigsaw (ModeInfo *mi)
   if (!jc->glx_context)
     return;
 
-  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(jc->glx_context));
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *jc->glx_context);
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1502,6 +1501,22 @@ draw_jigsaw (ModeInfo *mi)
   glFinish();
 
   glXSwapBuffers(dpy, window);
+}
+
+
+ENTRYPOINT void
+free_jigsaw (ModeInfo *mi)
+{
+  jigsaw_configuration *jc = &sps[MI_SCREEN(mi)];
+
+  if (!jc->glx_context) return;
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *jc->glx_context);
+
+  if (jc->trackball) free (jc->trackball);
+  if (jc->rot) free_rotator (jc->rot);
+  if (jc->texfont) free_texture_font (jc->texfont);
+  free_puzzle_grid (jc);
+  if (glIsList(jc->loading_dlist)) glDeleteLists(jc->loading_dlist, 1);
 }
 
 XSCREENSAVER_MODULE ("Jigsaw", jigsaw)

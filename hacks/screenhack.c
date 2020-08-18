@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1992-2017 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1992-2020 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -137,6 +137,9 @@ const char *progname;   /* used by hacks in error messages */
 const char *progclass;  /* used by ../utils/resources.c */
 Bool mono_p;		/* used by hacks */
 
+#ifdef EXIT_AFTER
+static time_t exit_after;	/* Exit gracefully after N seconds */
+#endif
 
 static XrmOptionDescRec default_options [] = {
   { "-root",	".root",		XrmoptionNoArg, "True" },
@@ -151,11 +154,13 @@ static XrmOptionDescRec default_options [] = {
 
 # ifdef DEBUG_PAIR
   { "-pair",	".pair",		XrmoptionNoArg, "True" },
-# endif /* DEBUG_PAIR */
-
+# endif
 # ifdef HAVE_RECORD_ANIM
   { "-record-animation", ".recordAnim", XrmoptionSepArg, 0 },
-# endif /* HAVE_RECORD_ANIM */
+# endif
+# ifdef EXIT_AFTER
+  { "-exit-after",	".exitAfter",	XrmoptionSepArg, 0 },
+# endif
 
   { 0, 0, 0, 0 }
 };
@@ -260,7 +265,7 @@ MapNotify_event_p (Display *dpy, XEvent *event, XPointer window)
 }
 
 
-static Atom XA_WM_PROTOCOLS, XA_WM_DELETE_WINDOW;
+static Atom XA_WM_PROTOCOLS, XA_WM_DELETE_WINDOW, XA_NET_WM_PID;
 
 /* Dead-trivial event handling: exits if "q" or "ESC" are typed.
    Exit if the WM_PROTOCOLS WM_DELETE_WINDOW ClientMessage is received.
@@ -473,6 +478,12 @@ screenhack_table_handle_events (Display *dpy,
       if (XtAppPending (app) & (XtIMTimer|XtIMAlternateInput))
         XtAppProcessEvent (app, XtIMTimer|XtIMAlternateInput);
     }
+
+# ifdef EXIT_AFTER
+  if (exit_after != 0 && time ((time_t *) 0) >= exit_after)
+    return False;
+# endif
+
   return True;
 }
 
@@ -601,11 +612,11 @@ run_screenhack_table (Display *dpy,
 #endif
 
   ft->free_cb (dpy, window, closure);
-  if (fpst) fps_free (fpst);
+  if (fpst) ft->fps_free (fpst);
 
 #ifdef DEBUG_PAIR
   if (window2) ft->free_cb (dpy, window2, closure2);
-  if (fpst2) fps_free (fpst2);
+  if (fpst2) ft->fps_free (fpst2);
 #endif
 }
 
@@ -680,6 +691,7 @@ init_window (Display *dpy, Widget toplevel, const char *title)
   XWindowAttributes xgwa;
   XtPopup (toplevel, XtGrabNone);
   XtVaSetValues (toplevel, XtNtitle, title, NULL);
+  long pid = getpid();
 
   /* Select KeyPress, and announce that we accept WM_DELETE_WINDOW.
    */
@@ -691,6 +703,8 @@ init_window (Display *dpy, Widget toplevel, const char *title)
   XChangeProperty (dpy, window, XA_WM_PROTOCOLS, XA_ATOM, 32,
                    PropModeReplace,
                    (unsigned char *) &XA_WM_DELETE_WINDOW, 1);
+  XChangeProperty (dpy, window, XA_NET_WM_PID, XA_CARDINAL, 32,
+                   PropModeReplace, (unsigned char *)&pid, 1);
 }
 
 
@@ -707,9 +721,9 @@ main (int argc, char **argv)
   Window window2 = 0;
   Widget toplevel2 = 0;
 # endif
-#ifdef HAVE_RECORD_ANIM
+# ifdef HAVE_RECORD_ANIM
   record_anim_state *anim_state = 0;
-#endif
+# endif
   XtAppContext app;
   Bool root_p;
   Window on_window = 0;
@@ -756,6 +770,7 @@ main (int argc, char **argv)
 
   XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
   XA_WM_DELETE_WINDOW = XInternAtom (dpy, "WM_DELETE_WINDOW", False);
+  XA_NET_WM_PID = XInternAtom (dpy, "_NET_WM_PID", False);
 
   {
     char *v = (char *) strdup(strchr(screensaver_id, ' '));
@@ -863,6 +878,15 @@ main (int argc, char **argv)
     mono_p = True;
 
   root_p = get_boolean_resource (dpy, "root", "Boolean");
+
+# ifdef EXIT_AFTER
+  {
+    int secs = get_integer_resource (dpy, "exitAfter", "Integer");
+    exit_after = (secs > 0
+                  ? time((time_t *) 0) + secs
+                  : 0);
+  }      
+# endif
 
   {
     char *s = get_string_resource (dpy, "windowID", "WindowID");

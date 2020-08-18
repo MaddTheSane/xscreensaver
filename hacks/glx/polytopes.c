@@ -4,7 +4,7 @@
 static const char sccsid[] = "@(#)polytopes.c  1.2 05/09/28 xlockmore";
 #endif
 
-/* Copyright (c) 2003-2009 Carsten Steger <carsten@mirsanmir.org>. */
+/* Copyright (c) 2003-2019 Carsten Steger <carsten@mirsanmir.org>. */
 
 /*
  * Permission to use, copy, modify, and distribute this software and its
@@ -93,7 +93,6 @@ static const char sccsid[] = "@(#)polytopes.c  1.2 05/09/28 xlockmore";
                             "*showFPS:    False \n" \
 			    "*suppressRotationAnimation: True\n" \
 
-# define free_polytopes 0
 # define release_polytopes 0
 # include "xlockmore.h"         /* from the xscreensaver distribution */
 #else  /* !STANDALONE */
@@ -2863,16 +2862,10 @@ static void display_polytopes(ModeInfo *mi)
 ENTRYPOINT void reshape_polytopes(ModeInfo *mi, int width, int height)
 {
   polytopesstruct *pp = &poly[MI_SCREEN(mi)];
-  int y = 0;
-
-  if (width > height * 5) {   /* tiny window: show middle */
-    height = width;
-    y = -height/2;
-  }
 
   pp->WindW = (GLint)width;
   pp->WindH = (GLint)height;
-  glViewport(0,y,width,height);
+  glViewport(0,0,width,height);
   pp->aspect = (GLfloat)width/(GLfloat)height;
 }
 
@@ -3097,7 +3090,7 @@ ENTRYPOINT void draw_polytopes(ModeInfo *mi)
   if (!hp->glx_context)
     return;
 
-  glXMakeCurrent(display,window,*(hp->glx_context));
+  glXMakeCurrent(display, window, *hp->glx_context);
 
 
   glMatrixMode(GL_PROJECTION);
@@ -3179,10 +3172,19 @@ ENTRYPOINT void change_polytopes(ModeInfo *mi)
   if (!hp->glx_context)
     return;
 
-  glXMakeCurrent(MI_DISPLAY(mi),MI_WINDOW(mi),*(hp->glx_context));
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *hp->glx_context);
   init(mi);
 }
 #endif /* !STANDALONE */
+
+ENTRYPOINT void free_polytopes(ModeInfo *mi)
+{
+  polytopesstruct *hp = &poly[MI_SCREEN(mi)];
+  if (!hp->glx_context) return;
+  glXMakeCurrent (MI_DISPLAY(mi), MI_WINDOW(mi), *hp->glx_context);
+  gltrackball_free (hp->trackballs[0]);
+  gltrackball_free (hp->trackballs[1]);
+}
 
 XSCREENSAVER_MODULE ("Polytopes", polytopes)
 

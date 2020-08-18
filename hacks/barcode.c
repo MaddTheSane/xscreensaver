@@ -101,14 +101,17 @@ static const char *words[] =
   "abstraction",
   "acid",
   "addiction",
+  "affluenza",
   "alertness",
   "Algeria",
+  "antifa",
   "anxiety",
   "aorta",
   "argyle socks",
   "attrition",
   "axis of evil",
   "bamboo",
+  "banana slug",
   "bangle",
   "bankruptcy",
   "baptism",
@@ -122,6 +125,7 @@ static const char *words[] =
   "boobs",
   "booty",
   "bread",
+  "brogrammers",
   "bubba",
   "burrito",
   "California",
@@ -131,8 +135,10 @@ static const char *words[] =
   "carnage",
   "children",
   "chocolate",
+  "chupacabra",
   "CLONE",
   "cock",
+  "congress",
   "constriction",
   "contrition",
   "cop",
@@ -153,10 +159,10 @@ static const char *words[] =
   "despair",
   "desperation",
   "disease",
-  "disease",
+  "DNA Lounge",
   "doberman",
   "DOOM",
-  "dreams",
+  "dot com",
   "dreams",
   "drugs",
   "easy",
@@ -175,8 +181,9 @@ static const char *words[] =
   "flatulence",
   "fluff",
   "fnord",
+  "followers",
+  "frak",
   "freedom",
-  "fruit",
   "fruit",
   "futility",
   "gerbils",
@@ -198,8 +205,12 @@ static const char *words[] =
   "icepick",
   "identity",
   "ignorance",
+  "illuminati",
   "importance",
   "individuality",
+  "influence",
+  "influencers",
+  "influenza",
   "inkling",
   "insurrection",
   "intoxicant",
@@ -215,6 +226,7 @@ static const char *words[] =
   "lattice",
   "lawyer",
   "lemming",
+  "likes",
   "liquidation",
   "lobbyist",
   "love",
@@ -224,9 +236,11 @@ static const char *words[] =
   "malfunction",
   "marmot",
   "marshmallow",
+  "measles",
   "merit",
   "merkin",
   "mescaline",
+  "methane",
   "milk",
   "mischief",
   "mistrust",
@@ -281,6 +295,7 @@ static const char *words[] =
   "respect",
   "revolution",
   "roadrunner",
+  "rootkit",
   "rule",
   "savor",
   "scab",
@@ -290,6 +305,7 @@ static const char *words[] =
   "security",
   "sediment",
   "self worth",
+  "shadow profile",
   "sickness",
   "silicone",
   "slack",
@@ -316,17 +332,21 @@ static const char *words[] =
   "terrorism",
   "terrorist",
   "the impossible",
+  "the panopticon",
   "the unknown",
   "toast",
   "topography",
   "truism",
+  "truthiness",
   "turgid",
+  "twits",
   "underbrush",
   "underling",
   "unguent",
   "unusual",
   "uplink",
   "urge",
+  "vaccines",
   "valor",
   "variance",
   "vaudeville",
@@ -334,6 +354,7 @@ static const char *words[] =
   "vegetarian",
   "venom",
   "verifiability",
+  "very fine people",
   "viagra",
   "vibrator",
   "victim",
@@ -350,7 +371,6 @@ static const char *words[] =
   "windmill",
   "words",
   "worm",
-  "worship",
   "worship",
   "Xanax",
   "Xerxes",
@@ -391,14 +411,12 @@ static void bitmapClear (Bitmap *b)
     memset (b->buf, 0, b->widthBytes * b->height);
 }
 
-#if 0
 /* free a bitmap */
 static void bitmapFree (Bitmap *b)
 {
     free (b->buf);
     free (b);
 }
-#endif
 
 
 /* get the byte value at the given byte-offset coordinates in the given
@@ -1913,6 +1931,16 @@ barcode_reshape (Display *dpy, Window window, void *closure,
 static void
 barcode_free (Display *dpy, Window window, void *closure)
 {
+  struct state *st = (struct state *) closure;
+  int i;
+  XFreeGC (dpy, st->theGC);
+  st->theImage->data = 0;
+  XDestroyImage (st->theImage);
+  bitmapFree (st->theBitmap);
+  for (i = 0; i < st->barcode_max; i++)
+    bitmapFree (st->barcodes[i].bitmap);
+  free (st->barcodes);
+  free (st);
 }
 
 

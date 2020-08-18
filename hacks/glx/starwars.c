@@ -69,6 +69,7 @@
 #define DEF_LINES      "125"
 #define DEF_STEPS      "35"
 #define DEF_SPIN       "0.03"
+#define DEF_SATURATION "0.3"
 #define DEF_SIZE       "-1"
 #define DEF_COLUMNS    "-1"
 #define DEF_LINE_WRAP  "True"
@@ -130,6 +131,7 @@ static sws_configuration *scs = NULL;
 static int max_lines;
 static int scroll_steps;
 static float star_spin;
+static float star_saturation;
 static float font_size;
 static int target_columns;
 static int wrap_p;
@@ -145,9 +147,11 @@ static XrmOptionDescRec opts[] = {
   {"-lines",       ".lines",     XrmoptionSepArg, 0 },
   {"-steps",       ".steps",     XrmoptionSepArg, 0 },
   {"-spin",        ".spin",      XrmoptionSepArg, 0 },
+  {"-saturation",  ".saturation",XrmoptionSepArg, 0 },
   {"-size",	   ".size",      XrmoptionSepArg, 0 },
   {"-columns",	   ".columns",   XrmoptionSepArg, 0 },
 /*{"-font",        ".font",      XrmoptionSepArg, 0 },*/
+  {"-program",	   ".program",   XrmoptionSepArg, 0 },
   {"-fade",        ".fade",      XrmoptionNoArg,  "True"   },
   {"-no-fade",     ".fade",      XrmoptionNoArg,  "False"  },
   {"-textures",    ".textures",  XrmoptionNoArg,  "True"   },
@@ -170,6 +174,7 @@ static argtype vars[] = {
   {&max_lines,      "lines",     "Integer",    DEF_LINES,     t_Int},
   {&scroll_steps,   "steps",     "Integer",    DEF_STEPS,     t_Int},
   {&star_spin,      "spin",      "Float",      DEF_SPIN,      t_Float},
+  {&star_saturation,"saturation","Float",      DEF_SATURATION,t_Float},
   {&font_size,      "size",      "Float",      DEF_SIZE,      t_Float},
   {&target_columns, "columns",   "Integer",    DEF_COLUMNS,   t_Int},
   {&wrap_p,         "lineWrap",  "Boolean",    DEF_LINE_WRAP, t_Bool},
@@ -587,9 +592,10 @@ init_stars (ModeInfo *mi, int width, int height)
       glBegin (GL_POINTS);
       for (i = 0; i < nstars / steps; i++)
         {
-          glColor3f (0.6 + frand(0.3),
-                     0.6 + frand(0.3),
-                     0.6 + frand(0.3));
+          GLfloat brightness = 0.9 - star_saturation;
+          glColor3f (brightness + frand(star_saturation),
+                     brightness + frand(star_saturation),
+                     brightness + frand(star_saturation));
           glVertex2f (2 * size * (0.5 - frand(1.0)),
                       2 * size * (0.5 - frand(1.0)));
         }
@@ -896,7 +902,7 @@ draw_sws (ModeInfo *mi)
     return;
 
   glDrawBuffer (GL_BACK);
-  glXMakeCurrent (dpy, window, *(sc->glx_context));
+  glXMakeCurrent (dpy, window, *sc->glx_context);
 
   glClear (GL_COLOR_BUFFER_BIT);
 
@@ -1057,10 +1063,18 @@ ENTRYPOINT void
 free_sws (ModeInfo *mi)
 {
   sws_configuration *sc = &scs[MI_SCREEN(mi)];
-  if (sc->tc)
-    textclient_close (sc->tc);
-
-  /* #### there's more to free here */
+  int i;
+  if (!sc->glx_context) return;
+  glXMakeCurrent (MI_DISPLAY(mi), MI_WINDOW(mi), *sc->glx_context);
+  if (sc->tc) textclient_close (sc->tc);
+  if (sc->texfont) free_texture_font (sc->texfont);
+  if (sc->buf) free (sc->buf);
+  if (sc->line_widths) free (sc->line_widths);
+  for (i = 0; i < sc->total_lines; i++)
+    if (sc->lines[i]) free (sc->lines[i]);
+  if (sc->lines) free (sc->lines);
+  if (glIsList(sc->star_list)) glDeleteLists(sc->star_list, 1);
+  if (glIsList(sc->text_list)) glDeleteLists(sc->text_list, 1);
 }
 
 

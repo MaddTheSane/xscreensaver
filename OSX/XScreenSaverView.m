@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2006-2018 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2006-2020 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -18,6 +18,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <sys/mman.h>
 #import <zlib.h>
+#ifdef LOG_STACK
+# include <execinfo.h>
+#endif
 #import "XScreenSaverView.h"
 #import "XScreenSaverConfigSheet.h"
 #import "Updater.h"
@@ -50,6 +53,10 @@
 # import <objc/objc-auto.h>
 # define DO_GC_HACKERY
 #endif
+
+#undef countof
+#define countof(x) (sizeof((x))/sizeof((*x)))
+
 
 /* Duplicated in xlockmoreI.h and XScreenSaverGLView.m. */
 extern void clear_gl_error (void);
@@ -295,15 +302,11 @@ add_default_options (const XrmOptionDescRec *opts,
 # endif
     ".doubleBuffer:       True",
     ".multiSample:        False",
-# ifndef USE_IPHONE
-    ".textMode:           date",
-# else
     ".textMode:           url",
-# endif
- // ".textLiteral:        ",
- // ".textFile:           ",
+    ".textLiteral:        ",
+    ".textFile:           ",
     ".textURL:            https://en.wikipedia.org/w/index.php?title=Special:NewPages&feed=rss",
- // ".textProgram:        ",
+    ".textProgram:        ",
     ".grabDesktopImages:  yes",
 # ifndef USE_IPHONE
     ".chooseRandomImages: no",
@@ -381,6 +384,54 @@ add_default_options (const XrmOptionDescRec *opts,
 }
 
 
+static void sighandler (int sig)
+{
+  const char *s = strsignal(sig);
+  if (!s) s = "Unknowng";
+# ifdef USE_IPHONE
+  jwxyz_abort ("Signal: %s", s);	// Throw NSException, show dialog
+# else
+  NSLog (@"Signal: %s", s);		// Just make sure it is logged
+
+  // Log stack trace too.
+  // Same info shows up in Library/Logs/DiagnosticReports/ScreenSaverEngine*
+#  ifdef LOG_STACK
+  void *stack [20];
+  int frames = backtrace (stack, countof(stack));
+  char **strs = backtrace_symbols (stack, frames);
+  NSMutableArray *backtrace = [NSMutableArray arrayWithCapacity:frames];
+  for (int i = 2; i < frames; i++) {
+    if (strs[i])
+      [backtrace addObject:[NSString stringWithUTF8String: strs[i]]];
+  }
+  // Can't embed newlines in the message for /usr/bin/log
+  NSLog(@"Stack:\\n\t%@", [backtrace componentsJoinedByString:@"\\n\t"]);
+  // free (strs);
+#  endif // LOG_STACK
+
+  signal (sig, SIG_DFL);
+  kill (getpid (), sig);
+# endif
+}
+
+static void catch_signals (void)
+{
+  signal (SIGINT,  sighandler);
+  signal (SIGQUIT, sighandler);
+  signal (SIGILL,  sighandler);
+  signal (SIGTRAP, sighandler);
+  signal (SIGABRT, sighandler);
+  signal (SIGEMT,  sighandler);
+  signal (SIGFPE,  sighandler);
+  signal (SIGBUS,  sighandler);
+  signal (SIGSEGV, sighandler);
+  signal (SIGSYS,  sighandler);
+  signal (SIGTERM, sighandler);
+  signal (SIGXCPU, sighandler);
+  signal (SIGXFSZ, sighandler);
+}
+
+
 - (id) initWithFrame:(NSRect)frame
            saverName:(NSString *)saverName
            isPreview:(BOOL)isPreview
@@ -388,6 +439,7 @@ add_default_options (const XrmOptionDescRec *opts,
   if (! (self = [super initWithFrame:frame isPreview:isPreview]))
     return nil;
   
+  catch_signals();
   xsft = [self findFunctionTable: saverName];
   if (! xsft) {
     return nil;
@@ -445,6 +497,27 @@ add_default_options (const XrmOptionDescRec *opts,
 
   return self;
 }
+
+
+#ifndef USE_IPHONE
+/* On 10.15, if "use random screen saver" is checked, then startAnimation
+   is never called.  This may be related to Apple's buggy code in 
+   ScreenSaverEngine calling nonexistent beginExtensionRequestWithUserInfo,
+   but on 10.15 we're not even running in that process: now we're in the
+   not-at-all-ominously-named legacyScreenSaver process.
+ */
+- (void) viewDidMoveToWindow
+{
+  if (self.window)
+    [self startAnimation];
+}
+
+- (void) viewWillMoveToWindow:(NSWindow *)window
+{
+  if (window == nil)
+    [self stopAnimation];
+}
+#endif  // USE_IPHONE
 
 
 #ifdef USE_TOUCHBAR
@@ -580,6 +653,8 @@ add_default_options (const XrmOptionDescRec *opts,
 
 - (void) startAnimation
 {
+  if ([self isAnimating]) return;  // macOS 10.15 stupidity
+
   NSAssert(![self isAnimating], @"already animating");
   NSAssert(!initted_p && !xdata, @"already initialized");
 
@@ -927,15 +1002,28 @@ screenhack_do_fps (Display *dpy, Window w, fps_state *fpst, void *closure)
  */
 - (CGFloat) hackedContentScaleFactor
 {
+  return [self hackedContentScaleFactor:FALSE];
+}
+
+- (CGFloat) hackedContentScaleFactor:(BOOL)fonts_p
+{
 # ifdef USE_IPHONE
   CGFloat s = self.contentScaleFactor;
 # else
   CGFloat s = self.window.backingScaleFactor;
 # endif
 
-  if (_lowrez_p) {
-    NSSize b = [self bounds].size;
+  /* This notion of "scale fonts differently than the viewport seemed
+     like it made sense for BSOD but it makes -fps text be stupidly
+     large for all other hacks. So instead let's just make BSOD not
+     be lowrez. There are no other lowrez hacks that make heavy use
+     of fonts. */
+  fonts_p = 0;
+
+  if (_lowrez_p && !fonts_p) {
+    NSSize b = [self bounds].size;  // This is in points, not pixels
     CGFloat wh = b.width > b.height ? b.width : b.height;
+    wh *= s;  // points -> pixels
 
     // Scale down to as close to 1024 as we can get without going under,
     // while keeping an integral scale factor so that we don't get banding
@@ -1005,12 +1093,14 @@ current_device_rotation (void)
                                               e]
                            preferredStyle:UIAlertControllerStyleAlert];
 
-  [c addAction: [UIAlertAction actionWithTitle: @"Exit"
+  [c addAction: [UIAlertAction actionWithTitle:
+                                 NSLocalizedString(@"Exit", @"")
                                style: UIAlertActionStyleDefault
                                handler: ^(UIAlertAction *a) {
     exit (-1);
   }]];
-  [c addAction: [UIAlertAction actionWithTitle: @"Keep going"
+  [c addAction: [UIAlertAction actionWithTitle:
+                                 NSLocalizedString(@"Keep going", @"")
                                style: UIAlertActionStyleDefault
                                handler: ^(UIAlertAction *a) {
     [self stopAndClose:NO];
@@ -1635,14 +1725,15 @@ gl_check_ver (const struct gl_version *caps,
       if (_lowrez_p) {
         resized_p = YES;
 
-# if !defined __OPTIMIZE__ || TARGET_IPHONE_SIMULATOR
         NSSize  b = [self bounds].size;
         CGFloat s = self.hackedContentScaleFactor;
-#  ifdef USE_IPHONE
+# ifdef USE_IPHONE
         CGFloat o = self.contentScaleFactor;
-#  else
+# else
         CGFloat o = self.window.backingScaleFactor;
-#  endif
+# endif
+
+# if !defined __OPTIMIZE__ || TARGET_IPHONE_SIMULATOR
         if (o != s)
           NSLog(@"lowrez: scaling %.0fx%.0f -> %.0fx%.0f (%.02f)",
                 b.width * o, b.height * o,
@@ -1857,6 +1948,27 @@ gl_check_ver (const struct gl_version *caps,
     [self handleException: e];
   }
 # endif // USE_IPHONE
+
+# if 0
+  {
+    static int frame = 0;
+    if (++frame == 100) {
+      fprintf(stderr,"BOOM\n");
+      int y = 0;
+      //    int aa = *((int*)y);
+      int x = 30/y;
+    }
+  }
+# endif
+}
+
+
+/* drawRect always does nothing, and animateOneFrame renders bits to the
+   screen.  This is (now) true of both X11 and GL on both MacOS and iOS.
+   But this null method needs to exist or things complain.
+ */
+- (void)drawRect:(NSRect)rect
+{
 }
 
 
@@ -1983,9 +2095,12 @@ gl_check_ver (const struct gl_version *caps,
   
 # ifdef USE_IPHONE
   UIViewController *sheet;
+  NSString *updater = 0;
 # else  // !USE_IPHONE
   NSWindow *sheet;
+  NSString *updater = [self updaterPath];
 # endif // !USE_IPHONE
+
 
   NSData *xmld = [NSData dataWithContentsOfFile:path];
   NSString *xml = [[self class] decompressXML: xmld];
@@ -1994,7 +2109,8 @@ gl_check_ver (const struct gl_version *caps,
                 options:xsft->options
              controller:[prefsReader userDefaultsController]
        globalController:[prefsReader globalDefaultsController]
-               defaults:[prefsReader defaultOptions]];
+               defaults:[prefsReader defaultOptions]
+            haveUpdater:(updater ? TRUE : FALSE)];
 
   // #### am I expected to retain this, or not? wtf.
   //      I thought not, but if I don't do this, we (sometimes) crash.
@@ -2052,10 +2168,10 @@ gl_check_ver (const struct gl_version *caps,
   if (!initted_p || ![self isAnimating]) // no event handling unless running.
     return NO;
 
-  [self lockFocus];
+//  [self lockFocus];  // As of 10.14 this causes flicker on mouse motion
   [self prepareContext];
   BOOL result = xsft->event_cb (xdpy, xwindow, xdata, e);
-  [self unlockFocus];
+//  [self unlockFocus];cp -Rf ${CONFIGURATION_BUILD_DIR}/BuildOutputPrefPane.prefPane ~/Library/PreferencePanes
   return result;
 }
 
@@ -2938,24 +3054,12 @@ gl_check_ver (const struct gl_version *caps,
 #endif // USE_IPHONE
 
 
-- (void) checkForUpdates
-{
 # ifndef USE_IPHONE
-  // We only check once at startup, even if there are multiple screens,
-  // and even if this saver is running for many days.
-  // (Uh, except this doesn't work because this static isn't shared,
-  // even if we make it an exported global. Not sure why. Oh well.)
-  static BOOL checked_p = NO;
-  if (checked_p) return;
-  checked_p = YES;
 
-  // If it's off, don't bother running the updater.  Otherwise, the
-  // updater will decide if it's time to hit the network.
-  if (! get_boolean_resource (xdpy,
-                              SUSUEnableAutomaticChecksKey,
-                              SUSUEnableAutomaticChecksKey))
-    return;
-
+// Returns the full pathname to the Sparkle updater app.
+//
+- (NSString *) updaterPath
+{
   NSString *updater = @"XScreenSaverUpdater.app";
 
   // There may be multiple copies of the updater: e.g., one in /Applications
@@ -2986,11 +3090,37 @@ gl_check_ver (const struct gl_version *caps,
   if (app_path && [app_path hasPrefix:@"/Volumes/XScreenSaver "])
     app_path = 0;  // The DMG version will not do.
 
+  return app_path;
+}
+# endif // !USE_IPHONE
+
+
+- (void) checkForUpdates
+{
+# ifndef USE_IPHONE
+  // We only check once at startup, even if there are multiple screens,
+  // and even if this saver is running for many days.
+  // (Uh, except this doesn't work because this static isn't shared,
+  // even if we make it an exported global. Not sure why. Oh well.)
+  static BOOL checked_p = NO;
+  if (checked_p) return;
+  checked_p = YES;
+
+  // If it's off, don't bother running the updater.  Otherwise, the
+  // updater will decide if it's time to hit the network.
+  if (! get_boolean_resource (xdpy,
+                              SUSUEnableAutomaticChecksKey,
+                              SUSUEnableAutomaticChecksKey))
+    return;
+
+  NSString *app_path = [self updaterPath];
+
   if (!app_path) {
-    NSLog(@"Unable to find %@", updater);
+    NSLog(@"Unable to find XScreenSaverUpdater.app");
     return;
   }
 
+  NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
   NSError *err = nil;
   if (! [workspace launchApplicationAtURL:[NSURL fileURLWithPath:app_path]
                    options:(NSWorkspaceLaunchWithoutAddingToRecents |
@@ -3013,6 +3143,7 @@ gl_check_ver (const struct gl_version *caps,
 static PrefsReader *
 get_prefsReader (Display *dpy)
 {
+  if (! dpy) return 0;
   XScreenSaverView *view = (XScreenSaverView *)(jwxyz_window_view (XRootWindow (dpy, 0)));
   if (!view) return 0;
   return [view prefsReader];

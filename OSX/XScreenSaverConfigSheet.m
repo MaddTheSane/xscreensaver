@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2006-2017 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2006-2019 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -103,10 +103,19 @@ typedef enum { SimpleXMLCommentKind,
 @synthesize attributes;
 @synthesize object;
 
+- (void) dealloc
+{
+  [name release];
+  [children release];
+  //[attributes release];
+  [object release];
+  [super dealloc];
+}
+
 - (id) init
 {
   self = [super init];
-  attributes = [NSMutableArray arrayWithCapacity:10];
+  attributes = [[NSMutableArray alloc] initWithCapacity:10];
   return self;
 }
 
@@ -188,7 +197,26 @@ typedef enum { SimpleXMLCommentKind,
   return value;
 }
 @end
-#endif // USE_IPHONE
+
+/* Current theory is that the @"value" KVO binding on NSTextFields are
+   sometimes returning nil when they're empty, but meanwhile
+   [NSUserDefaults setObject:forKey:] needs non-nil objects.
+ */
+@interface NonNilStringTransformer: NSValueTransformer {}
+@end
+@implementation NonNilStringTransformer
++ (Class)transformedValueClass { return [NSString class]; }
++ (BOOL)allowsReverseTransformation { return YES; }
+
+- (id)transformedValue:(id)value {
+  return value ? value : @"";
+}
+
+- (id)reverseTransformedValue:(id)value {
+  return value ? value : @"";
+}
+@end
+#endif // !USE_IPHONE
 
 
 #pragma mark Implementing radio buttons
@@ -296,6 +324,18 @@ typedef enum { SimpleXMLCommentKind,
 {
   if (! h) return;
   html = h;
+
+  BOOL dark_mode_p = FALSE;
+  {
+    UITraitCollection *t = [self traitCollection];
+#   pragma clang diagnostic push   // "only available on iOS 12.0 or newer"
+#   pragma clang diagnostic ignored "-Wunguarded-availability-new"
+    if (t && [t respondsToSelector:@selector(userInterfaceStyle)] &&
+        [t userInterfaceStyle] == UIUserInterfaceStyleDark)
+      dark_mode_p = TRUE;
+#   pragma clang diagnostic pop
+  }
+
   NSString *h2 =
     [NSString stringWithFormat:
                 @"<!DOCTYPE HTML PUBLIC "
@@ -315,7 +355,9 @@ typedef enum { SimpleXMLCommentKind,
                       " font-size: %.4fpx;"	// Must be "px", not "pt"!
                       " line-height: %.4fpx;"   // And no spaces before it.
                       " -webkit-text-size-adjust: none;"
+                      " color: %@;"
                       "}"
+                    " a { color: %@ !important; }"
                     "\n//-->\n"
                    "</STYLE>"
                   "</HEAD>"
@@ -323,9 +365,12 @@ typedef enum { SimpleXMLCommentKind,
                    "%@"
                   "</BODY>"
                  "</HTML>",
-              [font fontName],
+              // [font fontName],  // Returns ".SFUI-Regular", doesn't work.
+              @"Helvetica", // "SanFranciscoDisplay-Regular" also doesn't work.
               [font pointSize],
               [font lineHeight],
+              (dark_mode_p ? @"#FFF" : @"#000"),
+              (dark_mode_p ? @"#0DF" : @"#00E"),
               h];
   [webView stopLoading];
   [webView loadHTMLString:h2 baseURL:[NSURL URLWithString:@""]];
@@ -699,13 +744,13 @@ static void layout_group (NSView *group, BOOL horiz_p);
 
 - (void) okAction:(NSObject *)arg
 {
+  // Without this, edits to text fields only happen if the user hits RET.
+  // Clicking OK should also commit those edits.
+  [self makeFirstResponder:nil];
+
   // Without the setAppliesImmediately:, when the saver restarts, it's still
   // got the old settings. -[XScreenSaverConfigSheet traverseTree] sets this
   // to NO; default is YES.
-
-  // #### However: I'm told that when these are set to YES, then changes to
-  // 'textLiteral', 'textURL' and 'textProgram' are ignored, but 'textFile'
-  // works.  In StarWars, at least...
 
   [userDefaultsController   setAppliesImmediately:YES];
   [globalDefaultsController setAppliesImmediately:YES];
@@ -766,6 +811,9 @@ static void layout_group (NSView *group, BOOL horiz_p);
   if ([control isKindOfClass:[NSMatrix class]]) {
     opts_dict = @{ NSValueTransformerNameBindingOption:
                    @"TextModeTransformer" };
+  } else if ([control isKindOfClass:[NSTextField class]]) {
+    opts_dict = @{ NSValueTransformerNameBindingOption:
+                     @"NonNilStringTransformer" };
   }
 
   [control bind:bindto
@@ -1221,7 +1269,7 @@ hreffify (NSText *nstext)
   [lab setEditable:NO];
   [lab setBezeled:NO];
   [lab setDrawsBackground:NO];
-  [lab setStringValue:text];
+  [lab setStringValue:NSLocalizedString(text, @"")];
   [lab sizeToFit];
 # else  // USE_IPHONE
   UILabel *lab = [[UILabel alloc] initWithFrame:rect];
@@ -1242,15 +1290,21 @@ hreffify (NSText *nstext)
  */
 - (void) makeCheckbox:(NSXMLNode *)node on:(NSView *)parent
 {
-  NSMutableDictionary *dict = [@{ @"id":       @"",
+  NSMutableDictionary *dict = [@{ @"id":        @"",
                                   @"_label":    @"",
                                   @"arg-set":   @"",
-                                  @"arg-unset": @"" }
+                                  @"arg-unset": @"",
+                                  @"disabled":  @"" }
                                 mutableCopy];
   [self parseAttrs:dict node:node];
   NSString *label     = [dict objectForKey:@"_label"];
   NSString *arg_set   = [dict objectForKey:@"arg-set"];
   NSString *arg_unset = [dict objectForKey:@"arg-unset"];
+
+  NSString *dd   = [dict objectForKey:@"disabled"];
+  BOOL disabledp = (dd &&
+                    (NSOrderedSame == [dd caseInsensitiveCompare:@"true"] ||
+                     NSOrderedSame == [dd caseInsensitiveCompare:@"yes"]));
   dict = 0;
   
   if (!label) {
@@ -1298,7 +1352,10 @@ hreffify (NSText *nstext)
 
 # endif // USE_IPHONE
   
-  [self bindSwitch:button cmdline:(arg_set ? arg_set : arg_unset)];
+  if (disabledp)
+    [button setEnabled:NO];
+  else
+    [self bindSwitch:button cmdline:(arg_set ? arg_set : arg_unset)];
 }
 
 
@@ -1492,7 +1549,7 @@ hreffify (NSText *nstext)
     rect.size.width = rect.size.height = 10;
     
     NSTextField *txt = [[NSTextField alloc] initWithFrame:rect];
-    [txt setStringValue:@"0000.0"];
+    [txt setStringValue:NSLocalizedString(@"0000.0", @"")];
     [txt sizeToFit];
     [txt setStringValue:@""];
     
@@ -1590,6 +1647,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 /* Creates the popup menu described by the given XML node (and its children).
  */
 - (void) makeOptionMenu:(NSXMLNode *)node on:(NSView *)parent
+               disabled:(BOOL)disabled
 {
   NSArray *children = [node children];
   NSUInteger i, count = [children count];
@@ -1768,7 +1826,10 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 
 # if !defined(USE_IPHONE) || defined(USE_PICKER_VIEW)
   [self placeChild:popup on:parent];
-  [self bindResource:popup key:menu_key];
+  if (disabled)
+    [popup setEnabled:NO];
+  else
+    [self bindResource:popup key:menu_key];
 # endif
 
 # ifdef USE_IPHONE
@@ -1804,6 +1865,11 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 #  endif // !USE_PICKER_VIEW
 # endif // !USE_IPHONE
 
+}
+
+- (void) makeOptionMenu:(NSXMLNode *)node on:(NSView *)parent
+{
+ [self makeOptionMenu:node on:parent disabled:NO];
 }
 
 
@@ -1901,7 +1967,8 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   // make the default size be around 30 columns; a typical value for
   // these text fields is "xscreensaver-text --cols 40".
   //
-  [txt setStringValue:@"123456789 123456789 123456789 "];
+  [txt setStringValue:
+         NSLocalizedString(@"123456789 123456789 123456789 ", @"")];
   [txt sizeToFit];
   [[txt cell] setWraps:NO];
   [[txt cell] setScrollable:YES];
@@ -1910,7 +1977,8 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 # else  // USE_IPHONE
 
   txt.adjustsFontSizeToFitWidth = YES;
-  txt.textColor = [UIColor blackColor];
+  // Why did I do this? Messes up dark mode.
+  // txt.textColor = [UIColor blackColor];
   txt.font = [UIFont systemFontOfSize: FONT_SIZE];
   txt.placeholder = @"";
   txt.borderStyle = UITextBorderStyleRoundedRect;
@@ -1974,7 +2042,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
 
   // make the default size be around 20 columns.
   //
-  [txt setStringValue:@"123456789 123456789 "];
+  [txt setStringValue:NSLocalizedString(@"123456789 123456789 ", @"")];
   [txt sizeToFit];
   [txt setSelectable:YES];
   [txt setEditable:editable_p];
@@ -2009,7 +2077,7 @@ set_menu_item_object (NSMenuItem *item, NSObject *obj)
   rect.origin.x = rect.origin.y = 0;    
   rect.size.width = rect.size.height = 10;
   NSButton *choose = [[NSButton alloc] initWithFrame:rect];
-  [choose setTitle:@"Choose..."];
+  [choose setTitle:NSLocalizedString(@"Choose...", @"")];
   [choose setBezelStyle:NSRoundedBezelStyle];
   [choose sizeToFit];
 
@@ -2042,6 +2110,22 @@ do_file_selector (NSTextField *txt, BOOL dirs_p)
   [panel setAllowsMultipleSelection:NO];
   [panel setCanChooseFiles:!dirs_p];
   [panel setCanChooseDirectories:dirs_p];
+  [panel setCanCreateDirectories:NO];
+
+  NSString *def = [[txt stringValue] stringByExpandingTildeInPath];
+  if (dirs_p) {
+    // Open in the previously-selected directory.
+    [panel setDirectoryURL:
+             [NSURL fileURLWithPath:def isDirectory:YES]];
+    [panel setNameFieldStringValue:[def lastPathComponent]];
+  } else {
+    // Open in the directory of the previously-selected file.
+    [panel setDirectoryURL:
+             [NSURL fileURLWithPath:[def stringByDeletingLastPathComponent]
+                    isDirectory:YES]];
+    // I hoped that this would select that file by default, but it does not.
+    [panel setNameFieldStringValue:[def lastPathComponent]];
+  }
 
   NSInteger result = [panel runModal];
   if (result == NSOKButton) {
@@ -2053,6 +2137,9 @@ do_file_selector (NSTextField *txt, BOOL dirs_p)
     // Fuck me!  Just setting the value of the NSTextField does not cause
     // that to end up in the preferences!
     //
+    [[txt window] makeFirstResponder:nil];  // And this doesn't fix it.
+
+    // So set the value manually.
     NSDictionary *dict = [txt infoForBinding:@"value"];
     NSUserDefaultsController *prefs = [dict objectForKey:@"NSObservedObject"];
     NSString *path = [dict objectForKey:@"NSObservedKeyPath"];
@@ -2322,7 +2409,7 @@ find_text_field_of_button (NSButton *button)
   NSBox *box = [[NSBox alloc] initWithFrame:rect];
   [box setTitlePosition:NSAtTop];
   [box setBorderType:NSBezelBorder];
-  [box setTitle:@"Display Text"];
+  [box setTitle:NSLocalizedString(@"Display Text", @"")];
 
   rect.size.width = rect.size.height = 12;
   [box setContentViewMargins:rect.size];
@@ -2438,6 +2525,7 @@ find_text_field_of_button (NSButton *button)
            @{ @"id":        @SUSUEnableAutomaticChecksKey,
               @"_label":    @"Automatically check for updates",
               @"arg-unset": @"-no-" SUSUEnableAutomaticChecksKey,
+              @"disabled":  (haveUpdater ? @"no" : @"yes")
             }];
   [self makeCheckbox:node2 on:group];
 
@@ -2480,10 +2568,24 @@ find_text_field_of_button (NSButton *button)
   [node3 setParent: node2];
 
   // </option>
-  [self makeOptionMenu:node2 on:group];
+  [self makeOptionMenu:node2 on:group disabled:!haveUpdater];
 
   // </hgroup>
   layout_group (group, TRUE);
+
+  if (!haveUpdater) {
+    // Add a second, explanatory label.
+    LABEL *lab2 = 0;
+    lab2 = [self makeLabel:@"XScreenSaverUpdater.app is not installed!\n"
+                            "Unable to check for updates."];
+    [self placeChild:lab2 on:group];
+
+    // Pack it in a little tighter vertically.
+    NSRect r2 = [lab2 frame];
+    r2.origin.x += -4;
+    r2.origin.y += 14;
+    [lab2 setFrameOrigin:r2.origin];
+  }
 
   rect.size.width = rect.size.height = 0;
   NSBox *box = [[NSBox alloc] initWithFrame:rect];
@@ -2943,13 +3045,13 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   rect.origin.x = rect.origin.y = 0;
   rect.size.width = rect.size.height = 10;
   NSButton *reset = [[NSButton alloc] initWithFrame:rect];
-  [reset setTitle:@"Reset to Defaults"];
+  [reset setTitle:NSLocalizedString(@"Reset to Defaults", @"")];
   [reset setBezelStyle:NSRoundedBezelStyle];
   [reset sizeToFit];
 
   rect = [reset frame];
   NSButton *ok = [[NSButton alloc] initWithFrame:rect];
-  [ok setTitle:@"OK"];
+  [ok setTitle:NSLocalizedString(@"OK", @"")];
   [ok setBezelStyle:NSRoundedBezelStyle];
   [ok sizeToFit];
   rect = [bbox frame];
@@ -2958,7 +3060,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 
   rect = [ok frame];
   NSButton *cancel = [[NSButton alloc] initWithFrame:rect];
-  [cancel setTitle:@"Cancel"];
+  [cancel setTitle:NSLocalizedString(@"Cancel", @"")];
   [cancel setBezelStyle:NSRoundedBezelStyle];
   [cancel sizeToFit];
   rect.origin.x -= [cancel frame].size.width + 10;
@@ -3205,7 +3307,8 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 {
   [[self navigationItem] 
     setRightBarButtonItem: [[UIBarButtonItem alloc]
-                             initWithTitle: @"Reset to Defaults"
+                             initWithTitle:
+                               NSLocalizedString(@"Reset to Defaults", @"")
                              style: UIBarButtonItemStylePlain
                              target:self
                              action:@selector(resetAction:)]];
@@ -3216,7 +3319,15 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 }
 
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (BOOL)shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation)o
+{
+  return YES;					/* Deprecated in iOS 6 */
+}
+#pragma clang diagnostic pop
+
+- (BOOL)shouldAutorotate			/* Added in iOS 6 */
 {
   return YES;
 }
@@ -3315,6 +3426,8 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
 }
 
 
+#pragma clang diagnostic push	 /* Deprecated in iOS 8 */
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)o
 {
   [NSTimer scheduledTimerWithTimeInterval: 0
@@ -3323,6 +3436,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
            userInfo:nil
            repeats:NO];
 }
+#pragma clang diagnostic pop
 
 
 #ifndef USE_PICKER_VIEW
@@ -3577,6 +3691,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
        controller: (NSUserDefaultsController *) _prefs
  globalController: (NSUserDefaultsController *) _globalPrefs
          defaults: (NSDictionary *) _defs
+      haveUpdater: (BOOL) _haveUpdater
 {
 # ifndef USE_IPHONE
   self = [super init];
@@ -3591,6 +3706,7 @@ wrap_with_buttons (NSWindow *window, NSView *panel)
   defaultOptions = _defs;
   userDefaultsController   = _prefs;
   globalDefaultsController = _globalPrefs;
+  haveUpdater = _haveUpdater;
 
   NSXMLParser *xmlDoc = [[NSXMLParser alloc] initWithData:xml_data];
 

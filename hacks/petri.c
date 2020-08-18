@@ -245,7 +245,10 @@ setup_display (struct state *st)
     XWindowAttributes xgwa;
 
     int cell_size = get_integer_resource (st->dpy, "size", "Integer");
-    int osize, alloc_size, oalloc;
+    int osize, alloc_size;
+#if 0
+    int oalloc;
+#endif
     int mem_throttle = 0;
     char *s;
 
@@ -404,7 +407,9 @@ setup_display (struct state *st)
     st->arr_height = st->windowHeight / cell_size;
 
     alloc_size = sizeof(cell) * st->arr_width * st->arr_height;
+# if 0
     oalloc = alloc_size;
+# endif
 
     if (mem_throttle > 0)
       while (cell_size < st->windowWidth/10 &&
@@ -419,6 +424,7 @@ setup_display (struct state *st)
 
     if (osize != cell_size)
       {
+# if 0
         if (!st->warned)
           {
             fprintf (stderr,
@@ -432,6 +438,7 @@ setup_display (struct state *st)
                      ((float) alloc_size) / (1 << 20));
             st->warned = 1;
           }
+# endif
       }
 
     st->xSize = st->arr_width ? st->windowWidth / st->arr_width : 0;
@@ -707,9 +714,17 @@ static void
 petri_free (Display *dpy, Window window, void *closure)
 {
   struct state *st = (struct state *) closure;
+  if (st->arr) free (st->arr);
+  if (st->head) free (st->head);
+  if (st->tail) free (st->tail);
+  if (st->coloredGCs) {
+    int i;
+    for (i = 0; i < st->count*2; i++)
+      XFreeGC (st->dpy, st->coloredGCs[i]);
+    free (st->coloredGCs);
+  }
   free (st);
 }
-
 
 
 static const char *petri_defaults [] = {
