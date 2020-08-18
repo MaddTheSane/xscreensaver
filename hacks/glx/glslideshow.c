@@ -78,7 +78,6 @@
 		  "*grabDesktopImages:   False \n" \
 		  "*chooseRandomImages:  True  \n"
 
-# define free_slideshow 0
 # define release_slideshow 0
 # include "xlockmore.h"
 
@@ -389,8 +388,8 @@ destroy_image (ModeInfo *mi, image *img)
   int i;
 
   if (!img) abort();
-  if (!img->loaded_p) abort();
-  if (!img->used_p) abort();
+  /* if (!img->loaded_p) abort(); */
+  /* if (!img->used_p) abort(); */
   if (img->texid <= 0) abort();
   if (img->refcount != 0) abort();
 
@@ -1068,6 +1067,7 @@ hack_resources (void)
   value.addr = buf2;
   value.size = strlen(buf2);
   XrmPutResource (&db, buf1, "String", &value);
+  free (val);
 #endif
 }
 
@@ -1137,7 +1137,7 @@ draw_slideshow (ModeInfo *mi)
   if (!ss->glx_context)
     return;
 
-  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(ss->glx_context));
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *ss->glx_context);
 
   if (ss->awaiting_first_image_p)
     {
@@ -1200,6 +1200,10 @@ draw_slideshow (ModeInfo *mi)
     new_sprite (mi);
 
   if (!ss->redisplay_needed_p)
+    /* Nothing to do! Don't bother drawing a texture or even swapping the
+       frame buffers. Note that this means that the FPS display will be
+       wrong: "Load" will be frozen on whatever it last was, when in
+       reality it will be close to 0. */
     return;
 
   if (debug_p && ss->now - ss->prev_frame_time > 1)
@@ -1215,6 +1219,34 @@ draw_slideshow (ModeInfo *mi)
   ss->prev_frame_time = ss->now;
   ss->redisplay_needed_p = False;
   check_fps (mi);
+}
+
+
+ENTRYPOINT void
+free_slideshow (ModeInfo *mi)
+{
+  slideshow_state *ss = &sss[MI_SCREEN(mi)];
+  /* int i; */
+  if (!ss->glx_context) return;
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *ss->glx_context);
+
+  if (ss->font_data) free_texture_font (ss->font_data);
+  ss->font_data = 0;
+
+# if 0
+  /* The lifetime of these objects is incomprehensible.
+     Doing this causes free pointers to be run from the XtInput.
+   */
+  for (i = ss->nimages-1; i >= 0; i--) {
+    if (ss->images[i] && ss->images[i]->refcount == 0)
+      destroy_image (mi, ss->images[i]);
+  }
+
+  for (i = countof(ss->sprites)-1; i >= 0; i--) {
+    if (ss->sprites[i])
+      destroy_sprite (mi, ss->sprites[i]);
+  }
+# endif
 }
 
 XSCREENSAVER_MODULE_2 ("GLSlideshow", glslideshow, slideshow)

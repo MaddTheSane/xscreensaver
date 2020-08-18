@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2012-2014 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2012-2019 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -51,7 +51,7 @@
                         [year stringByAppendingString:
                                 @" Jamie Zawinski <jwz@jwz.org>"]];
 
-  UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
+  v = [[UIView alloc] initWithFrame:CGRectZero];
 
   // The "go to web page" button on the right
 
@@ -72,8 +72,8 @@
 
   // The title bar
 
-  UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectZero];
-  UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectZero];
+  label1 = [[UILabel alloc] initWithFrame:CGRectZero];
+  label2 = [[UILabel alloc] initWithFrame:CGRectZero];
   [label1 setText: line1];
   [label2 setText: line2];
   [label1 setBackgroundColor:[UIColor clearColor]];
@@ -84,33 +84,10 @@
   [label1 sizeToFit];
   [label2 sizeToFit];
 
-  CGRect r1 = [label1 frame];
-  CGRect r2 = [label2 frame];
-  CGRect r3 = r2;
+  label2.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
 
-  CGRect win = [self view].frame;
-  if (win.size.width > 414 && win.size.height > 414) {		// iPad
-    [label1 setTextAlignment: NSTextAlignmentLeft];
-    [label2 setTextAlignment: NSTextAlignmentRight];
-    label2.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    r3.size.width = win.size.width;
-    r1 = r3;
-    r1.origin.x   += 6;
-    r1.size.width -= 12;
-    r2 = r1;
-
-  } else {							// iPhone
-    r3.size.width = win.size.width; // force it to be flush-left
-    [label1 setTextAlignment: NSTextAlignmentLeft];
-    [label2 setTextAlignment: NSTextAlignmentLeft];
-    r1.origin.y = -1;    // make it fit in landscape
-    r2.origin.y = r1.origin.y + r1.size.height - 2;
-    r3.size.height = r1.size.height + r2.size.height;
-  }
   v.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  [label1 setFrame:r1];
-  [label2 setFrame:r2];
-  [v setFrame:r3];
+  [v setFrame:CGRectMake(0, 0, self.view.frame.size.width, 0)];
 
   [v addSubview:label1];
   [v addSubview:label2];
@@ -120,12 +97,9 @@
 
   self.navigationItem.titleView = v;
 
-  win.origin.x = 0;
-  win.origin.y = 0;
-  win.size.height = 44; // #### This cannot possibly be right.
-  UISearchBar *search = [[UISearchBar alloc] initWithFrame:win];
+  search = [[UISearchBar alloc] init];
   search.delegate = self;
-  search.placeholder = @"Search...";
+  search.placeholder = NSLocalizedString(@"Search...", @"");
   self.tableView.tableHeaderView = search;
 
   // Dismiss the search field's keyboard as soon as we scroll.
@@ -134,6 +108,46 @@
     [self.tableView setKeyboardDismissMode:
            UIScrollViewKeyboardDismissModeOnDrag];
 # endif
+}
+
+- (void)viewWillLayoutSubviews
+{
+  CGRect r1 = [label1 frame];
+  CGRect r2 = [label2 frame];
+  CGRect r3 = [v frame];
+
+  CGRect win = [self view].frame;
+  if (r3.size.width > 385) {
+    [label1 setTextAlignment: NSTextAlignmentLeft];
+    [label2 setTextAlignment: NSTextAlignmentRight];
+    r1.origin     = CGPointMake(6, 0);
+    r1.size.width = r3.size.width - 12;
+    r2 = r1;
+    r3.size.height = r2.size.height;
+
+  } else {
+    [label1 setTextAlignment: NSTextAlignmentLeft];
+    [label2 setTextAlignment: NSTextAlignmentLeft];
+    r1.origin = CGPointMake(0, -1);    // make it fit in landscape
+    r1.size.width = r3.size.width;
+    r2.origin = CGPointMake(0, r1.origin.y + r1.size.height - 2);
+    r2.size.width = r3.size.width;
+    r3.size.height = r1.size.height + r2.size.height;
+  }
+
+  r3.size.width = win.size.width;
+
+  [label1 setFrame:r1];
+  [label2 setFrame:r2];
+  [v setFrame:r3];
+
+  win.origin.x = 0;
+  win.origin.y = 0;
+  win.size.height = 44; // #### This cannot possibly be right.
+
+  search.frame = win;
+
+  [super viewWillLayoutSubviews];
 }
 
 
@@ -225,6 +239,8 @@
   for (int i = 0; i < n; i++) {
     if ([list_by_letter[i] count] > 0) {
       active_section_count++;
+      [list_by_letter[i] sortUsingSelector:
+                           @selector(localizedCaseInsensitiveCompare:)];
       [letter_sections addObject: list_by_letter[i]];
       if (i <= 'Z'-'A')
         [section_titles addObject: [NSString stringWithFormat: @"%c", i+'A']];

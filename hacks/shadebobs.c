@@ -121,7 +121,7 @@ static void InitShadeBob( struct state *st, SShadeBob *pShadeBob, Bool bDark )
 	double nDelta;
 	int iWidth, iHeight;
 
-	if( ( pShadeBob->anDeltaMap = calloc( st->iBobDiameter * st->iBobDiameter, sizeof(char) ) ) == NULL )
+	if( ( pShadeBob->anDeltaMap = calloc( st->iBobDiameter * st->iBobDiameter, sizeof(signed char) ) ) == NULL )
 	{
 		fprintf( stderr, "%s: Could not allocate Delta Map!\n", progname );
 		return;
@@ -454,12 +454,14 @@ shadebobs_free (Display *dpy, Window window, void *closure)
   struct state *st = (struct state *) closure;
 	free( st->anSinTable );
 	free( st->anCosTable );
-	/* free( st->pImage->data ); */
+        if (st->sColor) free (st->sColor);
+        XFreeGC (dpy, st->gc);
 	XDestroyImage( st->pImage );
 	for( st->iShadeBob=0; st->iShadeBob<st->nShadeBobCount; st->iShadeBob++ )
 		free( st->aShadeBobs[ st->iShadeBob ].anDeltaMap );
 	free( st->aShadeBobs );
 	free( st->aiColorVals );
+        free(st);
 }
 
 

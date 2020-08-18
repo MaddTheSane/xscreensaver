@@ -446,6 +446,7 @@ rd_init (Display *dpy, Window win)
           ok = True;
       if (!ok)
         st->pdepth = 16;
+      free (pfv);
     }
 
   st->cmap = st->xgwa.colormap;
@@ -488,12 +489,21 @@ rd_draw (Display *dpy, Window win, void *closure)
   struct state *st = (struct state *) closure;
   Bool bump = False;
 
+  /* Let's compute N frames at once. This speeds up the progress of
+     the animation and the seething, but doesn't appreciably affect the
+     frame rate or CPU utilization. */
+  int ii;
+  int chunk = 3;
+  for (ii = 0; ii < chunk; ii++) {
+
   int i, j;
   pixack_frame(st, st->pd);
+  if (ii == chunk-1) {  /* Only need to putimage on the final frame */
   for (i = 0; i < st->array_width; i += st->width)
     for (j = 0; j < st->array_height; j += st->height)
       put_xshm_image(st->dpy, st->window, st->gc, st->image, 0, 0, i+st->array_x, j+st->array_y,
                      st->width, st->height, &st->shm_info);
+  }
 
   st->array_x += st->array_dx;
   st->array_y += st->array_dy;
@@ -525,6 +535,7 @@ rd_draw (Display *dpy, Window win, void *closure)
   }
 
   st->frame++;
+  }
 
   return st->delay;
 }
@@ -544,6 +555,16 @@ rd_event (Display *dpy, Window window, void *closure, XEvent *event)
 static void
 rd_free (Display *dpy, Window window, void *closure)
 {
+  struct state *st = (struct state *) closure;
+  free (st->r1);
+  free (st->r2);
+  free (st->r1b);
+  free (st->r2b);
+  free (st->colors);
+  free (st->mc);
+  XFreeGC (dpy, st->gc);
+  destroy_xshm_image (dpy, st->image, &st->shm_info);
+  free (st);
 }
 
 XSCREENSAVER_MODULE_2 ("RDbomb", rdbomb, rd)

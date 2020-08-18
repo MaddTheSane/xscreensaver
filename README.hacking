@@ -90,7 +90,7 @@ The XScreenSaver API
   state machine.
 
   You may not store global state in global variables, or in function-local
-  static variables.  All of your runtime state must be encapsulted in the
+  static variables.  All of your runtime state must be encapsulated in the
   "state" object created by your "init" function.  If you use global or
   static variables, your screen saver will not work properly on macOS.
 
@@ -177,6 +177,12 @@ Programming Tips
 
   - On modern machines, OpenGL will always run faster than Xlib.  It's
     also more portable.  Consider writing in OpenGL whenever possible.
+
+  - Free any memory you allocate. While screen savers under X11 have
+    their memory freed automatically when their process is killed by
+    the XScreenSaver daemon, under iOS and Android screen savers exist
+    in long-lived processes where no such cleanup takes place.
+    Consider Valgrind or gcc -fsanitize=leak to find memory leaks.
 
 
 ==========================================================================

@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 1998-2018 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 1998-2019 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -61,6 +61,8 @@
 #include "images/gen/macbomb_png.h"
 #include "images/gen/apple_png.h"
 #include "images/gen/atm_png.h"
+#include "images/gen/sun_png.h"
+#include "images/gen/dvd_png.h"
 
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
@@ -481,7 +483,13 @@ draw_char (struct bsod_state *bst, char c)
     {
       int dir, ascent, descent;
       XCharStruct ov;
+      Bool cursorp = (c == '\033');  /* apparently \e is non-standard now! */
+
+      if (cursorp) c = ' ';
       XTextExtents (bst->font, &c, 1, &dir, &ascent, &descent, &ov);
+
+      if (bst->x < bst->left_margin)
+        bst->x = bst->left_margin;
 
       if ((bst->wrap_p || bst->word_wrap_p) &&
           bst->x + ov.width > bst->xgwa.width - bst->right_margin - bst->xoff)
@@ -518,8 +526,30 @@ draw_char (struct bsod_state *bst, char c)
             }
         }
 
+      /* We render the character ESC as an inverted space (block cursor). */
+
+      if (cursorp)
+        {
+          unsigned long swap = bst->fg;
+          bst->fg = bst->bg;
+          bst->bg = swap;
+          XSetForeground (bst->dpy, bst->gc, bst->fg);
+          XSetBackground (bst->dpy, bst->gc, bst->bg);
+        }
+
       XDrawImageString (bst->dpy, bst->window, bst->gc,
                         bst->x, bst->y, &c, 1);
+
+      if (cursorp)
+        {
+          unsigned long swap = bst->fg;
+          bst->fg = bst->bg;
+          bst->bg = swap;
+          XSetForeground (bst->dpy, bst->gc, bst->fg);
+          XSetBackground (bst->dpy, bst->gc, bst->bg);
+          c = ' ';
+        }
+
       bst->x += ov.width;
 
       if (bst->word_wrap_p)
@@ -670,6 +700,11 @@ bsod_pop (struct bsod_state *bst)
       int h    = (long) bst->queue[bst->pos].arg4;
       int tox  = (long) bst->queue[bst->pos].arg5;
       int toy  = (long) bst->queue[bst->pos].arg6;
+
+      /* If ~0, place pixmap at current text pos */
+      if (tox == ~0) tox = bst->x;
+      if (toy == ~0) toy = bst->y - bst->font->ascent;
+
       if (type == PIXMAP && bst->mask)
         {
           XSetClipMask (bst->dpy, bst->gc, bst->mask);
@@ -838,7 +873,7 @@ make_bsod_state (Display *dpy, Window window,
   char buf1[1024], buf2[1024];
   char buf5[1024], buf6[1024];
   char buf7[1024], buf8[1024];
-  const char *font1, *font3, *font4;
+  char *font1, *font3, *font4;
 
   bst = (struct bsod_state *) calloc (1, sizeof (*bst));
   bst->queue_size = 10;
@@ -939,6 +974,11 @@ make_bsod_state (Display *dpy, Window window,
   bst->y = bst->font->ascent + bst->left_margin + bst->yoff;
 
   XSetWindowBackground (dpy, window, gcv.background);
+
+  if (font1) free (font1);
+  if (font3) free (font3);
+  if (font4) free (font4);
+
   return bst;
 }
 
@@ -956,6 +996,8 @@ free_bsod_state (struct bsod_state *bst)
     XFreePixmap(bst->dpy, bst->mask);
 
   XFreeFont (bst->dpy, bst->font);
+  if (bst->fontB && bst->fontB != bst->font) XFreeFont (bst->dpy, bst->fontB);
+  if (bst->fontC && bst->fontC != bst->font) XFreeFont (bst->dpy, bst->fontC);
   XFreeGC (bst->dpy, bst->gc);
 
   for (i = 0; i < bst->queue_size; i++)
@@ -1512,7 +1554,7 @@ windows_ransomware (Display *dpy, Window window)
   const time_t stage1_deadline = now + 259200 - advance_deadline; /* 3 days */
   const time_t stage2_deadline = now + 604800 - advance_deadline; /* 7 days */
   char stage1_deadline_str[25], stage2_deadline_str[25];
-  char countdown_str[16];
+  char countdown_str[20];
   int countdown_d, countdown_h, countdown_m, countdown_s, countdown_r;
   int line_height  = bst->font->ascent + bst->font->descent;
   int line_height1 = bst->fontA->ascent + bst->fontA->descent;
@@ -2486,7 +2528,7 @@ macsbug (Display *dpy, Window window)
   if (xoff < 0) xoff = 0;
   if (yoff < 0) yoff = 0;
 
-  BSOD_MARGINS (bst, xoff, yoff);
+  BSOD_MARGINS (bst, xoff, xoff);
 
   BSOD_COLOR (bst, bc, bg);
   BSOD_RECT (bst, True, 0, 0, bst->xgwa.width, bst->xgwa.height);
@@ -2510,7 +2552,9 @@ macsbug (Display *dpy, Window window)
   BSOD_MOVETO (bst,
                xoff + col_right + char_width,
                yoff + body_top + line_height);
-  BSOD_MARGINS (bst, xoff + col_right + char_width, yoff);
+  BSOD_MARGINS (bst,
+                xoff + col_right + char_width,
+                xoff + col_right + char_width);
   BSOD_TEXT (bst, LEFT, body);
 
   BSOD_RECT (bst, False, xoff-2, yoff, page_right+4, page_bottom); /* again */
@@ -3217,6 +3261,29 @@ sparc_solaris (Display *dpy, Window window)
 {
   struct bsod_state *bst = make_bsod_state (dpy, window, "solaris", "Solaris");
   int i;
+  int pix_w = 0, pix_h = 0;
+  int char_width;
+  Pixmap mask = 0;
+  Pixmap pixmap = image_data_to_pixmap (dpy, window,
+                                        sun_png, sizeof(sun_png),
+                                        &pix_w, &pix_h, &mask);
+
+  char_width = (bst->font->per_char
+		? bst->font->per_char['n'-bst->font->min_char_or_byte2].width
+		: bst->font->min_bounds.width);
+
+  if (pixmap)
+    while (pix_w < char_width * 4)
+      {
+        pixmap = double_pixmap (dpy, bst->xgwa.visual,
+                                bst->xgwa.depth, pixmap, pix_w, pix_h);
+        mask = double_pixmap (dpy, bst->xgwa.visual, 1, mask, pix_w, pix_h);
+        pix_w *= 2;
+        pix_h *= 2;
+      }
+
+  bst->pixmap = pixmap;
+  bst->mask = mask;
 
   bst->scroll_p = True;
   bst->wrap_p = True;
@@ -3224,8 +3291,14 @@ sparc_solaris (Display *dpy, Window window)
   bst->top_margin = bst->bottom_margin = bst->xgwa.height * 0.07;
   bst->y = bst->top_margin + bst->yoff + bst->font->ascent;
 
+# if 0
+  /* This looks correct if we have a desktop image behind it, but doesn't
+     make sense if it's a photo.  So let's skip it. */
   BSOD_IMG (bst);
   BSOD_PAUSE (bst, 3000000);
+# endif
+
+  BSOD_LINE_DELAY (bst, 20000);
 
   BSOD_INVERT(bst);
   BSOD_RECT (bst, True,
@@ -3260,30 +3333,359 @@ sparc_solaris (Display *dpy, Window window)
     " 100131480 10012a6e0 0\n"
     "End traceback...\n"
     "panic[cpu0]/thread=30000953a20: trap\n"
-    "syncing file systems...");
+    "syncing file systems...\033");
 
   BSOD_PAUSE (bst, 3000000);
 
-  BSOD_TEXT (bst, LEFT, " 1 done\n");
-  BSOD_TEXT (bst, LEFT, "dumping to /dev/dsk/c0t0d0s3, offset 26935296\n");
+  BSOD_TEXT (bst, LEFT, "\b 1 done\n");
+  BSOD_TEXT (bst, LEFT, "dumping to /dev/dsk/c0t0d0s3, offset 26935296\n\033");
   BSOD_PAUSE (bst, 2000000);
-
+  BSOD_TEXT (bst, LEFT, "\b");
 
   for (i = 1; i <= 100; ++i)
     {
       char buf[100];
-      sprintf (buf, "\b\b\b\b\b\b\b\b\b\b\b%3d%% done", i);
+      sprintf (buf, "\r %3d%% done\033", i);
       BSOD_TEXT (bst, LEFT, buf);
       BSOD_PAUSE (bst, 100000);
     }
 
   BSOD_TEXT (bst, LEFT,
-    ": 2803 pages dumped, compression ratio 2.88, dump succeeded\n");
+    "\b: 2803 pages dumped, compression ratio 2.88, dump succeeded\n\033");
   BSOD_PAUSE (bst, 2000000);
 
   BSOD_TEXT (bst, LEFT,
-    "rebooting...\n"
-    "Resetting ...");
+    "\brebooting...\n"
+    "Resetting ...\n\033");
+
+  BSOD_PAUSE (bst, 3000000);
+
+  BSOD_INVERT(bst);
+  BSOD_RECT (bst, True,
+             bst->left_margin, bst->top_margin,
+             bst->xgwa.width - bst->left_margin - bst->right_margin,
+             bst->xgwa.height - bst->top_margin - bst->bottom_margin);
+  BSOD_INVERT(bst);
+  BSOD_MOVETO (bst, bst->left_margin, bst->top_margin + bst->font->ascent);
+  BSOD_PAUSE (bst, 1000000);
+
+  BSOD_TEXT (bst, LEFT,
+    "Starting real time clock...\n"
+    "Probing /sbus@1,f8000000 at 0,0  dma esp sd st le\n"
+    "Probing /sbus@1,f8000000 at 1,0  Invalid FCode start byte at ffe70000\n"
+    "Probing /sbus@1,f8000000 at 2,0  Invalid FCode start byte at ffe70000\n"
+    "Probing /sbus@1,f8000000 at 3,0  bwtwo\n"
+    "\n");
+
+  BSOD_PIXMAP (bst, 0, 0, pix_w, pix_h, ~0, ~0);
+  BSOD_MARGINS (bst,
+                bst->left_margin + pix_w + char_width * 2,
+                bst->left_margin + pix_w + char_width * 2);
+  BSOD_TEXT (bst, LEFT,
+             "SPARCstation IPC, Keyboard Present\n"
+             "ROM Rev. 2.9, 16 MB memory installed, Serial #12648190.\n"
+             "Ethernet address 8:0:20:37:1:87, Host ID: 52c0fefe.\n");
+  BSOD_MARGINS (bst, bst->left_margin, bst->left_margin);
+
+  BSOD_TEXT (bst, LEFT, "\n\n\033");
+  BSOD_PAUSE (bst, 3000000);
+  BSOD_TEXT (bst, LEFT, "\r");
+
+  BSOD_TEXT (bst, LEFT, "Testing 16 megs of memory. Still to go \033 16");
+
+  for (i = 16; i > 0; i--)
+    {
+      char buf[100];
+      sprintf (buf, "\b\b%2d", i);
+      BSOD_TEXT (bst, LEFT, buf);
+      BSOD_PAUSE (bst, 100000);
+    }
+  BSOD_TEXT (bst, LEFT, "\b\b\b\b   0\n"
+             "Initializing  16 megs of memory at addr         0\033 16");
+  for (i = 16; i >= 0; i--)
+    {
+      char buf[100];
+      sprintf (buf, "\b\b%2d", i);
+      BSOD_TEXT (bst, LEFT, buf);
+      BSOD_PAUSE (bst, 30000);
+    }
+  BSOD_TEXT (bst, LEFT, "\r"
+             "                                                          \r"
+             "Boot device: /sbus/le@0,c00000   File and args:\n\033");
+
+  {
+    int n = (random() % 10);
+    for (i = 0; i < n; i++)
+      {
+        BSOD_PAUSE (bst, 3000000);
+        BSOD_TEXT (bst, LEFT, "\rTimeout waiting for ARP/RARP packet\n\033");
+      }
+  }
+  BSOD_TEXT (bst, LEFT, "\r");
+
+  BSOD_TEXT (bst, LEFT,
+    "Internal loopback test -- Wrong packet length;"
+      " expected 36, observed 1600\n"
+    "Can't open boot device\n"
+    "\n"
+    "Type b (boot), c (continue), or n (new command mode)\n"
+    ">");
+  BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 10);
+  BSOD_TEXT (bst, LEFT, "n\n");
+  BSOD_PAUSE (bst, 500000);
+  BSOD_TEXT (bst, LEFT, "Type  help  for more information\n"
+             "ok ");
+
+  BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 4);
+  BSOD_CHAR_DELAY (bst, 80000);
+  BSOD_TEXT (bst, LEFT, /* "test net" */
+             "t\033\be\033\bs\033\bt\033\b \033\bn\033\be\033\bt\033\b");
+  BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 2);
+  BSOD_TEXT (bst, LEFT, "\n\033");
+  BSOD_CHAR_DELAY (bst, 0);
+
+  BSOD_PAUSE (bst, 1000000);
+  BSOD_TEXT (bst, LEFT, "\r Lance register test -- succeeded.\n\033");
+  BSOD_PAUSE (bst, 1000000);
+  BSOD_TEXT (bst, LEFT, "\r Internal loopback test -- succeeded.\n\033");
+  BSOD_PAUSE (bst, 1000000);
+  BSOD_TEXT (bst, LEFT, "\r External loopback test -- succeeded.\n"
+             "ok ");
+  BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 8);
+
+  BSOD_TEXT (bst, LEFT, "\rok ");
+  BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 4);
+  BSOD_CHAR_DELAY (bst, 80000);
+  BSOD_TEXT (bst, LEFT, /* "boot cdrom" */
+     "b\033\bo\033\bo\033\bt\033\b \033\bc\033\bd\033\br\033\bo\033\bm\033\b");
+  BSOD_TEXT (bst, LEFT, "  \n");
+  BSOD_CHAR_DELAY (bst, 0);
+  BSOD_TEXT (bst, LEFT,
+    "\rBoot device: /sbus/esp@0,800000/sd@6,0:c    File and args:\n\033");
+  BSOD_PAUSE (bst, 1000000);
+  BSOD_TEXT (bst, LEFT,
+    "\rroot on   fstype 4.3\n"
+    "Boot: vmunix\n\033");
+
+  BSOD_TEXT (bst, LEFT, "\rSize: 696320+");
+  BSOD_CHAR_DELAY (bst, 5000);
+  BSOD_INVERT(bst);
+  BSOD_TEXT (bst, LEFT,  /* spinner */
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/"
+             "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/" "\b-\b\\\b|\b/");
+  BSOD_INVERT(bst);
+  BSOD_TEXT (bst, LEFT, "\b+");
+  BSOD_CHAR_DELAY (bst, 0);
+  BSOD_TEXT (bst, LEFT,
+             "2218504+28056 bytes\n\033");
+  BSOD_PAUSE (bst, 1000000);
+
+  i = random() % 3;
+
+  if (i == 0)
+    {
+      BSOD_TEXT (bst, LEFT,
+        "\rSunOS Release 4.1.1 (MUNIX) #1: Thu Oct 11 11:22:48 PDT 1990\n"
+        "Copyright (c) 1983-1990, Sun Microsystems, Inc.\n"
+        "mem = 16384K (0x1000000)\n"
+        "avail mem = 12865536\n"
+        "Ethernet address = 8:0:20:37:1:87\n"
+        "No FPU in configuration\n"
+        "cpu = SUNW,Sun 4/40\n"
+        "zs0 at obio 0xf1000000 pri 12\n"
+        "zs1 at obio 0xf0000000 pri 12\n"
+        "sbus0 at SBus slot 0 0x0\n"
+        "dma0 at SBus slot 0 0x400000\n"
+        "esp0 at SBus slot 0 0x800000 pri 3\n"
+        "\033");
+    }
+  else if (i == 1)
+    {
+      BSOD_TEXT (bst, LEFT,
+        "\rSunOS Release 5.6 Version Generic [UNIX(R) System V Release 4.0]\n"
+        "Copyright (c) 1983-1997, Sun Microsystems, Inc.\n"
+        "No FPU in configuration\n"
+        "WARNING: kbd: Unknown keyboard type, Type 3 assumed.\n"
+        "WARNING: kbd: Unknown keyboard type, Type 3 assumed.\n"
+        "Configuring devices...\n"
+        "\033");
+      BSOD_PAUSE (bst, 1000000);
+      BSOD_TEXT (bst, LEFT,
+        "\rWARNING: /sbus@1,f8000000/esp@0,800000/sd@6,0 (sd6):\n"
+        "        incomplete read- retrying\n"
+        "\n"
+        "loadkeys: ioctl(KIOCLAYOUT): Invalid argument\n"
+        "\033");
+    }
+  else
+    {
+      BSOD_TEXT (bst, LEFT,
+        "\rSunOS Release 5.3 Version Generic [UNIX(R) System V Release 4.0]\n"
+        "Copyright (c) 1983-1993, Sun Microsystems, Inc.\n"
+        "No FPU in configuration\n"
+        "WARNING: /sbus@1,f8000000/esp@0,800000/sd@3,0 (sd3):\n"
+        "        corrupt label - wrong magic number\n"
+        "\n"
+        "\\       unexpected data phase\n\033");
+      for (i = 0; i < 3; i++)
+        {
+          BSOD_PAUSE (bst, 3000000);
+          if (i > 0)
+            BSOD_TEXT (bst, LEFT,
+                       "\r        polled command timeout\n");
+          BSOD_TEXT (bst, LEFT,
+           "\resp:         State=DATA Last State=UNKNOWN\n"
+           "esp:         Latched stat=0x11<XZERO,IO> intr=0x10<BUS,FCMO>"
+                   " fifo 0x0\n"
+           "esp:         lst msg out: IDENTIFY; lst msg in: COMMAND COMPLETE\n"
+           "esp:         DMA csr=0x10<INTEN>\n"
+           "esp:         addr=fff0100f dmacnt=8000 last=fff01008 last_cnt=7\n"
+           "esp:         Cmd dump for Target 6 Lun 0:\n"
+           "esp:         cdblen=6, cdb=[ 0x0 0x0 0x0 0x0 0x1 0x0 ]\n"
+           "esp:         pkt_state 0x3<SEL,ARB> pkt_flags 0x10000"
+                   " pkt_statistics 0x0\n"
+           "esp:         cmd_flags=0x10022 cmd_timeout=120\n"
+           "\033");
+        }
+      BSOD_PAUSE (bst, 3000000);
+      BSOD_TEXT (bst, LEFT,
+        "\rWARNING: /sbus@1,f8000000/esp@0,800000/sd@6,0 (sd6):\n"
+        "        incomplete read- retrying\n"
+        "\n"
+        "loadkeys: ioctl(KIOCLAYOUT): Invalid argument\n"
+        "\033");
+  }
+
+  BSOD_PAUSE (bst, 1000000);
+  BSOD_TEXT (bst, LEFT,
+    "\rsd1 at esp0 target 1 lun 0\n"
+    "sd1:    corrupt label - wrong magic number\n"
+    "sd1: Vendor ' SEAGAT', product ' ', 786432 512 byte blocks\n"
+    "sr0: Unrecongized vendor 'Sony    ',"
+      " product 'CDU-76S        'sr0 at esp0 target 6 lun 0\n"
+    "le0 at SBus slot 0 0xc00000 pri 5\n"
+    "fd0 at obio 0xf7200000 pri 11\n\033");
+  BSOD_PAUSE (bst, 1000000);
+  BSOD_TEXT (bst, LEFT,
+    "\rrd0: using preloaded munixfs\n"
+    "WARNING: TOD clock not initialized -- CHECK AND RESET THE DATE!\n"
+    "root on rd0a fstype 4.2\n"
+    "swap on ns0b fstype spec size 12480K\n"
+    "dump on ns0b fstype spec size 12468K\n"
+    "\033");
+  BSOD_PAUSE (bst, 4000000);
+
+  i = random() % 3;
+
+  if (i == 0)
+    {
+      BSOD_TEXT (bst, LEFT,
+        "\rStarting OpenWindows...\n"
+        "\n"
+        "\n"
+        "waiting for X server to begin accepting connections \033");
+      BSOD_PAUSE (bst, 2500000);
+      BSOD_TEXT (bst, LEFT, "\b.\033");
+      BSOD_PAUSE (bst, 2500000);
+      BSOD_TEXT (bst, LEFT, "\b \n.\033");
+      for (i = 0; i < 10; i++)
+        {
+          BSOD_PAUSE (bst, 2500000);
+          BSOD_TEXT (bst, LEFT, "\b.\033");
+          BSOD_PAUSE (bst, 2500000);
+          BSOD_TEXT (bst, LEFT, "\b \n.\033");
+        }
+    }
+  else if (i == 1)
+    {
+      BSOD_TEXT (bst, LEFT,
+        "\rCan't invoke /sbin/init, error 13\n"
+        "Can't invoke /etc/init, error 13\n"
+        "Can't invoke /bin/init, error 13\n"
+        "Can't invoke /usr/etc/init, error 13\n"
+        "Can't invoke /usr/bin/init, error 13\n"
+        "panic: icode\n"
+        "syncing file systems...\033");
+      BSOD_PAUSE (bst, 2000000);
+      BSOD_TEXT (bst, LEFT, "\b done\n");
+      BSOD_TEXT (bst, LEFT,
+        "00000 low-memory static kernel pages\n"
+        "00888 additional static and sysmap kernel pages\n"
+        "00000 dynamic kernel data pages\n"
+        "00008 additional user structure pages\n"
+        "00000 segmap kernel pages\n"
+        "00000 segvn kernel pages\n"
+        "00000 current user process pages\n"
+        "00000 user stack pages\n"
+        "00896 total pages (896 chunks)\n"
+        "\n"
+        "dumping to vp ff007dd4, offset 17768\n"
+        "0 total pages, dump failed: error 19\n"
+        "rebooting...\n");
+    }
+  else
+    {
+      BSOD_TEXT (bst, LEFT,
+        "\r  \n"
+        "What would you like to do?\n"
+        "  1 - install SunOS mini-root\n"
+        "  2 - exit to single user shell\n"
+        "Enter a 1 or 2: ");
+      BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 4);
+      BSOD_TEXT (bst, LEFT,
+                 "2\n"
+                 "you may restart this script by typing <cntl-D>\n# ");
+      BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 4);
+      BSOD_CHAR_DELAY (bst, 80000);
+      BSOD_TEXT (bst, LEFT, "l\033\bs\033\b");
+      BSOD_TEXT (bst, LEFT, "  \n");
+      BSOD_CHAR_DELAY (bst, 0);
+      BSOD_TEXT (bst, LEFT,
+        ".MUNIXFS        bin             extract         stand\n"
+        ".profile        dev             lib             tmp\n"
+        "README          etc             sbin            usr\n"
+        "# ");
+      BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 4);
+      BSOD_CHAR_DELAY (bst, 80000);
+      BSOD_TEXT (bst, LEFT, /* ". extract" */
+        ".\033\b \033\be\033\bx\033\bt\033\br\033\ba\033\bc\033\bt\033\b");
+      BSOD_TEXT (bst, LEFT, "  \n");
+      BSOD_CHAR_DELAY (bst, 0);
+      BSOD_TEXT (bst, LEFT,
+         "using cdrom partition number 2\n"
+         "esp0:    data transfer overrun\n"
+         "         State=DATA Last State=DATA_DNE\n"
+         "         Latched stat=0x11<XZERO,IO> intr=0x10<BUS> fifo 0x0\n"
+         "         lst msg out: EXTENDED; lst msg in: COMMAND COMPLETE\n"
+         "         DMA csr=0x10<INTEN>\n"
+         "         addr=fff026d0 last=fff024d0 last_count=200\n"
+         "         Cmd dump for Target 6 Lun 0:\n"
+         "         cdb=[ 0x8 0x0 0x0 0x0 0x1 0x0 ]\n"
+         "         pkt_state 0xf<XFER,CMD,SEL,ARB> pkt_flags 0x0"
+                 " pkt_statistics 0x0\n"
+         "         Mapped Dma Space:\n"
+         "                 Base = 0x24d0 Count = 0x200\n"
+         "         Transfer History:\n"
+         "                 Base = 0x24d0 Count = 0x200\n");
+    }
+
+  BSOD_CURSOR (bst, CURSOR_BLOCK, 500000, 8);
+
+  XClearWindow(dpy, window);
 
   return bst;
 }
@@ -5023,6 +5425,122 @@ apple2ransomware (Display *dpy, Window window)
 
 
 
+static void
+a2controller_encom (apple2_sim_t *sim, int *stepno,
+                    double *next_actiontime)
+{
+  apple2_state_t *st=sim->st;
+
+  struct mydata {
+    const char *str;
+    Bool bold_p;
+  } *mine;
+
+  if (!sim->controller_data)
+    sim->controller_data = calloc(sizeof(struct mydata),1);
+  mine=(struct mydata *) sim->controller_data;
+
+  switch(*stepno) {
+  case 0:
+
+    st->gr_mode |= A2_GR_FULL;
+    a2_cls(st);
+    a2_goto(st,0,35);
+    a2_prints(st, "ENCOM");
+    a2_goto(st,23,0);
+    *stepno = 10;
+    *next_actiontime += 6;
+    break;
+
+  case 10:
+    a2_cls(st);
+    a2_goto(st,0,0);
+    *stepno = 11;
+    *next_actiontime += 1;
+    break;
+
+  case 11:
+    a2_goto(st, 1, 0);
+    *stepno = 12;
+    mine->str = ("\n"
+                 "\r\n"
+                 "\r\n"
+                 "\r\n"
+                 "\r\n"
+                 "\r\n"
+                 "\r\n"
+                 "\r\n"
+                 "\r\n"
+                 "SEPT 22, 18:32:21 PM\n"
+                 "\n"
+                 "         YOUR ACCESS SUSPENDED\n"
+                 "         PLEASE REPORT TO DILLINGER\n"
+                 "         IMMEDIATELY\n"
+                 "         AUTHORIZATION: MASTER CONTROL\n"
+                 "         PROGRAM\n"
+                 "\n"
+                 "\r\r\r\r\r"
+                 "         END OF LINE\n"
+                 "\n"
+                 "\n"
+                 "\n"
+                 "\n");
+    break;
+
+  case 12:
+    {
+      char c = *mine->str;
+      mine->str++;
+
+      if (c == 0)
+        {
+          *next_actiontime += 30;
+          *stepno = 0;
+        }
+      else
+        {
+          if (c == '\r')
+            *next_actiontime += 0.2;
+          if (mine->bold_p)
+            c |= 0xC0;
+          a2_printc_noscroll(st, c);
+        }
+    }
+    break;
+
+  case A2CONTROLLER_FREE:
+    return;
+  }
+}
+
+
+static int
+a2_encom_draw (struct bsod_state *bst)
+{
+  apple2_sim_t *sim = (apple2_sim_t *) bst->closure;
+  if (! sim) {
+    sim = apple2_start (bst->dpy, bst->window, 9999999,
+                        a2controller_encom);
+    bst->closure = sim;
+  }
+
+  if (! apple2_one_frame (sim)) {
+    bst->closure = 0;
+  }
+
+  return 10000;
+}
+
+static struct bsod_state *
+encom (Display *dpy, Window window)
+{
+  struct bsod_state *bst = make_bsod_state (dpy, window, "encom", "Encom");
+  bst->draw_cb = a2_encom_draw;
+  bst->free_cb = a2_free;
+  return bst;
+}
+
+
 /* A crash spotted on a cash machine circa 2006, by jwz.  I didn't note
    what model it was; probably a Tranax Mini-Bank 1000 or similar vintage.
  */
@@ -5076,6 +5594,171 @@ atm (Display *dpy, Window window)
   XFreePixmap (dpy, pixmap);
   XFreePixmap (dpy, mask);
 
+  return bst;
+}
+
+
+static struct bsod_state *
+dvd (Display *dpy, Window window)
+{
+  struct bsod_state *bst = make_bsod_state (dpy, window, "dvd", "DVD");
+  int pix_w, pix_h;
+  float scale = 0.15;
+  Pixmap mask = 0;
+  Pixmap pixmap = image_data_to_pixmap (dpy, window,
+                                        dvd_png, sizeof(dvd_png),
+                                        &pix_w, &pix_h, &mask);
+  int i = 0;
+  int x, y, dx, dy;
+  int steps = 10000;
+
+  XClearWindow (dpy, window);
+
+  while (pix_w <= bst->xgwa.width  * scale &&
+         pix_h <= bst->xgwa.height * scale)
+    {
+      pixmap = double_pixmap (dpy, bst->xgwa.visual, bst->xgwa.depth,
+                              pixmap, pix_w, pix_h);
+      mask = double_pixmap (dpy, bst->xgwa.visual, 1, mask, pix_w, pix_h);
+      pix_w *= 2;
+      pix_h *= 2;
+      i++;
+    }
+
+  bst->pixmap = pixmap;
+  bst->mask = mask;
+  x = random() % (bst->xgwa.width  - pix_w);
+  y = random() % (bst->xgwa.height - pix_h);
+  dx = random() & 1 ? 1 : -1;
+  dy = random() & 1 ? 1 : -1;
+
+  BSOD_INVERT(bst);
+  for (i = 0; i < steps; i++)
+    {
+      BSOD_RECT (bst, True, x, y, pix_w, pix_h);
+      if (x + dx < 0 || x + dx + pix_w > bst->xgwa.width)  dx = -dx;
+      if (y + dy < 0 || y + dy + pix_h > bst->xgwa.height) dy = -dy;
+      x += dx;
+      y += dy;
+      BSOD_PIXMAP (bst, 0, 0, pix_w, pix_h, x, y);
+      BSOD_PAUSE (bst, 1000000 / 30.0);
+    }
+
+  return bst;
+}
+
+
+static struct bsod_state *
+tivo (Display *dpy, Window window)
+{
+  struct bsod_state *bst = make_bsod_state (dpy, window, "tivo", "Tivo");
+  int char_width =
+    (bst->font->per_char
+     ? bst->font->per_char['n'-bst->font->min_char_or_byte2].width
+     : bst->font->min_bounds.width);
+  int line_height = bst->font->ascent + bst->font->descent;
+
+  int left = (bst->xgwa.width - char_width * 44) / 2;
+  int top = (bst->xgwa.height - line_height * 15) / 2;
+  if (left < 0) left = 0;
+  if (top < 0) top = 0;
+
+  XClearWindow (dpy, window);
+
+  BSOD_MARGINS (bst, left, left);
+  BSOD_MOVETO (bst, left, top);
+
+  BSOD_FONT (bst, 1);
+  BSOD_TEXT (bst, LEFT, "\nA severe error has occurred.\n\n");
+  BSOD_FONT (bst, 0);
+  BSOD_TEXT (bst, LEFT,
+             "Please leave the Receiver plugged in and connected\n"
+             "to the phone line for the next three hours while the\n"
+             "Receiver attempts to repair itself.");
+  BSOD_FONT (bst, 1);
+  BSOD_TEXT (bst, LEFT,
+             "\n\n"
+             "DO NOT UNPLUG OR RESTART\nTHE RECEIVER.\n\n");
+  BSOD_FONT (bst, 0);
+  BSOD_TEXT (bst, LEFT,
+             "If, after three hours, the Receiver does not restart\n"
+             "itself, call Customer Care.");
+
+  BSOD_PAUSE (bst, 1000000 * 60);
+  return bst;
+}
+
+
+/* Error message for corrupted (and therefore presumed bootleg) cartridges.
+ */
+static struct bsod_state *
+nintendo (Display *dpy, Window window)
+{
+  struct bsod_state *bst = make_bsod_state (dpy, window,
+                                            "nintendo", "Nintendo");
+  unsigned long bg = get_pixel_resource (dpy, bst->xgwa.colormap,
+                                         "nintendo.background",
+                                         "Nintendo.Background");
+  unsigned long bg2 = get_pixel_resource (dpy, bst->xgwa.colormap,
+                                          "nintendo.background2",
+                                          "Nintendo.Background");
+  unsigned long fg = get_pixel_resource (dpy, bst->xgwa.colormap,
+                                         "nintendo.foreground",
+                                         "Nintendo.Foreground");
+  int char_width =
+    (bst->font->per_char
+     ? bst->font->per_char['n'-bst->font->min_char_or_byte2].width
+     : bst->font->min_bounds.width);
+  int line_height = bst->font->ascent + bst->font->descent;
+
+  int left = (bst->xgwa.width - char_width * 30) / 2;
+  int top = (bst->xgwa.height - line_height * 9) / 2;
+  int left2 = left - char_width * 4;
+  int top2  = top - line_height;
+  if (left < 0) left = 0;
+  if (top < 0) top = 0;
+  if (left2 < 0) left2 = 0;
+  if (top2 < 0) top2 = 0;
+  if (left2 > char_width * 8) left2 = char_width * 8;
+  if (top2  > line_height * 10) top2 = line_height * 10;
+
+  XClearWindow (dpy, window);
+
+  BSOD_COLOR (bst, bg2, bg);
+  BSOD_RECT (bst, True, left2, top2 - line_height*2,
+             bst->xgwa.width - left2*2, 
+             bst->xgwa.height - top2*2 + line_height*2);
+
+  BSOD_MARGINS (bst, left, left);
+  BSOD_MOVETO (bst, left, top - line_height/2);
+
+  BSOD_FONT (bst, 1);
+  BSOD_COLOR (bst, bg, bg2);
+
+  /* a variant crash has a second box above the English text that says:
+
+                        警告
+         ビデオゲームのコピーは法律で禁じられています。
+         詳しくは取扱説明書をご覧になってください。
+
+     but BSOD_TEXT doesn't do Xft, and more importantly, "PxPlus IBM VGA8"
+     doesn't contain Japanese characters.
+   */
+
+  BSOD_TEXT (bst, CENTER, "WARNING");
+  BSOD_FONT (bst, 0);
+  BSOD_COLOR (bst, fg, bg2);
+  BSOD_TEXT (bst, LEFT,
+             "\n\n"
+             "IT IS A SERIOUS CRIME\n"
+             "TO COPY VIDEO GAMES\n"
+             "ACCORDING TO COPYRIGHT LAW.\n"
+             "PLEASE REFER TO\n"
+             "YOUR NINTENDO GAME\n"
+             "INSTRUCTION BOOKLET\n"
+             "FOR FURTHER INFORMATION.");
+
+  BSOD_PAUSE (bst, 1000000 * 60);
   return bst;
 }
 
@@ -5355,6 +6038,10 @@ static const struct {
   { "GLaDOS",		glados },
   { "Android",		android },
   { "VMware",		vmware },
+  { "Encom",		encom },
+  { "DVD",		dvd },
+  { "Tivo",		tivo },
+  { "Nintendo",		nintendo },
 };
 
 
@@ -5385,6 +6072,7 @@ hack_title (struct driver_state *dst)
     XStoreName (dst->bst->dpy, dst->bst->window, nname);
     free (nname);
   }
+  if (oname) free (oname);
 # endif /* !HAVE_JWXYZ */
 }
 
@@ -5671,8 +6359,12 @@ static const char *bsod_defaults [] = {
   "*doNvidia:		   True",
   "*doATM:		   True",
   "*doGLaDOS:		   True",
-  "*doAndroid:		   True",
+  "*doAndroid:		   False",
   "*doVMware:		   True",
+  "*doEncom:		   True",
+  "*doDVD:		   True",
+  "*doTivo:		   True",
+  "*doNintendo:		   True",
 
   ".foreground:		   White",
   ".background:		   Black",
@@ -5784,6 +6476,13 @@ static const char *bsod_defaults [] = {
   ".vmware.foreground2:	   Yellow",
   ".vmware.background:	   #a700a8",    /* purple */
 
+  ".tivo.background:	   #339020",
+  ".tivo.foreground:	   #B8E6BA",
+
+  ".nintendo.background:   #F76D0A",
+  ".nintendo.background2:  #085C89",
+  ".nintendo.foreground:   #EEAACF",
+
   "*dontClearRoot:         True",
 
   ANALOGTV_DEFAULTS
@@ -5791,6 +6490,8 @@ static const char *bsod_defaults [] = {
 #ifdef HAVE_XSHM_EXTENSION
   "*useSHM:                True",
 #endif
+
+  ".lowrez: false",  /* This is required on macOS */
 
   "*fontB:		   ",
   "*fontC:		   ",
@@ -5813,14 +6514,19 @@ static const char *bsod_defaults [] = {
   ".win10.fontB:	   Arial 50, Helvetica 50",
   ".win10.fontC:	   Arial 9, Helvetica 9",
 
-  /* The real Solaris font is ../OSX/Gallant19.bdf but I don't know how
-     to convert that to a TTF, so let's use Luxi Mono instead. */
-  ".solaris.font:	   Luxi Mono 12, PxPlus IBM VGA8 12, Courier Bold 12",
+  /* The real Solaris font is Gallant (../OSX/gallant12x22.ttf)
+     but Luxi Mono (../OSX/luximr.ttf) is pretty close as well. */
+  ".solaris.font:	   Gallant12x22 12, Luxi Mono 12, PxPlus IBM VGA8 12, Courier Bold 12",
 
   /* "Arial" loads "ArialMT" but "Arial Bold" does not load "Arial-BoldMT"? */
   ".ransomware.font:         Arial 11, Helvetica 11",
   ".ransomware.fontB:        Arial 9, Helvetica 9",
   ".ransomware.fontC:        Arial Bold 11, Arial-BoldMT 11, Helvetica Bold 11",
+
+  ".tivo.font:		   Helvetica-Bold 13",
+  ".tivo.fontB:		   Helvetica-Bold 17",
+
+  ".nintendo.font:	   PxPlus IBM VGA8 18, Courier-Bold 18",
 
 # elif defined(HAVE_ANDROID)
 
@@ -5835,7 +6541,7 @@ static const char *bsod_defaults [] = {
   ".macinstall.bigFont:	   -*-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*",
   ".msdos.font:		   PxPlus IBM VGA8 32",
   ".nt.font:		   PxPlus IBM VGA8 12",
-  ".solaris.font:	   Luxi Mono 12, PxPlus IBM VGA8 12, Courier Bold 12",
+  ".solaris.font:	   Gallant12x22 14, Luxi Mono 12, PxPlus IBM VGA8 12, Courier Bold 12",
 
   ".win10.font:		   -*-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*",
   ".win10.bigFont:	   -*-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*",
@@ -5846,6 +6552,11 @@ static const char *bsod_defaults [] = {
   ".ransomware.fontB:	   -*-helvetica-medium-r-*-*-*-80-*-*-*-*-*-*",
   ".ransomware.fontC:	   -*-helvetica-bold-r-*-*-*-100-*-*-*-*-*-*",
 
+  ".tivo.font:		   -*-helvetica-medium-r-*-*-*-180-*-*-*-*-*-*",
+  ".tivo.fontB:		   -*-helvetica-bold-r-*-*-*-240-*-*-*-*-*-*",
+
+  ".nintendo.font:	   PxPlus IBM VGA8 18",
+
 # elif defined(HAVE_COCOA)
 
   "*font:		   PxPlus IBM VGA8 8,  Courier Bold 9",
@@ -5855,7 +6566,7 @@ static const char *bsod_defaults [] = {
   ".mac.bigFont:	   Monaco 18, Courier Bold 18",
 
   ".macsbug.font:	   Monaco 10, Courier Bold 9",
-  ".macsbug.bigFont:	   Monaco 24, Courier Bold 24",
+  ".macsbug.bigFont:	   Monaco 10, Courier Bold 9",
 
   ".macx.font:		   Courier Bold 9",
   ".macx.bigFont:	   Courier Bold 14",
@@ -5864,23 +6575,29 @@ static const char *bsod_defaults [] = {
   ".macinstall.font:	   Helvetica 24, Arial 24",
   ".macinstall.bigFont:	   Helvetica 24, Arial 24",
 
-  ".hvx.bigFont:	   PxPlus IBM VGA8 16, Courier Bold 14",
-  ".hppalinux.bigFont:	   PxPlus IBM VGA8 16, Courier Bold 14",
-  ".linux.bigFont:	   PxPlus IBM VGA8 16, Courier Bold 14",
-  ".hpux.bigFont:	   PxPlus IBM VGA8 16, Courier Bold 14",
-  ".msdos.font:		   PxPlus IBM VGA8 16, Courier Bold 14",
-  ".solaris.font:	   Luxi Mono 12, PxPlus IBM VGA8 12, Courier Bold 12",
-  ".solaris.bigFont:	   Luxi Mono 16, PxPlus IBM VGA8 16, Courier Bold 14",
+  ".hvx.bigFont:	   PxPlus IBM VGA8 24, Courier Bold 14",
+  ".hppalinux.bigFont:	   PxPlus IBM VGA8 24, Courier Bold 14",
+  ".linux.bigFont:	   PxPlus IBM VGA8 24, Courier Bold 14",
+  ".hpux.bigFont:	   PxPlus IBM VGA8 24, Courier Bold 14",
+  ".msdos.font:		   PxPlus IBM VGA8 24, Courier Bold 14",
+  ".solaris.font:	   Gallant12x22 12, Luxi Mono 12, PxPlus IBM VGA8 12, Courier Bold 12",
+  ".solaris.bigFont:	   Gallant12x22 22, Luxi Mono 16, PxPlus IBM VGA8 16, Courier Bold 14",
 
   ".win10.font:		   Arial 24, Helvetica 24",
   ".win10.bigFont:	   Arial 24, Helvetica 24",
   ".win10.fontB:	   Arial 100, Helvetica 100",
   ".win10.fontC:	   Arial 16, Helvetica 16",
 
-  ".ransomware.font:         Arial 24, Helvetica 24",
-  ".ransomware.bigFont:      Arial 24, Helvetica 24",
-  ".ransomware.fontB:        Arial 16, Helvetica 16",
-  ".ransomware.fontC:        Arial Bold 24, Helvetica Bold 24",
+  ".ransomware.font:       Arial 24, Helvetica 24",
+  ".ransomware.bigFont:    Arial 24, Helvetica 24",
+  ".ransomware.fontB:      Arial 16, Helvetica 16",
+  ".ransomware.fontC:      Arial Bold 24, Helvetica Bold 24",
+
+  ".tivo.font:		   Helvetica 36",
+  ".tivo.fontB:		   Helvetica 48",
+
+  ".nintendo.font:	   PxPlus IBM VGA8 12, Courier Bold 12",
+  ".nintendo.bigFont:	   PxPlus IBM VGA8 48, Courier Bold 48",
 
 # else   /* X11 */
 
@@ -5928,6 +6645,11 @@ static const char *bsod_defaults [] = {
   ".ransomware.fontB:	   -*-helvetica-medium-r-*-*-*-140-*-*-*-*-*-*",
   ".ransomware.fontC:	   -*-helvetica-bold-r-*-*-*-180-*-*-*-*-*-*",
 
+  ".tivo.font:		   -*-helvetica-medium-r-*-*-*-180-*-*-*-*-*-*",
+  ".tivo.fontB:		   -*-helvetica-bold-r-*-*-*-240-*-*-*-*-*-*",
+
+  ".nintendo.font:	   -*-courier-bold-r-*-*-*-180-*-*-m-*-*-*",
+  ".nintendo.bigFont:	   -*-courier-bold-r-*-*-*-360-*-*-m-*-*-*",
 
 # endif  /* X11 */
 
@@ -6000,6 +6722,14 @@ static const XrmOptionDescRec bsod_options [] = {
   { "-no-android",	".doAndroid",		XrmoptionNoArg,  "False" },
   { "-vmware",		".doVMware",		XrmoptionNoArg,  "True"  },
   { "-no-vmware",	".doVMware",		XrmoptionNoArg,  "False" },
+  { "-encom",		".doEncom",		XrmoptionNoArg,  "True"  },
+  { "-no-encom",	".doEncom",		XrmoptionNoArg,  "False" },
+  { "-dvd",		".doDVD",		XrmoptionNoArg,  "True"  },
+  { "-no-dvd",		".doDVD",		XrmoptionNoArg,  "False" },
+  { "-tivo",		".doTivo",		XrmoptionNoArg,  "True"  },
+  { "-no-tivo",		".doTivo",		XrmoptionNoArg,  "False" },
+  { "-nintendo",	".doNintendo",		XrmoptionNoArg,  "True"  },
+  { "-no-nintendo",	".doNintendo",		XrmoptionNoArg,  "False" },
   ANALOGTV_OPTIONS
   { 0, 0, 0, 0 }
 };

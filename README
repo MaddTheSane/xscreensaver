@@ -46,19 +46,58 @@ XScreenSaver has an extensive manual -- please read it!
 
 ===============================================================================
 
-5.40	* New hacks, 'filmleader', 'vfeedback'.
-	* New hack, 'glitchpeg' (X11 and macOS only).
+5.44	* New hacks, `gibson', `etruscanvenus' and `scooter'.
+	* BSOD supports Tivo and Nintendo.
+	* New color options in `romanboy', `projectiveplane', `hypertorus'
+          and `klein'.
+	* macOS: Fixed "Use random screen saver" on macOS 10.15.
+	* iOS: Supports dark mode.
+	* iOS: Fixed image loading on iOS 13.
+	* iOS: Fixed rotation on iOS 13 (Apple incompatibly breaks rotation
+          every two years as a matter of policy).
+        * Performance tweaks for `eruption', `fireworkx', `halftone', `halo',
+          `moire2', `rd-bomb'.
+	* X11: Always use $HOME/.xscreensaver, not getpwuid's directory.
+	* Various bug fixes.
+
+5.43	* New hacks, `GravityWell', `DeepStars'.
+	* GLPlanet now supports the Mercator projection.
+	* Bouncing Cow has mathematically ideal cows (spherical, frictionless).
+	* Foggy toasters.
+	* Unknown Pleasures can now use an image file as a clip mask.
+	* Updated `webcollage' for recent changes.
+	* macOS: Fixed BSOD fonts on UWQHD+ displays.
+	* X11: Added some sample unlock dialog color schemes to the .ad file.
+	* X11: On systemd systems, closing your laptop lid might actually lock
+          your screen now, maybe.
+	* X11: 'sonar' can ping without being setuid by using setcap.
+
+5.42	* macOS: Fixed Sparkle auto-updater.
+
+5.41	* X11: Those new font-loading fallback heuristics work again. Oops.
+	* iOS, Android: Plugged many memory leaks at exit.
+	* New hack, `handsy'.
+	* Fixed `noof' from displaying minimalistically.
+	* Rewrote `unknownpleasures' to be faster, and a true waterfall graph.
+	* BSOD Solaris improved. DVD added.
+	* Linux: If the xscreensaver daemon is setuid, then we can implore the
+          kernel's out-of-memory killer to pretty please not unlock the screen.
+	* macOS: Upgraded Sparkle (the "Check for Updates" library).
+	* macOS: Screen saver settings work again on 10.14.
+
+5.40	* New hacks, `filmleader', `vfeedback'.
+	* New hack, `glitchpeg' (X11 and macOS only).
 	* GLPlanet blends between day and night maps at the dusk terminator.
 	* DymaxionMap can display arbitrary map images, and animate sunlight
           across the flattened globe.
 	* Tessellimage can draw either Delaunay or Voronoi tilings.
 	* XAnalogTV includes test cards.
-	* Android: These hacks work now: 'blitspin', 'bumps', 'cityflow',
-	  'endgame', 'esper', 'flipscreen3d', 'gleidescope', 'glslideshow',
-	  'jigglypuff', 'queens', 'tessellimage', 'xanalogtv', 'xmatrix',
-	  'zoom'.
+	* Android: These hacks work now: `blitspin', `bumps', `cityflow',
+	  `endgame', `esper', `flipscreen3d', `gleidescope', `glslideshow',
+	  `jigglypuff', `queens', `tessellimage', `xanalogtv', `xmatrix',
+	  `zoom'.
 
-5.39	* New hacks, 'razzledazzle', 'peepers', 'crumbler' and `maze3d'.
+5.39	* New hacks, `razzledazzle', `peepers', `crumbler' and `maze3d'.
 	* More heuristics for using RSS feeds as image sources.
 	* Android: Image loading works.
 	* Built-in image assets are now PNG instead of XPM or XBM.
@@ -66,24 +105,24 @@ XScreenSaver has an extensive manual -- please read it!
 	  terrible selection of installed fonts.
 	* macOS: Retina display-related bug fixes.
 
-5.38	* New hack, 'esper'.
+5.38	* New hack, `esper'.
 	* macOS: Support for Retina displays.
 	* X11: `webcollage' now works with ImageMagick instead of with
 	  pbmtools if `webcollage-helper' is not installed.
-	* 'bsod' now accepts Dunning-Krugerrands.
-	* Android: These hacks work now: 'anemone', 'anemotaxis', 'atlantis',
-	  'bouboule', 'celtic', 'compass', 'crackberg', 'epicycle',
-	  'fuzzyflakes', 'goop', 'kumppa' 'munch', 'pacman', 'polyominoes',
-	  'slip'.
-	* Android: Thick lines work better for: 'anemone', 'anemotaxis',
-	  'celtic', 'compass', 'deluxe', 'epicycle', 'fuzzyflakes', 'pacman'
-	* Android: Assorted performance improvements, especially for 'kumppa'
-	  and 'slip'.
+	* `bsod' now accepts Dunning-Krugerrands.
+	* Android: These hacks work now: `anemone', `anemotaxis', `atlantis',
+	  `bouboule', `celtic', `compass', `crackberg', `epicycle',
+	  `fuzzyflakes', `goop', `kumppa' `munch', `pacman', `polyominoes',
+	  `slip'.
+	* Android: Thick lines work better for: `anemone', `anemotaxis',
+	  `celtic', `compass', `deluxe', `epicycle', `fuzzyflakes', `pacman'.
+	* Android: Assorted performance improvements, especially for `kumppa'
+	  and `slip'.
         * Android TV: Daydreams work.
 	* iOS: Tweaks for iPhone X.
 	* Lots of xlockmore-derived hacks now have animated erase routines.
-	* 'crystal' works properly on non-X11 systems.
-	* 'm6502' now includes 'texture.asm'.
+	* `crystal' works properly on non-X11 systems.
+	* `m6502' now includes `texture.asm'.
 	* X11: Try harder to find sensible fonts for the password dialog.
 
 5.37	* New hack, `vigilance'.

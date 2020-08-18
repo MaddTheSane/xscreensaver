@@ -1,5 +1,5 @@
 /*
- * fliptext, Copyright (c) 2005-2015 Jamie Zawinski <jwz@jwz.org>
+ * fliptext, Copyright (c) 2005-2019 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -798,13 +798,14 @@ ENTRYPOINT void
 init_fliptext (ModeInfo *mi)
 {
   int wire = MI_IS_WIREFRAME(mi);
+  char *s;
 
   fliptext_configuration *sc;
 
   MI_INIT(mi, scs);
 
   sc = &scs[MI_SCREEN(mi)];
-  sc->lines = (line **) calloc (max_lines+1, sizeof(char *));
+  sc->lines = (line **) calloc (max_lines+1, sizeof(*sc->lines));
 
   sc->dpy = MI_DISPLAY(mi);
 
@@ -897,9 +898,9 @@ init_fliptext (ModeInfo *mi)
   if (min_lines > max_lines - 3) min_lines = max_lines - 4;
   if (min_lines < 1) min_lines = 1;
 
-  parse_color (mi, "foreground",
-               get_string_resource(mi->dpy, "foreground", "Foreground"),
-               sc->color);
+  s = get_string_resource(mi->dpy, "foreground", "Foreground");
+  parse_color (mi, "foreground", s, sc->color);
+  if (s) free (s);
 
   sc->top_margin = (sc->char_width * 100);
   sc->bottom_margin = -sc->top_margin;
@@ -919,7 +920,7 @@ draw_fliptext (ModeInfo *mi)
   if (!sc->glx_context)
     return;
 
-  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(sc->glx_context));
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *sc->glx_context);
 
 #if 0
   if (XtAppPending (app) & (XtIMTimer|XtIMAlternateInput))
@@ -989,11 +990,18 @@ ENTRYPOINT void
 free_fliptext (ModeInfo *mi)
 {
   fliptext_configuration *sc = &scs[MI_SCREEN(mi)];
+  int i;
+  if (!sc->glx_context) return;
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *sc->glx_context);
   if (sc->tc)
     textclient_close (sc->tc);
-  free(sc->lines);
-
-  /* #### there's more to free here */
+  if (sc->texfont) free_texture_font (sc->texfont);
+  for (i = 0; i < sc->nlines; i++)
+    if (sc->lines[i]) {
+      if (sc->lines[i]->text) free (sc->lines[i]->text);
+      free (sc->lines[i]);
+    }
+  if(sc->lines) free(sc->lines);
 }
 
 XSCREENSAVER_MODULE ("FlipText", fliptext)

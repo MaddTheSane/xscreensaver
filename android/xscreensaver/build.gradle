@@ -1,13 +1,13 @@
 apply plugin: 'android'
 
 dependencies {
-    compile fileTree(include: '*.jar', dir: 'libs')
-    compile "com.android.support:support-v4:27.1.1"
+    implementation fileTree(include: '*.jar', dir: 'libs')
+    implementation "com.android.support:support-v4:27.1.1"
 }
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
@@ -96,8 +96,12 @@ android {
 
 
     defaultConfig {
+        // Previous applicationId was "org.jwz.xscreensaver" but I had
+        // to change it because I managed to lose the signing key...
+        // Note that the Java class tree is still "org.jwz.xscreensaver".
+        applicationId "org.jwz.android.xscreensaver"
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 28
     }
     productFlavors {
     }

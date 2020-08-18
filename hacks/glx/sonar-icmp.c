@@ -1,4 +1,4 @@
-/* sonar, Copyright (c) 1998-2018 Jamie Zawinski and Stephen Martin
+/* sonar, Copyright (c) 1998-2020 Jamie Zawinski and Stephen Martin
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -67,6 +67,9 @@
 # include <errno.h>
 # ifdef HAVE_GETIFADDRS
 #  include <ifaddrs.h>
+# endif
+# ifdef HAVE_LIBCAP
+#  include <sys/capability.h>
 # endif
 #endif /* HAVE_ICMP || HAVE_ICMPHDR */
 
@@ -758,7 +761,9 @@ subnet_hosts (sonar_sensor_data *ssd, char **error_ret, char **desc_ret,
                      mask_width (mask),
                      mask);
           if (in2.s_addr == 0x0100007f ||   /* 127.0.0.1 in network order */
+              ((in2.s_addr & 0x000000ff) == 0x7f) ||  /* 127.0.0.0/24 */
               mask == 0)
+            /* Assume all 127 addresses are loopback, not just 127.0.0.1. */
             continue;
 
           /* At least on the AT&T 3G network, pinging either of the two
@@ -780,6 +785,10 @@ subnet_hosts (sonar_sensor_data *ssd, char **error_ret, char **desc_ret,
 
           in = in2;
           subnet_width = mask_width (mask);
+
+          /* Take the first non-loopback network: prefer en0 over en1. */
+          if (in.s_addr && subnet_width)
+            break;
         }
 
       if (in.s_addr)
@@ -930,6 +939,7 @@ send_ping (ping_data *pd, const sonar_bogie *b)
   struct ICMP *icmph;
   const char *token = "org.jwz.xscreensaver.sonar";
   char *host_id;
+  struct timeval tval;
 
   unsigned long pcktsiz = (sizeof(struct ICMP) + sizeof(struct timeval) +
                  sizeof(socklen_t) + pb->addrlen +
@@ -947,12 +957,16 @@ send_ping (ping_data *pd, const sonar_bogie *b)
   ICMP_CHECKSUM(icmph) = 0;
   ICMP_ID(icmph) = pd->pid;
   ICMP_SEQ(icmph) = pd->seq++;
+  /* struct timeval needs alignment, so we first use aligned buffer for
+     gettimeofday() and later copy the result to packet buffer
+   */
 # ifdef GETTIMEOFDAY_TWO_ARGS
-  gettimeofday((struct timeval *) &packet[sizeof(struct ICMP)],
+  gettimeofday((struct timeval *) &tval,
                (struct timezone *) 0);
 # else
-  gettimeofday((struct timeval *) &packet[sizeof(struct ICMP)]);
+  gettimeofday((struct timeval *) &tval);
 # endif
+  memcpy(&packet[sizeof(struct ICMP)], &tval, sizeof tval);
 
   /* We store the sockaddr of the host we're pinging in the packet, and parse
      that out of the return packet later (see get_ping() for why).
@@ -980,6 +994,8 @@ send_ping (ping_data *pd, const sonar_bogie *b)
       perror(buf);
 #endif
     }
+
+  free (packet);
 }
 
 /* signal handler */
@@ -1057,7 +1073,7 @@ get_ping (sonar_sensor_data *ssd)
   int result;
   u_char packet[1024];
   struct timeval now;
-  struct timeval *then;
+  struct timeval then;
   struct ip *ip;
   int iphdrlen;
   struct ICMP *icmph;
@@ -1121,7 +1137,10 @@ get_ping (sonar_sensor_data *ssd)
           ip = (struct ip *) packet;
           iphdrlen = IP_HDRLEN(ip) << 2;
           icmph = (struct ICMP *) &packet[iphdrlen];
-          then  = (struct timeval *) &packet[iphdrlen + sizeof(struct ICMP)];
+           /* struct timeval data in packet is not aligned, move the data to
+              the aligned buffer
+             */
+          memcpy(&then, &packet[iphdrlen + sizeof(struct ICMP)], sizeof then);
 
 
           /* Ignore anything but ICMP Replies */
@@ -1210,7 +1229,7 @@ get_ping (sonar_sensor_data *ssd)
           bl = new;
 
           {
-            double msec = delta(then, &now) / 1000.0;
+            double msec = delta(&then, &now) / 1000.0;
 
             if (pd->times_p)
               {
@@ -1475,7 +1494,7 @@ parse_mode (sonar_sensor_data *ssd, char **error_ret, char **desc_ret,
 
       if (!ping_works_p)
         {
-          *error_ret = strdup ("Sonar must be setuid to ping!\n"
+          *error_ret = strdup ("Sonar must be setuid or libcap to ping!\n"
                                "Running simulation instead.");
           return 0;
         }
@@ -1561,6 +1580,46 @@ parse_mode (sonar_sensor_data *ssd, char **error_ret, char **desc_ret,
 }
 
 
+static Bool
+set_net_raw_capalibity(int enable_p)
+{
+  Bool ret_status = False;
+# ifdef HAVE_LIBCAP
+  cap_t cap_status;
+  cap_value_t cap_value[] = { CAP_NET_RAW, };
+  cap_flag_value_t cap_flag_value;
+  cap_flag_value_t new_value = enable_p ? CAP_SET : CAP_CLEAR;
+
+  cap_status = cap_get_proc();
+  do {
+    cap_flag_value = CAP_CLEAR;
+    if (cap_get_flag (cap_status, CAP_NET_RAW, CAP_EFFECTIVE, &cap_flag_value))
+      break;
+    if (cap_flag_value == new_value)
+      {
+        ret_status = True;
+        break;
+      }
+
+    cap_set_flag (cap_status, CAP_EFFECTIVE, 1, cap_value, new_value);
+    if (!cap_set_proc(cap_status)) 
+      ret_status = True;
+  } while (0);
+
+  if (cap_status) cap_free (cap_status);
+# endif /* HAVE_LIBCAP */
+
+  return ret_status;
+}
+
+static Bool
+set_ping_capability (void)
+{
+  if (geteuid() == 0) return True;
+  return set_net_raw_capalibity (True);
+}
+
+
 sonar_sensor_data *
 sonar_init_ping (Display *dpy, char **error_ret, char **desc_ret,
                  const char *subnet, int timeout,
@@ -1607,6 +1666,10 @@ sonar_init_ping (Display *dpy, char **error_ret, char **desc_ret,
 
      On MacOS X, we can avoid the whole problem by using a
      non-privileged datagram instead of a raw socket.
+
+     On recent Linux systems (2012-ish?) we can avoid setuid by instead
+     using cap_set_flag(... CAP_NET_RAW). To make that call the executable
+     needs to have "sudo setcap cap_net_raw=p sonar" done to it first.
    */
   if (global_icmpsock)
     {
@@ -1620,7 +1683,7 @@ sonar_init_ping (Display *dpy, char **error_ret, char **desc_ret,
     {
       socket_initted_p = True;
     }
-  else if (geteuid() == 0 &&
+  else if (set_ping_capability() &&
            (pd->icmpsock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) >= 0)
     {
       socket_initted_p = True;
@@ -1639,7 +1702,7 @@ sonar_init_ping (Display *dpy, char **error_ret, char **desc_ret,
     fprintf (stderr, "%s: unable to open icmp socket\n", progname);
 
   /* Disavow privs */
-  setuid(getuid());
+  if (setuid(getuid()) == -1) abort();
 
   pd->pid = getpid() & 0xFFFF;
   pd->seq = 0;

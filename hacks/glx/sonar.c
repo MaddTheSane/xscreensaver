@@ -1,4 +1,4 @@
-/* sonar, Copyright (c) 1998-2018 Jamie Zawinski and Stephen Martin
+/* sonar, Copyright (c) 1998-2020 Jamie Zawinski and Stephen Martin
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -623,17 +623,20 @@ static void
 update_sensor_data (sonar_configuration *sp)
 {
   sonar_bogie *new_list = sp->ssd->scan_cb (sp->ssd);
-  sonar_bogie *b2;
+  sonar_bogie *b2, *next;
 
   /* If a bogie exists in 'new_list' but not 'pending', add it.
      If a bogie exists in both, update it in 'pending'.
    */
-  for (b2 = new_list; b2; b2 = b2->next)
+  for (b2 = new_list, next = b2 ? b2->next : 0; 
+       b2; 
+       b2 = next, next = next ? next->next : 0)
     {
       if (debug_p > 2)
         fprintf (stderr, "%s:   updated: %s (%5.2f %5.2f %5.2f)\n", 
                  progname, b2->name, b2->r, b2->th, b2->ttl);
       copy_and_insert_bogie (sp->ssd, b2, &sp->pending);
+      sonar_free_bogie (sp->ssd, b2);
     }
   if (debug_p > 2) fprintf (stderr, "\n");
 }
@@ -932,7 +935,11 @@ init_sensor (ModeInfo *mi)
                                ping_arg, ping_timeout, resolve_p, times_p,
                                debug_p);
   else
-    setuid(getuid()); /* Disavow privs if not pinging. */
+    { /* Disavow privs if not pinging. */
+      if (setuid(getuid()) == -1) abort();
+    }
+
+    setuid(getuid());
 
   sp->start_time = double_time ();  /* for error message timing */
 
@@ -1041,7 +1048,7 @@ draw_sonar (ModeInfo *mi)
   if (!sp->glx_context)
     return;
 
-  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(sp->glx_context));
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *sp->glx_context);
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1227,13 +1234,16 @@ draw_sonar (ModeInfo *mi)
 ENTRYPOINT void
 free_sonar (ModeInfo *mi)
 {
-#if 0
   sonar_configuration *sp = &sps[MI_SCREEN(mi)];
   sonar_bogie *b = sp->displayed;
+
+  if (!sp->glx_context) return;
+  glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *sp->glx_context);
+
   while (b)
     {
       sonar_bogie *next = b->next;
-      free_bogie (sp->ssd, b);
+      sonar_free_bogie (sp->ssd, b);
       b = next;
     }
   sp->displayed = 0;
@@ -1242,15 +1252,24 @@ free_sonar (ModeInfo *mi)
   while (b)
     {
       sonar_bogie *next = b->next;
-      free_bogie (sp->ssd, b);
+      sonar_free_bogie (sp->ssd, b);
       b = next;
     }
   sp->pending = 0;
 
-  sp->ssd->free_data_cb (sp->ssd, sp->ssd->closure);
-  free (sp->ssd);
-  sp->ssd = 0;
-#endif
+  if (sp->ssd) {
+    sp->ssd->free_data_cb (sp->ssd, sp->ssd->closure);
+    free (sp->ssd);
+    sp->ssd = 0;
+  }
+
+  if (sp->trackball) gltrackball_free (sp->trackball);
+  if (sp->rot) free_rotator (sp->rot);
+  if (sp->texfont) free_texture_font (sp->texfont);
+  glDeleteLists (sp->table_list, 1);
+  glDeleteLists (sp->screen_list, 1);
+  glDeleteLists (sp->grid_list, 1);
+  glDeleteLists (sp->sweep_list, 1);
 }
 
 XSCREENSAVER_MODULE ("Sonar", sonar)

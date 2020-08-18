@@ -1,5 +1,5 @@
 /* subprocs.c --- choosing, spawning, and killing screenhacks.
- * xscreensaver, Copyright (c) 1991-2017 Jamie Zawinski <jwz@jwz.org>
+ * xscreensaver, Copyright (c) 1991-2019 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -264,8 +264,8 @@ make_job (pid_t pid, int screen, const char *cmd)
   clean_job_list();
 
  AGAIN:
-  while (isspace(*in)) in++;		/* skip whitespace */
-  while (!isspace(*in) && *in != ':') {
+  while (*in && isspace(*in)) in++;		/* skip whitespace */
+  while (*in && !isspace(*in) && *in != ':') {
     if (*in == '=') got_eq = 1;
     *out++ = *in++;			/* snarf first token */
   }
@@ -277,7 +277,7 @@ make_job (pid_t pid, int screen, const char *cmd)
       goto AGAIN;
     }
 
-  while (isspace(*in)) in++;		/* skip whitespace */
+  while (*in && isspace(*in)) in++;		/* skip whitespace */
   *out = 0;
 
   job->name = strdup(name);
@@ -439,7 +439,7 @@ unblock_sigchld (void)
   block_sigchld_handler--;
 }
 
-static int
+int
 kill_job (saver_info *si, pid_t pid, int signal)
 {
   saver_preferences *p = &si->prefs;
@@ -738,12 +738,18 @@ describe_dead_child (saver_info *si, pid_t kid, int wait_status)
   /* Clear out the pid so that screenhack_running_p() knows it's dead.
    */
   if (!job || job->status == job_dead)
+    {
     for (i = 0; i < si->nscreens; i++)
       {
 	saver_screen_info *ssi = &si->screens[i];
 	if (kid == ssi->pid)
 	  ssi->pid = 0;
       }
+# ifdef HAVE_LIBSYSTEMD
+    if (kid == si->systemd_pid)
+      si->systemd_pid = 0;
+# endif
+    }
 }
 
 #else  /* VMS */
@@ -872,7 +878,12 @@ print_path_error (const char *program)
 pid_t
 fork_and_exec (saver_screen_info *ssi, const char *command)
 {
-  saver_info *si = ssi->global;
+  return fork_and_exec_1 (ssi->global, ssi, command);
+}
+
+pid_t
+fork_and_exec_1 (saver_info *si, saver_screen_info *ssi, const char *command)
+{
   saver_preferences *p = &si->prefs;
   pid_t forked;
 
@@ -889,11 +900,12 @@ fork_and_exec (saver_screen_info *ssi, const char *command)
     case 0:
       close (ConnectionNumber (si->dpy));	/* close display fd */
       limit_subproc_memory (p->inferior_memory_limit, p->verbose_p);
-      hack_subproc_environment (ssi->screen, ssi->screensaver_window);
+      if (ssi)
+        hack_subproc_environment (ssi->screen, ssi->screensaver_window);
 
       if (p->verbose_p)
         fprintf (stderr, "%s: %d: spawning \"%s\" in pid %lu.\n",
-                 blurb(), ssi->number, command,
+                 blurb(), (ssi ? ssi->number : 0), command,
                  (unsigned long) getpid ());
 
       exec_command (p->shell, command, p->nice_inferior);
@@ -908,7 +920,7 @@ fork_and_exec (saver_screen_info *ssi, const char *command)
       break;
 
     default:	/* parent */
-      (void) make_job (forked, ssi->number, command);
+      (void) make_job (forked, (ssi ? ssi->number : 0), command);
       break;
     }
 

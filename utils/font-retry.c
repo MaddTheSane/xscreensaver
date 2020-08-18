@@ -25,19 +25,21 @@ extern const char *progname;
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
+#undef DEBUG
+
 static void *
 load_font_retry_1 (Display *dpy, int screen, const char *xlfd, Bool xft_p)
 {
 
 # ifdef USE_XFT
-#  define LOADFONT() (xft_p \
-                      ? (void *) XftFontOpenXlfd (dpy, screen, xlfd) \
-                      : (void *) XLoadQueryFont (dpy, xlfd))
+#  define LOADFONT(F) (xft_p \
+                      ? (void *) XftFontOpenXlfd (dpy, screen, (F)) \
+                      : (void *) XLoadQueryFont (dpy, (F)))
 # else
-#  define LOADFONT() ((void *) XLoadQueryFont (dpy, xlfd))
+#  define LOADFONT(F) ((void *) XLoadQueryFont (dpy, (F)))
 # endif
 
-  void *f = LOADFONT();
+  void *f = xlfd ? LOADFONT(xlfd) : 0;
 
 # ifndef USE_XFT
   if (xft_p) abort();
@@ -46,11 +48,18 @@ load_font_retry_1 (Display *dpy, int screen, const char *xlfd, Bool xft_p)
 # ifdef HAVE_JWXYZ
   return f;
 # else /* !HAVE_JWXYZ */
+  if (! xlfd) xlfd = "<null>";
   if (f)
-    return f;
+    {
+# ifdef DEBUG
+      fprintf (stderr, "%s: loaded %s\n", progname, xlfd);
+# endif
+      return f;
+    }
   else
     {
-      Bool bold_p   = (!!strcasestr (xlfd, "-bold-"));
+      Bool bold_p   = (!!strcasestr (xlfd, "-bold-") ||
+                       !!strcasestr (xlfd, "-ocr"));
       Bool italic_p = (!!strcasestr (xlfd, "-i-") ||
                        !!strcasestr (xlfd, "-o-"));
       Bool fixed_p  = (!!strcasestr (xlfd, "courier") ||
@@ -58,6 +67,10 @@ load_font_retry_1 (Display *dpy, int screen, const char *xlfd, Bool xft_p)
                        !!strcasestr (xlfd, "-m-") ||
                        !!strcasestr (xlfd, "-c-"));
       int size = 0;
+
+# ifdef DEBUG
+      fprintf (stderr, "%s: failed %s\n", progname, xlfd);
+# endif
 
       if (!strcmp (xlfd, "vga"))  /* BSOD uses this: it has no XLFD name. */
         fixed_p = True, size = 120;
@@ -90,30 +103,43 @@ load_font_retry_1 (Display *dpy, int screen, const char *xlfd, Bool xft_p)
           fprintf (stderr, "%s: unloadable, unparsable font: \"%s\"\n",
                    progname, xlfd);
           xlfd = "fixed";
-          return LOADFONT();
+          return LOADFONT(xlfd);
         }
       else
         {
-          const char *fixed[] = { "courier",
-                                  "courier new",
-                                  "courier 10 pitch",
-                                  "lucidatypewriter",
-                                  "american typewriter",
-                                  "fixed",
-                                  "ocr a std",
-                                  "*" };
-          const char *variable[] = { "helvetica",
-                                     "arial",
-                                     "bitstream vera sans",
-                                     "gill sans",
-                                     "times",
-                                     "times new roman",
-                                     "new century schoolbook",
-                                     "utopia",
-                                     "palatino",
-                                     "lucida",
-                                     "bitstream charter",
-                                     "*" };
+          const char *variable[] = {
+            "helvetica",
+            "arial",
+            "bitstream vera sans",
+            "gill sans",
+            "times",
+            "times new roman",
+            "new century schoolbook",
+            "utopia",
+            "palatino",
+            "lucida",
+            "bitstream charter",
+
+            /* Don't use a wildcard family. If none of the above worked, then
+               then almost none of the X11 fonts are installed, and it's not
+               unlikely that "-*-*-medium-r-*-*-*-140-*-*-*-10646-1" will
+               match an Arabic or or Japanese font that contains no Latin
+               glyphs at all, even in a Latin locale. So in that case, just
+               let "helvetica" fall back to "fixed".
+             */
+            /* "*" */
+          };
+          const char *fixed[] = {
+            "courier",
+            "courier new",
+            "courier 10 pitch",
+            "lucidatypewriter",
+            "american typewriter",
+            "fixed",
+            "ocr a std",
+            /* As above, but "can't happen" because we already tried fixed? */
+            /* "*" */
+          };
           const char *charsets[] = { "iso10646-1", "iso8859-1", "*-*" };
           const char *weights[]  = { "bold", "medium" };
           const char *slants[]   = { "o", "i", "r" };
@@ -145,13 +171,17 @@ load_font_retry_1 (Display *dpy, int screen, const char *xlfd, Bool xft_p)
                                  spacings[e],
                                  "*",			/* average width */
                                  charsets[a]);
-                        /* fprintf(stderr, "%s: trying %s\n", progname, buf);*/
-                        f = LOADFONT();
+# ifdef DEBUG
+                        fprintf(stderr, "%s: trying %s\n", progname, buf);
+# endif
+                        f = LOADFONT(buf);
                         if (f)
                           {
-                            /* fprintf (stderr,
+# ifdef DEBUG
+                            fprintf (stderr,
                                      "%s: substituted \"%s\" for \"%s\"\n",
-                                     progname, buf, xlfd); */
+                                     progname, buf, xlfd);
+# endif
                             return f;
                           }
                       }
@@ -159,7 +189,7 @@ load_font_retry_1 (Display *dpy, int screen, const char *xlfd, Bool xft_p)
           fprintf (stderr, "%s: unable to find any alternatives to \"%s\"\n",
                    progname, xlfd);
           xlfd = "fixed";
-          return LOADFONT();
+          return LOADFONT(xlfd);
         }
     }
 # endif /* !HAVE_JWXYZ */

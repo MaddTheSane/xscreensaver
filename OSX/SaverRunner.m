@@ -1,4 +1,4 @@
-/* xscreensaver, Copyright (c) 2006-2017 Jamie Zawinski <jwz@jwz.org>
+/* xscreensaver, Copyright (c) 2006-2019 Jamie Zawinski <jwz@jwz.org>
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -67,10 +67,13 @@
   return self;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (BOOL)shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation)o
 {
   return allowRotation;				/* Deprecated in iOS 6 */
 }
+#pragma clang diagnostic pop
 
 - (BOOL)shouldAutorotate			/* Added in iOS 6 */
 {
@@ -95,7 +98,6 @@
   self = [super init];
   if (self) {
     _parent = parent;
-    // _storedOrientation = UIInterfaceOrientationUnknown;
     _showAboutBox = showAboutBox;
 
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -115,7 +117,7 @@
 
 - (void)dealloc
 {
-  [_saverName release];
+  [saverName release];
   // iOS: When a UIView deallocs, it doesn't do [UIView removeFromSuperView]
   // for its subviews, so the subviews end up with a dangling pointer in their
   // superview properties.
@@ -343,23 +345,17 @@
     [_saverView release];
   }
 
-# if 0
-  if (_storedOrientation != UIInterfaceOrientationUnknown) {
-    [[UIApplication sharedApplication]
-     setStatusBarOrientation:_storedOrientation
-     animated:NO];
-  }
-# endif
-
   _saverView = [_parent newSaverView:_saverName
                             withSize:parentView.bounds.size];
 
   if (! _saverView) {
     UIAlertController *c = [UIAlertController
-                             alertControllerWithTitle:@"Unable to load!"
+                             alertControllerWithTitle:
+                               NSLocalizedString(@"Unable to load!", @"")
                              message:@""
                              preferredStyle:UIAlertControllerStyleAlert];
-    [c addAction: [UIAlertAction actionWithTitle: @"Bummer"
+    [c addAction: [UIAlertAction actionWithTitle:
+                                   NSLocalizedString(@"Bummer", @"")
                                  style: UIAlertActionStyleDefault
                                  handler: ^(UIAlertAction *a) {
       // #### Should expose the SaverListController...
@@ -380,7 +376,7 @@
   [_saverView becomeFirstResponder]; // For shakes on iOS 6.
   [_saverView startAnimation];
   [self aboutPanel:_saverView
-       orientation:/* _storedOrientation */ UIInterfaceOrientationPortrait];
+       orientation: UIInterfaceOrientationPortrait];
 }
 
 
@@ -391,10 +387,13 @@
 }
 
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (BOOL)shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation)o
 {
   return NO;					/* Deprecated in iOS 6 */
 }
+#pragma clang diagnostic pop
 
 
 - (BOOL)shouldAutorotate			/* Added in iOS 6 */
@@ -428,9 +427,6 @@
   [name retain];
   [_saverName release];
   _saverName = name;
-  // _storedOrientation =
-  //   [UIApplication sharedApplication].statusBarOrientation;
-
   if (_saverView)
     [self createSaverView];
 }
@@ -454,16 +450,38 @@
 
   [self aboutOff:TRUE];  // It does goofy things if we rotate while it's up
 
+# if 1
+  NSLog(@"## orient");
+  [CATransaction commit];
+  [_saverView orientationChanged];
+  return;
+# endif
+
+  BOOL queued =
   [coordinator animateAlongsideTransition:^
                (id <UIViewControllerTransitionCoordinatorContext> context) {
     // This executes repeatedly during the rotation.
+NSLog(@"## animate %@", context);
   } completion:^(id <UIViewControllerTransitionCoordinatorContext> context) {
+NSLog(@"## completion %@", context);
     // This executes once when the rotation has finished.
     [CATransaction commit];
     [_saverView orientationChanged];
   }];
   // No code goes here, as it would execute before the above completes.
+
+  NSLog(@"## queued = %d", queued);
+
 }
+
+/* Not called
+- (void)willTransitionToTraitCollection:(UITraitCollection *)collection
+              withTransitionCoordinator:
+                (id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  NSLog(@"#### %@ %@", collection, coordinator);
+}
+*/
 
 @end
 
@@ -941,6 +959,10 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
                             showAboutBox:[saverNames count] != 1];
   nonrotating_controller.saverName = name;
 
+  // Necessary to prevent "card"-like presentation on Xcode 11 with iOS 13:
+  nonrotating_controller.modalPresentationStyle =
+    UIModalPresentationFullScreen;
+
   /* LAUNCH: */
 
   [rotating_nav presentViewController:nonrotating_controller animated:NO completion:nil];
@@ -1035,10 +1057,11 @@ relabel_menus (NSObject *v, NSString *old_str, NSString *new_str)
     if (name) [result addObject: name];
   }
 
-  if (! [result count])
-    result = 0;
-
-  return result;
+  if (result && [result count])
+    return [result sortedArrayUsingSelector:
+                     @selector(localizedCaseInsensitiveCompare:)];
+  else
+    return 0;
 }
 
 
@@ -1248,17 +1271,6 @@ FAIL:
 {
   rotating_nav.view.hidden = NO; // In case it was hidden during startup.
 
-  /* The XScreenSaverView screws with the status bar orientation, mostly to
-     keep the simulator oriented properly. But on iOS 8.1 (and maybe 8.0
-     and/or 8.2), this confuses the UINavigationController, so put the
-     orientation back to portrait before dismissing the SaverViewController.
-   */
-# if 0
-  [[UIApplication sharedApplication]
-   setStatusBarOrientation:UIInterfaceOrientationPortrait
-   animated:NO];
-# endif
-
   /* Make sure the most-recently-run saver is visible.  Sometimes it ends
      up scrolled half a line off the bottom of the screen.
    */
@@ -1342,7 +1354,7 @@ FAIL:
     rect.origin.y = 0;
     rect.size.width = rect.size.height = 10;
     pb = [[NSButton alloc] initWithFrame:rect];
-    [pb setTitle:@"Preferences"];
+    [pb setTitle:NSLocalizedString(@"Preferences", @"")];
     [pb setBezelStyle:NSRoundedBezelStyle];
     [pb sizeToFit];
 

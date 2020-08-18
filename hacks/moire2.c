@@ -320,10 +320,16 @@ moire2_event (Display *dpy, Window window, void *closure, XEvent *event)
 static void
 moire2_free (Display *dpy, Window window, void *closure)
 {
+  struct state *st = (struct state *) closure;
+  XFreeGC (dpy, st->copy_gc);
+  XFreeGC (dpy, st->erase_gc);
+  XFreeGC (dpy, st->window_gc);
+  free (st->colors);
+  free (st);
 }
 
 static const char *moire2_defaults [] = {
-  ".lowrez:		true",
+  ".lowrez:		true",  /* Too slow on Retina screens otherwise */
   ".background:		black",
   ".foreground:		white",
   "*delay:		50000",
