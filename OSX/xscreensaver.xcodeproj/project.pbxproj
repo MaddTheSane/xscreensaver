@@ -339,6 +339,8 @@
 /* Begin PBXBuildFile section */
 		5501D1961DBDCC3D00624BE9 /* xshm.c in Sources */ = {isa = PBXBuildFile; fileRef = 5501D1941DBDCC0200624BE9 /* xshm.c */; };
 		550FB6001AD64424001A4FA5 /* Media-iOS.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 550FB5FD1AD64424001A4FA5 /* Media-iOS.xcassets */; };
+		552B5B5A24ED12ED0077398A /* Phosphor.saver in Copy PlugIn */ = {isa = PBXBuildFile; fileRef = AF7776F609B63ABF00EA3033 /* Phosphor.saver */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		552B5B5E24ED139D0077398A /* Apple2.saver in Copy PlugIn */ = {isa = PBXBuildFile; fileRef = AF9D4DFE09B5BB19006E59CF /* Apple2.saver */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		552BDF8024EC92F50086BCC4 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* jwxyz.framework */; };
 		552BDF8124EC92F50086BCC4 /* jwxyz.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* jwxyz.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		552BDF8324EC93420086BCC4 /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* jwxyz.framework */; };
@@ -3231,7 +3233,6 @@
 		AFBFE757178642DC00432B21 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF2C31E515C0F7FE007A6896 /* QuartzCore.framework */; };
 		AFBFE758178642DC00432B21 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AFBFE759178642DC00432B21 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF48112B0990A2C700FB32B8 /* Carbon.framework */; };
-		AFBFE765178643B200432B21 /* Apple2.saver in Resources */ = {isa = PBXBuildFile; fileRef = AF9D4DFE09B5BB19006E59CF /* Apple2.saver */; };
 		AFBFE76F178647FE00432B21 /* SaverRunner.nib in Resources */ = {isa = PBXBuildFile; fileRef = AF9772E10989DFC6001F8B92 /* SaverRunner.nib */; };
 		AFBFE770178647FE00432B21 /* SaverRunner.icns in Resources */ = {isa = PBXBuildFile; fileRef = AF2D522513E954A0002AA818 /* SaverRunner.icns */; };
 		AFBFE772178647FE00432B21 /* SaverRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE1FD400981E32E00F7970E /* SaverRunner.m */; };
@@ -3241,7 +3242,6 @@
 		AFBFE777178647FE00432B21 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF2C31E515C0F7FE007A6896 /* QuartzCore.framework */; };
 		AFBFE778178647FE00432B21 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AFBFE779178647FE00432B21 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF48112B0990A2C700FB32B8 /* Carbon.framework */; };
-		AFBFE7831786483B00432B21 /* Phosphor.saver in Resources */ = {isa = PBXBuildFile; fileRef = AF7776F609B63ABF00EA3033 /* Phosphor.saver */; };
 		AFC0E8B21CDC601A008CAFAC /* XScreenSaverSubclass.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9CC7A0099580E70075E99B /* XScreenSaverSubclass.m */; };
 		AFC0E8B41CDC601A008CAFAC /* jwxyz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF4808C1098C3B6C00FB32B8 /* jwxyz.framework */; };
 		AFC0E8B51CDC601A008CAFAC /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF976ED30989BF59001F8B92 /* ScreenSaver.framework */; };
@@ -3812,6 +3812,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		552B5B5B24ED12ED0077398A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF7776E409B63ABF00EA3033;
+			remoteInfo = Phosphor;
+		};
+		552B5B5F24ED139D0077398A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF9D4DEC09B5BB19006E59CF;
+			remoteInfo = Apple2;
+		};
 		552BDF8524EC93430086BCC4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -7665,6 +7679,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		552B5B5D24ED12ED0077398A /* Copy PlugIn */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				552B5B5A24ED12ED0077398A /* Phosphor.saver in Copy PlugIn */,
+			);
+			name = "Copy PlugIn";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		552B5B6124ED139D0077398A /* Copy PlugIn */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				552B5B5E24ED139D0077398A /* Apple2.saver in Copy PlugIn */,
+			);
+			name = "Copy PlugIn";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		552BDF8224EC92F50086BCC4 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -18085,6 +18121,7 @@
 				AFBFE78817894FFA00432B21 /* Copy Standalone Preferences XML File */,
 				AFBFE75A178642DC00432B21 /* Run Update Info Plist */,
 				552BDF8724EC93430086BCC4 /* Embed Frameworks */,
+				552B5B6124ED139D0077398A /* Copy PlugIn */,
 			);
 			buildRules = (
 			);
@@ -18092,6 +18129,7 @@
 				AFBFE7641786438900432B21 /* PBXTargetDependency */,
 				AFBFE74C178642DC00432B21 /* PBXTargetDependency */,
 				552BDF8624EC93430086BCC4 /* PBXTargetDependency */,
+				552B5B6024ED139D0077398A /* PBXTargetDependency */,
 			);
 			name = "Apple2-OSX";
 			productName = SaverTester;
@@ -18108,6 +18146,7 @@
 				AFBFE78917895AAF00432B21 /* Copy Standalone Preferences XML File */,
 				AFBFE77A178647FE00432B21 /* Run Update Info Plist */,
 				552BDF8F24EC93640086BCC4 /* Embed Frameworks */,
+				552B5B5D24ED12ED0077398A /* Copy PlugIn */,
 			);
 			buildRules = (
 			);
@@ -18115,6 +18154,7 @@
 				AFBFE7811786482B00432B21 /* PBXTargetDependency */,
 				AFBFE76A178647FE00432B21 /* PBXTargetDependency */,
 				552BDF8E24EC93640086BCC4 /* PBXTargetDependency */,
+				552B5B5C24ED12ED0077398A /* PBXTargetDependency */,
 			);
 			name = "Phosphor-OSX";
 			productName = SaverTester;
@@ -22334,7 +22374,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AFBFE765178643B200432B21 /* Apple2.saver in Resources */,
 				AFBFE74F178642DC00432B21 /* SaverRunner.nib in Resources */,
 				AFBFE750178642DC00432B21 /* SaverRunner.icns in Resources */,
 			);
@@ -22344,7 +22383,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AFBFE7831786483B00432B21 /* Phosphor.saver in Resources */,
 				AFBFE76F178647FE00432B21 /* SaverRunner.nib in Resources */,
 				AFBFE770178647FE00432B21 /* SaverRunner.icns in Resources */,
 			);
@@ -28296,7 +28334,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "SRC=$SRCROOT/$PRODUCT_NAME-app.xml\nDST=$BUILT_PRODUCTS_DIR/$PRODUCT_NAME$WRAPPER_SUFFIX/Contents/Resources\nNAME=`echo $PRODUCT_NAME.xml | tr A-Z a-z`\ncp -p $SRC $DST/$NAME\nln -sf ../../../$NAME $DST/$PRODUCT_NAME.saver/Contents/Resources/";
+			shellScript = "SRC=$SRCROOT/$PRODUCT_NAME-app.xml\nDST=$BUILT_PRODUCTS_DIR/$PRODUCT_NAME$WRAPPER_SUFFIX/Contents/Resources\nNAME=`echo $PRODUCT_NAME.xml | tr A-Z a-z`\ncp -p $SRC $DST/$NAME\nln -sf ../../../$NAME $DST/$PRODUCT_NAME.saver/Contents/Resources/\n";
 		};
 		AFC0E8BC1CDC601A008CAFAC /* Run Update Info Plist */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -31624,6 +31662,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		552B5B5C24ED12ED0077398A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF7776E409B63ABF00EA3033 /* Phosphor */;
+			targetProxy = 552B5B5B24ED12ED0077398A /* PBXContainerItemProxy */;
+		};
+		552B5B6024ED139D0077398A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF9D4DEC09B5BB19006E59CF /* Apple2 */;
+			targetProxy = 552B5B5F24ED139D0077398A /* PBXContainerItemProxy */;
+		};
 		552BDF8624EC93430086BCC4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AF4808C0098C3B6C00FB32B8 /* jwxyz */;
