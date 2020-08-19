@@ -1,0 +1,6 @@
+.DS_Store
+hacks/m6502.h
+hacks/glx/molecules.h
+xcuserdata/
+build/
+hacks/images/gen/

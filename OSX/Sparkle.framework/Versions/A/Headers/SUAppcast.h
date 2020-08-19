@@ -9,27 +9,18 @@
 #ifndef SUAPPCAST_H
 #define SUAPPCAST_H
 
-#if __has_feature(modules)
-@import Foundation;
-#else
 #import <Foundation/Foundation.h>
-#endif
 #import "SUExport.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @class SUAppcastItem;
-SU_EXPORT @interface SUAppcast : NSObject
+SU_EXPORT @interface SUAppcast : NSObject<NSURLDownloadDelegate>
 
-@property (copy, nullable) NSString *userAgentString;
-@property (copy, nullable) NSDictionary<NSString *, NSString *> *httpHeaders;
+@property (copy) NSString *userAgentString;
+@property (copy) NSDictionary *httpHeaders;
 
-- (void)fetchAppcastFromURL:(NSURL *)url inBackground:(BOOL)bg completionBlock:(void (^)(NSError *_Nullable))err;
-- (SUAppcast *)copyWithoutDeltaUpdates;
+- (void)fetchAppcastFromURL:(NSURL *)url completionBlock:(void (^)(NSError *))err;
 
-@property (readonly, copy, nullable) NSArray *items;
+@property (readonly, copy) NSArray *items;
 @end
-
-NS_ASSUME_NONNULL_END
 
 #endif
