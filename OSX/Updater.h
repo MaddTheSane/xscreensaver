@@ -12,6 +12,7 @@
 #ifdef IN_UPDATER
 # import <Cocoa/Cocoa.h>
 # import <Sparkle/SUUpdater.h>
+# import <Sparkle/SUUpdaterDelegate.h>
 
 @interface XScreenSaverUpdater : NSObject <NSApplicationDelegate,
                                            SUUpdaterDelegate>
